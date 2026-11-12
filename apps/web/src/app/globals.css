@@ -1,0 +1,227 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ───────────────────────── PitchKH design tokens ─────────────────────────
+   Palette: turf green (the pitch), chalk (the line markings), floodlight
+   marigold (evening kick-off) and krama red (the Cambodian checked scarf).
+   Components only ever use the semantic names below. */
+:root {
+  --background: #f2f5ef;
+  --foreground: #0c1f1a;
+  --card: #ffffff;
+  --card-foreground: #0c1f1a;
+  --popover: #ffffff;
+  --popover-foreground: #0c1f1a;
+  --primary: #0a7446;
+  --primary-foreground: #ffffff;
+  --secondary: #e3ebe0;
+  --secondary-foreground: #0c1f1a;
+  --muted: #e9efe6;
+  --muted-foreground: #46584f;
+  --accent: #ffc629;
+  --accent-foreground: #221a00;
+  --destructive: #c2242b;
+  --destructive-foreground: #ffffff;
+  --success: #0a7446;
+  --warning: #8a5300;
+  --warning-surface: #fff1cc;
+  --border: #d2dbcf;
+  --input: #b9c7b8;
+  --ring: #0a7446;
+
+  --pitch: #0a7446;
+  --pitch-stripe: #09693f;
+  --pitch-foreground: #ffffff;
+  --krama: #c2242b;
+  --sport-football: #0a7446;
+  --sport-volleyball: #c24a0c;
+  --sport-tennis: #1a5fb4;
+
+  --radius: 1rem;
+  --tabbar-h: 4rem;
+  --header-h: 3.5rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.dark {
+  --background: #07120e;
+  --foreground: #e9f2eb;
+  --card: #0e1c16;
+  --card-foreground: #e9f2eb;
+  --popover: #12231c;
+  --popover-foreground: #e9f2eb;
+  --primary: #3ddc84;
+  --primary-foreground: #04170e;
+  --secondary: #172a21;
+  --secondary-foreground: #e9f2eb;
+  --muted: #13231b;
+  --muted-foreground: #9db2a7;
+  --accent: #ffc629;
+  --accent-foreground: #221a00;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #2a0606;
+  --success: #3ddc84;
+  --warning: #ffc629;
+  --warning-surface: #3a2c00;
+  --border: #203529;
+  --input: #2d4838;
+  --ring: #3ddc84;
+
+  --pitch: #0b6b42;
+  --pitch-stripe: #0a6039;
+  --krama: #e5484d;
+  --sport-football: #3ddc84;
+  --sport-volleyball: #ff8a4c;
+  --sport-tennis: #6aa9ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-pitch: var(--pitch);
+  --color-pitch-stripe: var(--pitch-stripe);
+  --color-pitch-foreground: var(--pitch-foreground);
+  --color-krama: var(--krama);
+  --color-football: var(--sport-football);
+  --color-volleyball: var(--sport-volleyball);
+  --color-tennis: var(--sport-tennis);
+
+  --font-sans: var(--font-archivo), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --ease-out-strong: var(--ease-out);
+  --ease-in-out-strong: var(--ease-in-out);
+
+  --animate-page-in: page-in 0.24s var(--ease-out) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-pop: pop 0.3s var(--ease-out) both;
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01";
+    overflow-x: clip;
+    min-height: 100dvh;
+  }
+  /* Khmer script has tall stacked glyphs: give it room to breathe. */
+  html[lang="km"] body { line-height: 1.8; }
+  html[lang="km"] :is(h1, h2, h3, h4, .font-display) { line-height: 1.45; letter-spacing: 0; text-transform: none; }
+  html[lang="km"] :is(button, a, label, input, select, textarea, [role="tab"]) { line-height: 1.6; }
+
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: var(--accent); color: var(--accent-foreground); }
+  button, [role="button"], a, summary, label[for], select { touch-action: manipulation; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
+  input, select, textarea { font-size: 16px; } /* stops iOS zooming into focused fields */
+  input[type="date"], input[type="time"] { min-height: 2.75rem; }
+}
+
+@layer utilities {
+  /* Display type: Archivo at expanded width, heavy, tight. The jersey-number voice of the brand. */
+  .font-display {
+    font-stretch: 122%;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 0.98;
+    text-transform: uppercase;
+  }
+  /* Numbers (prices, times, scores): condensed width + tabular figures. */
+  .font-num {
+    font-stretch: 82%;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  /* Clears the fixed bottom tab bar on phones/tablets. */
+  .pb-tabbar { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 1.5rem); }
+  @media (min-width: 1024px) { .pb-tabbar { padding-bottom: 4rem; } }
+
+  /* Mown-grass stripes: two flat greens, hard edge. */
+  .pitch-stripes {
+    background-color: var(--pitch);
+    background-image: repeating-linear-gradient(90deg, transparent 0 56px, var(--pitch-stripe) 56px 112px);
+  }
+  /* Krama gingham: the checked scarf everyone in Cambodia owns. */
+  .krama {
+    --k: color-mix(in srgb, var(--krama) 62%, transparent);
+    background-color: #fff;
+    background-image:
+      repeating-linear-gradient(0deg, var(--k) 0 var(--krama-size, 6px), transparent var(--krama-size, 6px) calc(var(--krama-size, 6px) * 2)),
+      repeating-linear-gradient(90deg, var(--k) 0 var(--krama-size, 6px), transparent var(--krama-size, 6px) calc(var(--krama-size, 6px) * 2));
+  }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .press { transition: transform 140ms var(--ease-out); }
+  .press:active { transform: scale(0.97); }
+}
+
+/* Leaflet sits under our sticky bars and sheets. */
+.leaflet-container { z-index: 0; font-family: inherit; background: var(--muted); }
+.leaflet-popup-content-wrapper { border-radius: 14px; }
+
+/* ───────── View Transitions: route crossfade + venue photo morph ───────── */
+@view-transition { navigation: none; }
+::view-transition-old(root) { animation: 160ms var(--ease-out) both vt-out; }
+::view-transition-new(root) { animation: 260ms var(--ease-out) both vt-in; }
+::view-transition-group(venue-photo) { animation-duration: 360ms; animation-timing-function: var(--ease-in-out); }
+::view-transition-old(venue-photo), ::view-transition-new(venue-photo) { height: 100%; width: 100%; object-fit: cover; overflow: clip; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  .press:active { transform: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

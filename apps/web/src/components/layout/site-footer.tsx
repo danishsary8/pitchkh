@@ -7,7 +7,7 @@ export function SiteFooter() {
   const t = useTranslations();
   const year = 2026;
   return (
-    <footer className="mt-16 bg-foreground text-background lg:mt-24">
+    <footer className="mt-16 overflow-hidden bg-foreground text-background lg:mt-24">
       <KramaStrip />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-10 lg:px-6 lg:py-14">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between">
@@ -27,7 +27,7 @@ export function SiteFooter() {
             </nav>
           </div>
         </div>
-        <p lang="en" aria-hidden className="font-display text-[19.5vw] leading-[0.8] tracking-[-0.05em] select-none lg:text-[13rem]">
+        <p lang="en" aria-hidden className="font-display text-[15vw] leading-[0.8] tracking-[-0.05em] select-none lg:text-[13rem]">
           PitchKH
         </p>
         <div className="flex flex-col gap-1 text-sm opacity-75 sm:flex-row sm:justify-between">

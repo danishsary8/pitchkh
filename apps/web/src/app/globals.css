@@ -145,6 +145,7 @@
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     scroll-padding-top: calc(var(--header-h) + 1rem);
+    overflow-x: clip;
   }
   body {
     background: var(--background);

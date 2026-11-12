@@ -1,6 +1,7 @@
+import { HomePage } from "@/features/home/home";
 import { usePageLocale, type LocalePageProps } from "@/i18n/page";
 
-export default function HomePage({ params }: LocalePageProps) {
+export default function Page({ params }: LocalePageProps) {
   usePageLocale(params);
-  return <div className="p-6">PitchKH</div>;
+  return <HomePage />;
 }

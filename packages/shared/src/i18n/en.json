@@ -259,5 +259,412 @@
     "passwordHint": "At least 6 characters",
     "showPassword": "Show password",
     "hidePassword": "Hide password"
+  },
+  "home": {
+    "heroTitle": "Book a pitch. Bring a rival.",
+    "heroBody": "Football, volleyball and tennis fields across Cambodia. See what's free tonight, pay with KHQR, and find a team to play if you don't have one.",
+    "heroImageAlt": "A floodlit seven-a-side football pitch at dusk",
+    "searchTitle": "Find a field",
+    "searchCta": "Find fields",
+    "freeLoading": "Checking tonight's free fields",
+    "freeTitle": "{count, plural, =0 {No fields free} one {# venue has a field free} other {# venues have a field free}} at {time}, {day}",
+    "sportsTitle": "Three sports, one booking",
+    "sportFootball": "5, 7 and 11-a-side, turf and grass",
+    "sportVolleyball": "Indoor halls and sand courts",
+    "sportTennis": "Hard and clay courts",
+    "featuredTitle": "Venues players rebook",
+    "howTitle": "From couch to kick-off in a minute",
+    "howBody": "No phone calls, no deposits by bank transfer, no arriving to a full pitch.",
+    "step1Title": "Pick a field",
+    "step1Body": "Filter by sport, district and price. Every venue shows its real fields, surfaces and photos.",
+    "step2Title": "Choose your time",
+    "step2Body": "Tap a start and an end on the live slot grid. Booked slots are greyed out, so there are no double bookings.",
+    "step3Title": "Pay and play",
+    "step3Body": "Pay with KHQR, ABA or Wing for instant confirmation, or pay cash when you arrive.",
+    "matchTitle": "No opponent? Post a match.",
+    "matchBody": "Tell other teams when and where you're playing. They ask to join, you pick who you face, and a chat opens to sort out the bibs.",
+    "matchCta": "See open matches",
+    "trustTitle": "Built for how Cambodia plays",
+    "trustVerifiedTitle": "Verified venues",
+    "trustVerifiedBody": "Our team checks every listing before it goes live.",
+    "trustPayTitle": "KHQR, ABA, Wing or cash",
+    "trustPayBody": "Pay the way you already do. Prices show in dollars and riel.",
+    "trustCancelTitle": "Free cancellation",
+    "trustCancelBody": "Plans change. Cancel or move a booking up to 2 hours before.",
+    "trustLanguageTitle": "English and ខ្មែរ",
+    "trustLanguageBody": "Switch language any time from the top of the screen.",
+    "ownerTitle": "Own a pitch? Fill your empty hours.",
+    "ownerBody": "List your fields, set per-sport prices, and accept bookings from your phone. Free to list.",
+    "ownerCta": "List your venue"
+  },
+  "venues": {
+    "title": "Find a field",
+    "subtitle": "Every venue is checked by our team. Prices are per hour, per field.",
+    "searchPlaceholder": "Search by venue or area",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "showResults": "{count, plural, =0 {No venues} one {Show # venue} other {Show # venues}}",
+    "resultCount": "{count, plural, =0 {No venues} one {# venue} other {# venues}}",
+    "filterSport": "Sport",
+    "filterProvince": "Province",
+    "filterDistrict": "District",
+    "allDistricts": "All districts",
+    "filterPrice": "Price per hour",
+    "upTo": "Up to {price}",
+    "filterWhen": "When",
+    "anyDay": "Any day",
+    "startTime": "Start time",
+    "duration": "Duration",
+    "sortBy": "Sort by",
+    "sort": {
+      "recommended": "Recommended",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low",
+      "rating": "Top rated",
+      "newest": "Newest"
+    },
+    "viewMode": "View",
+    "view": {
+      "list": "List view",
+      "map": "Map view"
+    },
+    "emptyTitle": "No venues match those filters",
+    "emptyBody": "Try another day, a wider area or a higher price.",
+    "fieldsFree": "{count, plural, one {# field free} other {# fields free}}",
+    "sportsOffered": "Sports offered",
+    "hr": "hr",
+    "addFavorite": "Save to favorites",
+    "removeFavorite": "Remove from favorites",
+    "savedToFavorites": "Saved to favorites",
+    "removedFromFavorites": "Removed from favorites"
+  },
+  "venue": {
+    "gallery": "Photos of {name}",
+    "photoAlt": "{name}, photo {n}",
+    "openToday": "Open today {open} – {close}",
+    "messageOwner": "Message venue",
+    "call": "Call",
+    "findOpponent": "Find an opponent",
+    "fields": "Fields",
+    "peak": "5–10pm",
+    "seeIn3d": "See in 3D",
+    "bookField": "Book",
+    "lookAround": "Look around the field",
+    "amenities": "What's here",
+    "hours": "Opening hours",
+    "closed": "Closed",
+    "peakNote": "Evening rate applies 5pm to 10pm. Weekends add 10%.",
+    "location": "Location",
+    "directions": "Get directions",
+    "reviews": "Reviews",
+    "noReviews": "No reviews yet. Play here and be the first to rate it.",
+    "managedBy": "Managed by {name}",
+    "report": "Report this venue",
+    "whenPlaying": "When are you playing?",
+    "bookNow": "Book now",
+    "freeCancel": "Free cancellation up to 2 hours before"
+  },
+  "viewer": {
+    "view3d": "View in 3D",
+    "loading": "Building the field",
+    "hint": "Drag to look around, pinch to zoom",
+    "unsupported": "3D isn't available on this device",
+    "posterAlt": "Illustration of {name}",
+    "timeOfDay": "Time of day",
+    "time": {
+      "day": "Daytime",
+      "dusk": "Dusk",
+      "night": "Night"
+    }
+  },
+  "weather": {
+    "condition": {
+      "sunny": "Sunny",
+      "partly_cloudy": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "showers": "Showers",
+      "storm": "Thunderstorms"
+    },
+    "advice": {
+      "great": "Good conditions to play.",
+      "hot": "Hot afternoon. Bring extra water or book after 5pm.",
+      "rain_likely": "Rain is likely. An indoor field is the safer pick.",
+      "storm": "Storms expected. Choose an indoor field."
+    },
+    "rainChance": "Rain {percent}%."
+  },
+  "report": {
+    "title": "Report a problem",
+    "body": "Our team reviews every report, usually within a day.",
+    "reason": "What's wrong?",
+    "details": "Details",
+    "detailsPlaceholder": "Tell us what happened",
+    "send": "Send report",
+    "sent": "Report sent. Thank you.",
+    "reasons": {
+      "wrong_info": "Wrong information",
+      "unsafe": "Unsafe conditions",
+      "no_show": "Didn't show up",
+      "abusive": "Abusive behaviour",
+      "scam": "Scam or fraud",
+      "other": "Something else"
+    }
+  },
+  "matches": {
+    "vs": "vs",
+    "lookingForOpponent": "Looking for an opponent",
+    "aSide": "{count}-a-side",
+    "requests": "{count, plural, =0 {No requests yet} one {# request} other {# requests}}",
+    "costSplit": {
+      "split": "Split the fee",
+      "host_pays": "Host pays",
+      "loser_pays": "Loser pays"
+    },
+    "fieldBooked": "Field booked",
+    "fieldNotBooked": "Field not booked yet",
+    "hostedBy": "Hosted by {name}"
+  },
+  "help": {
+    "title": "Help & FAQ",
+    "subtitle": "Quick answers about booking, paying and finding opponents.",
+    "contact": "Still stuck? Open Messages and write to PitchKH Support. We answer in English and Khmer, 7am to 10pm.",
+    "booking": {
+      "title": "Booking",
+      "q1": {
+        "q": "How do I book a field?",
+        "a": "Open a venue, tap Book now, then pick the field, the day and your start and end time. Add a referee or extras if you want them, pay, and you get a receipt with a booking code."
+      },
+      "q2": {
+        "q": "How long can I book for?",
+        "a": "Between 1 and 4 hours, in 30-minute steps. You can book up to 30 days ahead."
+      },
+      "q3": {
+        "q": "Can I cancel or change my booking?",
+        "a": "Yes. Cancel or reschedule for free up to 2 hours before the start time from My bookings. Online payments are refunded to the wallet you paid with."
+      },
+      "q4": {
+        "q": "Why is a slot greyed out?",
+        "a": "Someone already booked it, the venue blocked it for maintenance, or the time has passed. Greyed-out slots can't be selected."
+      }
+    },
+    "payment": {
+      "title": "Payment",
+      "q1": {
+        "q": "Which payment methods can I use?",
+        "a": "KHQR (any Bakong-enabled bank app), ABA Pay, Wing, or cash when you arrive."
+      },
+      "q2": {
+        "q": "Why are prices in dollars and riel?",
+        "a": "Venues set prices in US dollars. We show the riel amount at 4,100 ៛ per dollar so you know what to expect at the counter."
+      },
+      "q3": {
+        "q": "What happens when I choose cash?",
+        "a": "Your booking is sent to the venue as a request. The slot is held for you, and the booking is confirmed once the owner accepts it."
+      }
+    },
+    "matches": {
+      "title": "Finding an opponent",
+      "q1": {
+        "q": "Which sports support opponent matching?",
+        "a": "Football and volleyball. Tennis courts are booked directly."
+      },
+      "q2": {
+        "q": "How does matching work?",
+        "a": "Post a match with the venue, time and level. Other teams ask to join, you accept one, and a chat opens between both captains."
+      },
+      "q3": {
+        "q": "How do sportsmanship ratings work?",
+        "a": "After a match each captain can rate the other team from 1 to 5. The average shows on the team's profile."
+      }
+    },
+    "owners": {
+      "title": "Venue owners",
+      "q1": {
+        "q": "How do I list my venue?",
+        "a": "Create a venue owner account, add your venue and fields, then submit. Our team reviews new listings before they appear in search."
+      },
+      "q2": {
+        "q": "How do I block time for maintenance?",
+        "a": "Open Schedule in your dashboard, pick the field and day, and add a blocked time. Players won't be able to book it."
+      }
+    }
+  },
+  "legal": {
+    "updated": "Last updated 1 November 2026",
+    "demoNotice": "PitchKH is running in demo mode. Payments are simulated and no real booking is made with any venue.",
+    "terms": {
+      "title": "Terms of use",
+      "s1": {
+        "title": "Using PitchKH",
+        "body": "PitchKH lets players book sports fields listed by independent venue owners and arrange matches with other teams. You need an account to book, and you are responsible for activity on it."
+      },
+      "s2": {
+        "title": "Bookings and payment",
+        "body": "A booking is an agreement between you and the venue. The price shown at checkout is final and includes the platform service fee. Cash bookings are confirmed only after the venue accepts them."
+      },
+      "s3": {
+        "title": "Cancellations",
+        "body": "You may cancel or reschedule free of charge up to 2 hours before the start time. After that the venue may keep the full amount."
+      },
+      "s4": {
+        "title": "Fair play",
+        "body": "Arrive on time, respect the venue's rules and your opponents. Accounts that repeatedly fail to show up or behave abusively may be suspended."
+      },
+      "s5": {
+        "title": "Venue listings",
+        "body": "Owners must describe their fields accurately and honour confirmed bookings. PitchKH may remove listings that mislead players or are unsafe."
+      }
+    },
+    "privacy": {
+      "title": "Privacy",
+      "s1": {
+        "title": "What we collect",
+        "body": "Your name, phone number, email and language, plus the bookings, matches, messages and reviews you create."
+      },
+      "s2": {
+        "title": "How we use it",
+        "body": "To make and manage your bookings, show your team to possible opponents, send notifications about your games, and keep the platform safe."
+      },
+      "s3": {
+        "title": "Who can see it",
+        "body": "A venue sees your name and phone number for bookings you make there. Other teams see your team profile, not your contact details."
+      },
+      "s4": {
+        "title": "Storage in this demo",
+        "body": "In demo mode all data stays in your own browser and is never sent to a server. Clearing your browser data removes it."
+      },
+      "s5": {
+        "title": "Your choices",
+        "body": "You can edit your profile at any time and ask support to delete your account and its data."
+      }
+    }
+  },
+  "booking": {
+    "progress": "Step {step} of {total}",
+    "steps": {
+      "field": "Field",
+      "time": "Time",
+      "details": "Details",
+      "pay": "Pay"
+    },
+    "title": {
+      "field": "Choose a field",
+      "time": "Pick your time",
+      "details": "Set up your game",
+      "pay": "Review and pay"
+    },
+    "pickDay": "Day",
+    "pickTime": "Start and end time",
+    "pickTimeHint": "Tap a start, then an end. {min} to {max} hours.",
+    "loadingSlots": "Loading available times",
+    "slotGrid": "Available times",
+    "legend": "Legend",
+    "peakRate": "Evening rate",
+    "slot": {
+      "available": "Free",
+      "selected": "Selected",
+      "booked": "Booked",
+      "blocked": "Closed by venue",
+      "past": "Passed"
+    },
+    "closedTitle": "Closed on this day",
+    "closedBody": "Pick another day to see free times.",
+    "opponentQuestion": "Do you have an opponent?",
+    "opponent": {
+      "have": {
+        "title": "I have an opponent",
+        "body": "Just book the field for both teams."
+      },
+      "find": {
+        "title": "Find me an opponent",
+        "body": "We post your game on the match board."
+      }
+    },
+    "teamLevel": "Your team's level",
+    "teamLevelHint": "Shown on the match board so similar teams ask to join.",
+    "teamSize": "Players on your side",
+    "teamSizeHint": "Up to {max} on this field",
+    "referee": "Referee",
+    "refereeHint": "{price} per hour",
+    "water": "Water bottles",
+    "waterHint": "{price} each, cold at the field",
+    "ball": "Match ball",
+    "ballHint": "Rent for {price}",
+    "bibs": "Bibs",
+    "bibsHint": "One set for {price}",
+    "notes": "Note for the venue",
+    "notesPlaceholder": "Anything the venue should know?",
+    "field": "Field",
+    "summary": "Booking summary",
+    "pickToSeePrice": "Pick a field and time to see the price.",
+    "hintField": "Choose a field to continue",
+    "hintTime": "Tap a start and end time",
+    "paymentMethod": "Payment",
+    "signInToPay": "Sign in to book",
+    "requestBooking": "Request booking",
+    "payAmount": "Pay {amount}",
+    "cashTitle": "The venue confirms cash bookings",
+    "cashBody": "Your slot is held now. The booking is confirmed once the owner accepts it, usually within the hour.",
+    "findTitle": "Your game goes on the match board",
+    "findBody": "Other teams can ask to join as soon as you book. You choose who you play.",
+    "demoNote": "Demo mode: no real payment is taken.",
+    "payWith": "Pay with {method}",
+    "payDemo": "This is a simulated payment. Nothing is charged.",
+    "scanHint": "Open your banking app and scan the code to pay.",
+    "appHint": "Approve the payment in your {method} app.",
+    "expiresIn": "Expires in {time}",
+    "simulatePaid": "I've paid",
+    "confirming": "Confirming payment",
+    "line": {
+      "field": "Field",
+      "field_peak": "Field, evening rate",
+      "weekend": "Weekend surcharge",
+      "referee": "Referee",
+      "water": "Water",
+      "ball": "Match ball",
+      "bibs": "Bibs",
+      "service_fee": "Service fee"
+    },
+    "hoursShort": "{count}h",
+    "total": "Total",
+    "confirmedTitle": "You're booked",
+    "confirmedBody": "Your field is reserved. Show the booking code at the venue.",
+    "requestSent": "Request sent",
+    "requestSentBody": "We've held your slot and asked the venue to confirm. You'll get a notification.",
+    "detailTitle": "Booking",
+    "receipt": "Receipt",
+    "code": "Booking code",
+    "pendingBody": "Waiting for the venue to accept. Your slot is held meanwhile.",
+    "rejectedTitle": "The venue declined this booking",
+    "rejectedBody": "Nothing was charged. Try another time or venue.",
+    "viewMatch": "See who wants to play",
+    "addToCalendar": "Add to calendar",
+    "downloadIcs": "Apple / Outlook (.ics)",
+    "reschedule": "Reschedule",
+    "cancelBooking": "Cancel booking",
+    "rateVenue": "Rate this venue",
+    "viewAll": "See all my bookings",
+    "cancelTitle": "Cancel this booking?",
+    "cancelBodyPaid": "We'll refund {amount} to {method}.",
+    "cancelBodyUnpaid": "Nothing has been charged. The slot is released for other players.",
+    "keep": "Keep booking",
+    "cancelled": "Booking cancelled",
+    "rescheduleTitle": "Move your booking",
+    "rescheduleBody": "Same field, new day or time. The price updates to the new slot.",
+    "moveTo": "Move to {time}",
+    "rescheduled": "Booking moved"
+  },
+  "review": {
+    "venueTitle": "Rate {name}",
+    "teamTitle": "Rate {name}",
+    "venueBody": "How were the field, the lights and the staff?",
+    "teamBody": "How was their sportsmanship? Fair play, punctuality, attitude.",
+    "rating": "Rating",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "comment": "Comment",
+    "venuePlaceholder": "What should other players know?",
+    "teamPlaceholder": "Would you play them again?",
+    "submit": "Post review",
+    "thanks": "Review posted. Thank you."
   }
 }

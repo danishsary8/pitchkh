@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { LOCALES, MATCH_SPORTS, PAYMENT_METHODS, PROVINCES, ROLES, SKILL_LEVELS, SPORTS } from "../enums";
+
+export { LOCALES, MATCH_SPORTS, PAYMENT_METHODS, PROVINCES, ROLES, SKILL_LEVELS, SPORTS };
 
 export const Id = z.uuid();
 /** ISO-8601 with offset, e.g. 2026-11-14T18:00:00+07:00 */
@@ -8,32 +11,17 @@ export const DateStr = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM
 /** Local wall-clock time in Asia/Phnom_Penh, HH:mm (24:00 allowed as closing time) */
 export const TimeStr = z.string().regex(/^([01]\d|2[0-4]):[0-5]\d$/, "Expected HH:mm");
 
-export const SPORTS = ["football", "volleyball", "tennis"] as const;
 export const Sport = z.enum(SPORTS);
-/** Opponent matching only applies to these sports. */
-export const MATCH_SPORTS = ["football", "volleyball"] as const;
 export const MatchSport = z.enum(MATCH_SPORTS);
 
-export const ROLES = ["player", "owner", "admin"] as const;
 export const Role = z.enum(ROLES);
 
-export const LOCALES = ["en", "km"] as const;
 export const Locale = z.enum(LOCALES);
 
-export const PROVINCES = [
-  "phnom_penh",
-  "siem_reap",
-  "battambang",
-  "sihanoukville",
-  "kampot",
-  "kampong_cham",
-] as const;
 export const Province = z.enum(PROVINCES);
 
-export const PAYMENT_METHODS = ["khqr", "aba", "wing", "cash"] as const;
 export const PaymentMethod = z.enum(PAYMENT_METHODS);
 
-export const SKILL_LEVELS = ["beginner", "intermediate", "advanced"] as const;
 export const SkillLevel = z.enum(SKILL_LEVELS);
 
 export const PageQuery = z.object({

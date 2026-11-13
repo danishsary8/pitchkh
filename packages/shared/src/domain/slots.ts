@@ -65,16 +65,33 @@ export function generateSlots(input: SlotInput): Availability {
   const open = minutesOf(hours.open);
   const close = minutesOf(hours.close);
   const nowMs = input.now.getTime();
-  const slots: Slot[] = [];
+  const dayStartMs = Date.parse(toIso(input.date, "00:00"));
 
+  // Collect what occupies this field on this day once, as plain numbers, so the
+  // per-slot check below is a few comparisons instead of re-parsing every
+  // booking's dates for every slot (this runs for many fields at a time when
+  // listing venues that are free in a time window).
+  const busy: { start: number; end: number; status: Slot["status"] }[] = [];
+  for (const b of input.bookings) {
+    if (b.fieldId !== input.field.id || b.id === input.excludeBookingId || !holdsSlot(b)) continue;
+    const start = Date.parse(b.startAt);
+    const end = Date.parse(b.endAt);
+    if (rangesOverlap(start, end, dayStartMs, dayStartMs + 86_400_000)) busy.push({ start, end, status: "booked" });
+  }
+  for (const k of input.blocks) {
+    if (k.fieldId !== input.field.id || k.date !== input.date) continue;
+    busy.push({ start: dayStartMs + minutesOf(k.startTime) * 60_000, end: dayStartMs + minutesOf(k.endTime) * 60_000, status: "blocked" });
+  }
+
+  const slots: Slot[] = [];
   for (let m = open; m + APP.slotMinutes <= close; m += APP.slotMinutes) {
     const start = timeOf(m);
     const end = timeOf(m + APP.slotMinutes);
-    const startAt = toIso(input.date, start);
-    const endAt = toIso(input.date, end);
-    const conflict = findConflict({ fieldId: input.field.id, startAt, endAt, bookings: input.bookings, blocks: input.blocks, excludeBookingId: input.excludeBookingId });
-    const status: Slot["status"] = Date.parse(startAt) <= nowMs ? "past" : conflict === null ? "available" : conflict.kind === "booking" ? "booked" : "blocked";
-    slots.push({ start, end, startAt, endAt, status, peak: isPeakMinute(m), priceUsd: round2((rateAt(input.field, m) * APP.slotMinutes) / 60) });
+    const startMs = dayStartMs + m * 60_000;
+    const endMs = startMs + APP.slotMinutes * 60_000;
+    const taken = busy.find((x) => rangesOverlap(startMs, endMs, x.start, x.end));
+    const status: Slot["status"] = startMs <= nowMs ? "past" : taken ? taken.status : "available";
+    slots.push({ start, end, startAt: toIso(input.date, start), endAt: toIso(input.date, end), status, peak: isPeakMinute(m), priceUsd: round2((rateAt(input.field, m) * APP.slotMinutes) / 60) });
   }
   return { ...base, closed: false, slots };
 }

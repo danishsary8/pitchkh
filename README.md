@@ -119,3 +119,18 @@ mock data references them by path.
 - Payments are simulated. Nothing is charged.
 - Map tiles come from OpenStreetMap; the weather hint is a seasonal estimate, not a forecast.
 - Prices are stored in USD; KHR is shown at 4,100 riel per dollar.
+
+## Performance
+
+```bash
+node apps/web/scripts/lighthouse.mjs
+```
+
+Runs Lighthouse (mobile) against the local production server and prints the
+median of 3 runs per page. Add `--throttling devtools` to really throttle
+network and CPU instead of using Lighthouse's default simulation, and
+`--detail` for transfer sizes, the LCP element and the heaviest scripts.
+
+What keeps first load light: the mock backend, zod and the animation library
+are loaded on demand rather than with every page; the home page is a server
+component with small client islands; three.js and Leaflet load only when used.

@@ -1,14 +1,12 @@
 "use client";
 
-import { CalendarCheck, Heart, Home, LayoutDashboard, LogOut, MapPin, MessageCircle, ShieldCheck, Star, Swords, User as UserIcon, UserRound } from "lucide-react";
+import { CalendarCheck, Home, MapPin, Swords, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
-import { toast } from "sonner";
 import { Wordmark } from "@/components/brand/wordmark";
-import { Link, useNavigate } from "@/components/common/link";
+import { Link } from "@/components/common/link";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Avatar } from "@/components/ui/misc";
 import { useAuth } from "@/features/auth/auth-provider";
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -19,66 +17,17 @@ const isActive = (pathname: string, href: string): boolean => (href === "/" ? pa
 /** Focused flows (booking stepper, chat thread) hide the tab bar so their own sticky bar owns the bottom edge. */
 const hidesTabBar = (pathname: string): boolean => pathname.startsWith("/book/") || /^\/account\/messages\/.+/.test(pathname);
 
-function UserMenu() {
-  const { user, logout } = useAuth();
+// The dropdown (and its positioning library) is only downloaded once someone is signed in.
+const UserMenu = dynamic(() => import("./user-menu"), { ssr: false, loading: () => <span className="block size-10 rounded-full bg-secondary" aria-hidden /> });
+
+function AccountControl() {
+  const { user } = useAuth();
   const t = useTranslations("nav");
-  const navigate = useNavigate();
-  if (!user) {
-    return (
-      <Button asChild size="sm" className="h-10 px-4">
-        <Link href="/login">{t("signIn")}</Link>
-      </Button>
-    );
-  }
-  const items = [
-    { href: "/account/bookings", label: t("myBookings"), icon: CalendarCheck },
-    { href: "/account/matches", label: t("myMatches"), icon: Swords },
-    { href: "/account/favorites", label: t("favorites"), icon: Heart },
-    { href: "/account/messages", label: t("messages"), icon: MessageCircle },
-    { href: "/account/reviews", label: t("reviews"), icon: Star },
-    { href: "/account", label: t("profile"), icon: UserRound },
-  ];
+  if (user) return <UserMenu />;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="press rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background" aria-label={t("account")}>
-          <Avatar name={user.name} src={user.avatarUrl} />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>
-          <span className="block text-sm font-bold text-foreground">{user.name}</span>
-          <span className="block truncate font-normal">{user.email}</span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {user.role !== "player" ? (
-            <DropdownMenuItem onSelect={() => navigate(user.role === "admin" ? "/admin" : "/owner")}>
-              {user.role === "admin" ? <ShieldCheck /> : <LayoutDashboard />}
-              {user.role === "admin" ? t("adminPanel") : t("ownerDashboard")}
-            </DropdownMenuItem>
-          ) : null}
-          {items.map((item) => (
-            <DropdownMenuItem key={item.href} onSelect={() => navigate(item.href)}>
-              <item.icon />
-              {item.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={() => {
-            void logout().then(() => {
-              toast(t("signedOut"));
-              navigate("/");
-            });
-          }}
-        >
-          <LogOut />
-          {t("signOut")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button asChild size="sm" className="h-10 px-4">
+      <Link href="/login">{t("signIn")}</Link>
+    </Button>
   );
 }
 
@@ -119,7 +68,7 @@ function Header() {
         <ThemeToggle />
         <NotificationBell />
         <div className="hidden lg:block">
-          <UserMenu />
+          <AccountControl />
         </div>
       </div>
     </header>

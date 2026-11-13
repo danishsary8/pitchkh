@@ -113,8 +113,8 @@ export function seedDb(now: Date): MockDb {
   const others = players.slice(1);
   for (const venue of db.venues.filter((v) => v.status === "approved")) {
     for (const field of db.fields.filter((x) => x.venueId === venue.id)) {
-      for (let day = -7; day <= 10; day++) {
-        const count = Math.floor(rng() * 3.2);
+      for (let day = -7; day <= 7; day++) {
+        const count = Math.floor(rng() * 2.3);
         for (let n = 0; n < count; n++) {
           const start = pick(startHours) * 60 + (rng() < 0.25 ? 30 : 0);
           const length = pick([60, 60, 90, 90, 120]);

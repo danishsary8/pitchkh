@@ -168,9 +168,29 @@
   input[type="date"], input[type="time"] { min-height: 2.75rem; }
 }
 
+/*
+ * Fallback for display headings while Archivo is still downloading (about 2s
+ * on slow 4G). Archivo at expanded width is ~27.5% wider than Arial Bold, so
+ * without this a headline wraps onto more lines when the real font arrives and
+ * pushes the page down (a measured layout shift of 0.19 on the home page).
+ * size-adjust makes the fallback take the same width, so the wrapping, and
+ * therefore the layout, stays put. The ascent/descent overrides are Archivo's
+ * metrics divided by the size adjustment.
+ */
+@font-face {
+  font-family: "Archivo Display Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Neue Bold"), local("Helvetica-Bold"), local("Roboto Bold"), local("Liberation Sans Bold"), local("Arial");
+  size-adjust: 127.5%;
+  ascent-override: 68.9%;
+  descent-override: 16.5%;
+  line-gap-override: 0%;
+}
+
 @layer utilities {
   /* Display type: Archivo at expanded width, heavy, tight. The jersey-number voice of the brand. */
   .font-display {
+    /* "Archivo" is the family name next/font registers; it is spelled out here so the width-matched fallback comes second. */
+    font-family: "Archivo", "Archivo Display Fallback", var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
     font-stretch: 122%;
     font-weight: 800;
     letter-spacing: -0.025em;
@@ -208,6 +228,28 @@
   .press:active { transform: scale(0.97); }
 }
 
+/* Scroll reveal (components/common/motion.tsx): transform + opacity only. */
+.reveal { transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+.reveal[data-reveal="pending"] { opacity: 0; transform: translateY(20px); transition: none; }
+
+/* Staggered list entrance: each child rises 45ms after the previous one. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger > * { animation: rise-in 0.35s var(--ease-out) both; }
+.stagger > :nth-child(2) { animation-delay: 45ms; }
+.stagger > :nth-child(3) { animation-delay: 90ms; }
+.stagger > :nth-child(4) { animation-delay: 135ms; }
+.stagger > :nth-child(5) { animation-delay: 180ms; }
+.stagger > :nth-child(6) { animation-delay: 225ms; }
+.stagger > :nth-child(7) { animation-delay: 270ms; }
+.stagger > :nth-child(8) { animation-delay: 315ms; }
+.stagger > :nth-child(9) { animation-delay: 360ms; }
+.stagger > :nth-child(10) { animation-delay: 405ms; }
+.stagger > :nth-child(11) { animation-delay: 450ms; }
+.stagger > :nth-child(n + 12) { animation-delay: 495ms; }
+
 /* Leaflet sits under our sticky bars and sheets. */
 .leaflet-container { z-index: 0; font-family: inherit; background: var(--muted); }
 .leaflet-popup-content-wrapper { border-radius: 14px; }
@@ -224,5 +266,6 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
   .press:active { transform: none; }
+  .reveal[data-reveal="pending"] { opacity: 1; transform: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

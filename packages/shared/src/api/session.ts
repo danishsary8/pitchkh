@@ -1,4 +1,3 @@
-import { AuthSession as AuthSessionSchema } from "../schemas/user";
 import { STORAGE_KEYS, type StorageAdapter } from "../mock/storage";
 import type { AuthSession, User } from "../types";
 
@@ -21,8 +20,12 @@ export class SessionStore {
       .getItem(STORAGE_KEYS.session)
       .then((raw) => {
         if (!raw) return;
-        const parsed = AuthSessionSchema.safeParse(JSON.parse(raw));
-        if (parsed.success) this.session = parsed.data;
+        // A light shape check is enough here (and keeps zod out of the startup
+        // path): a tampered or stale token is rejected by the server anyway.
+        const parsed = JSON.parse(raw) as Partial<AuthSession> | null;
+        if (parsed && typeof parsed.accessToken === "string" && typeof parsed.refreshToken === "string" && typeof parsed.user?.id === "string") {
+          this.session = parsed as AuthSession;
+        }
       })
       .catch(() => undefined);
     return this.hydrated;

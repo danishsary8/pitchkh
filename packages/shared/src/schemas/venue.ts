@@ -1,21 +1,10 @@
 import { z } from "zod";
+import { AMENITIES, VENUE_SORTS } from "../enums";
 import { DateStr, Id, IsoDateTime, PageQuery, Province, QueryBool, Sport, TimeStr } from "./common";
 import { Field } from "./field";
 
-export const AMENITIES = [
-  "parking",
-  "showers",
-  "changing_rooms",
-  "floodlights",
-  "cafe",
-  "wifi",
-  "equipment_rental",
-  "spectator_seating",
-  "first_aid",
-  "drinking_water",
-  "air_conditioning",
-  "lockers",
-] as const;
+export { AMENITIES, VENUE_SORTS };
+
 export const Amenity = z.enum(AMENITIES);
 
 export const VenueStatus = z.enum(["pending", "approved", "rejected", "suspended"]);
@@ -70,7 +59,6 @@ export const VenueDetail = VenueSummary.extend({
   owner: z.object({ id: Id, name: z.string() }),
 });
 
-export const VENUE_SORTS = ["recommended", "price_asc", "price_desc", "rating", "newest"] as const;
 
 export const VenueListQuery = PageQuery.extend({
   q: z.string().trim().optional(),

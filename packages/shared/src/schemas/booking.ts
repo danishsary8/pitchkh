@@ -1,5 +1,8 @@
 import { z } from "zod";
+import { PRICE_LINE_KEYS } from "../enums";
 import { DateStr, Id, IsoDateTime, PageQuery, PaymentMethod, SkillLevel, Sport, TimeStr } from "./common";
+
+export { PRICE_LINE_KEYS };
 
 export const Extras = z.object({
   waterBottles: z.number().int().min(0).max(48),
@@ -7,7 +10,6 @@ export const Extras = z.object({
   bibs: z.boolean(),
 });
 
-export const PRICE_LINE_KEYS = ["field", "field_peak", "weekend", "referee", "water", "ball", "bibs", "service_fee"] as const;
 export const PriceLine = z.object({
   key: z.enum(PRICE_LINE_KEYS),
   /** Hours for field/referee lines, units for extras. */

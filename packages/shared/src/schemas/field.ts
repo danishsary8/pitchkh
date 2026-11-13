@@ -1,7 +1,9 @@
 import { z } from "zod";
+import { SURFACES } from "../enums";
 import { Id, Sport } from "./common";
 
-export const SURFACES = ["artificial_turf", "natural_grass", "futsal_court", "sand", "hard_court", "clay", "parquet"] as const;
+export { SURFACES };
+
 export const Surface = z.enum(SURFACES);
 export const FieldStatus = z.enum(["active", "maintenance"]);
 

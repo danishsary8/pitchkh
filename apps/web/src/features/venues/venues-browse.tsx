@@ -3,7 +3,6 @@
 import { VENUE_SORTS, type VenueSort } from "@pitchkh/shared";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { List, Map as MapIcon, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -133,16 +132,14 @@ export function VenuesBrowse() {
             <div className="flex flex-col gap-4 xl:flex-row-reverse">
               <div className="relative isolate h-[58dvh] overflow-hidden rounded-2xl bg-muted xl:sticky xl:top-24 xl:h-[calc(100dvh-8rem)] xl:flex-1">
                 <VenuesMap pins={venuesToPins(venues, text.name)} activeId={activePin ?? undefined} onOpen={(pin) => setActivePin(pin.id)} />
-                <AnimatePresence>
-                  {activeVenue ? (
-                    <motion.div key={activeVenue.id} className="absolute inset-x-3 bottom-3 z-[1000] mx-auto max-w-sm" initial={{ opacity: 0, transform: "translateY(16px)" }} animate={{ opacity: 1, transform: "translateY(0px)" }} exit={{ opacity: 0, transform: "translateY(16px)" }} transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}>
-                      <VenueCard venue={activeVenue} className="shadow-xl [&>div:first-child]:aspect-[16/7]" />
-                      <button type="button" onClick={() => setActivePin(null)} aria-label={t("common.close")} className="absolute -top-3 -left-2 z-20 grid size-9 place-items-center rounded-full bg-foreground text-background">
-                        <X className="size-4.5" />
-                      </button>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
+                {activeVenue ? (
+                  <div key={activeVenue.id} className="absolute inset-x-3 bottom-3 z-[1000] mx-auto max-w-sm animate-page-in">
+                    <VenueCard venue={activeVenue} className="shadow-xl [&>div:first-child]:aspect-[16/7]" />
+                    <button type="button" onClick={() => setActivePin(null)} aria-label={t("common.close")} className="absolute -top-3 -left-2 z-20 grid size-9 place-items-center rounded-full bg-foreground text-background">
+                      <X className="size-4.5" />
+                    </button>
+                  </div>
+                ) : null}
               </div>
               <div className="xl:w-[26rem] xl:shrink-0">{results}</div>
             </div>

@@ -1,5 +1,6 @@
 import { Suspense, use } from "react";
 import { BookingFlow } from "@/features/booking/booking-flow";
+import { MotionRoot } from "@/features/booking/motion-root";
 import { usePageLocale } from "@/i18n/page";
 
 export default function Page({ params }: { params: Promise<{ locale: string; slug: string }> }) {
@@ -7,7 +8,9 @@ export default function Page({ params }: { params: Promise<{ locale: string; slu
   const { slug } = use(params);
   return (
     <Suspense>
-      <BookingFlow slug={slug} />
+      <MotionRoot>
+        <BookingFlow slug={slug} />
+      </MotionRoot>
     </Suspense>
   );
 }

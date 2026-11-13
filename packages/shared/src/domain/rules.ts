@@ -1,6 +1,6 @@
 import { APP } from "../config";
 import type { Booking, MatchRequest, Sport } from "../types";
-import { MATCH_SPORTS } from "../schemas/common";
+import { MATCH_SPORTS } from "../enums";
 import { addDays, dateInPP } from "./time";
 
 /** A booking is "upcoming" until its end time passes, unless it was cancelled/rejected. */

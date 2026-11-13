@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { COST_SPLITS } from "../enums";
 import { DateStr, Id, IsoDateTime, MatchSport, PageQuery, Province, QueryBool, SkillLevel, TimeStr } from "./common";
 import { Team } from "./user";
 
-export const COST_SPLITS = ["split", "host_pays", "loser_pays"] as const;
+export { COST_SPLITS };
 export const CostSplit = z.enum(COST_SPLITS);
 export const MatchStatus = z.enum(["open", "matched", "cancelled", "expired"]);
 export const JoinStatus = z.enum(["pending", "accepted", "declined"]);

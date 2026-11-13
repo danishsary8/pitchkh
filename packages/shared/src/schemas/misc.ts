@@ -1,6 +1,9 @@
 import { z } from "zod";
+import { NOTIFICATION_TYPES, REPORT_REASONS } from "../enums";
 import { DateStr, Id, IsoDateTime, PageQuery, Province, Role, Sport } from "./common";
 import { UserStatus } from "./user";
+
+export { NOTIFICATION_TYPES, REPORT_REASONS };
 
 /* ----------------------------- Reviews ----------------------------- */
 export const ReviewTarget = z.enum(["venue", "team"]);
@@ -31,21 +34,6 @@ export const ReviewListQuery = PageQuery.extend({
 });
 
 /* -------------------------- Notifications -------------------------- */
-export const NOTIFICATION_TYPES = [
-  "booking_confirmed",
-  "booking_pending",
-  "booking_rejected",
-  "booking_cancelled",
-  "booking_rescheduled",
-  "join_request",
-  "join_accepted",
-  "join_declined",
-  "message",
-  "venue_approved",
-  "venue_rejected",
-  "review",
-  "system",
-] as const;
 export const Notification = z.object({
   id: Id,
   userId: Id,
@@ -59,7 +47,6 @@ export const Notification = z.object({
 });
 
 /* ----------------------------- Reports ----------------------------- */
-export const REPORT_REASONS = ["wrong_info", "unsafe", "no_show", "abusive", "scam", "other"] as const;
 export const ReportTarget = z.enum(["venue", "user", "review", "match"]);
 export const ReportStatus = z.enum(["open", "resolved", "dismissed"]);
 export const Report = z.object({

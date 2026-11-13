@@ -337,7 +337,8 @@
     "addFavorite": "រក្សាទុកក្នុងទីលានចូលចិត្ត",
     "removeFavorite": "ដកចេញពីទីលានចូលចិត្ត",
     "savedToFavorites": "បានរក្សាទុកក្នុងទីលានចូលចិត្ត",
-    "removedFromFavorites": "បានដកចេញពីទីលានចូលចិត្ត"
+    "removedFromFavorites": "បានដកចេញពីទីលានចូលចិត្ត",
+    "results": "លទ្ធផល"
   },
   "venue": {
     "gallery": "រូបភាព {name}",

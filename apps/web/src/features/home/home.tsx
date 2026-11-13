@@ -19,6 +19,7 @@ import { useVenueText } from "@/features/venues/text";
 import { VenueCard, VenueCardSkeleton } from "@/features/venues/venue-card";
 import { api } from "@/lib/api";
 import { useDates } from "@/lib/format";
+import { useIsClient } from "@/lib/hooks";
 import { qk } from "@/lib/query";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +30,9 @@ function SearchCard() {
   const [sport, setSport] = useState<Sport | "">("football");
   const [province, setProvince] = useState<Province | "">("phnom_penh");
   const [date, setDate] = useState("");
-  const days = Array.from({ length: 14 }, (_, i) => addDays(dates.today, i));
+  // Dates are formatted in the browser only: the page is prerendered, and Node and browsers format Khmer dates differently.
+  const client = useIsClient();
+  const days = client ? Array.from({ length: 14 }, (_, i) => addDays(dates.today, i)) : [];
 
   const submit = (event: React.FormEvent): void => {
     event.preventDefault();
@@ -163,8 +166,8 @@ export function HomePage() {
           <h2 id="sports-title" className="sr-only">{t("home.sportsTitle")}</h2>
           <ul className="grid gap-3 md:grid-cols-3 md:gap-4">
             {SPORTS.map((sport, i) => (
-              <Reveal key={sport} delay={i * 0.06}>
-                <li className="list-none">
+              <li key={sport}>
+                <Reveal delay={i * 0.06}>
                   <Link href={`/venues?sport=${sport}`} className="group relative flex aspect-[16/9] items-end overflow-hidden rounded-3xl bg-pitch outline-none focus-visible:ring-3 focus-visible:ring-ring md:aspect-[4/5]">
                     <Image src={`/assets/brand/sport-${sport}.webp`} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-105" />
                     <span className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/75 to-transparent" aria-hidden />
@@ -178,8 +181,8 @@ export function HomePage() {
                       </span>
                     </span>
                   </Link>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ul>
         </section>
@@ -217,12 +220,12 @@ export function HomePage() {
           </div>
           <ol className="flex flex-col gap-3">
             {steps.map((step, i) => (
-              <Reveal key={step.title} delay={i * 0.07}>
-                <li className={cn("flex flex-col gap-1 rounded-3xl p-5 sm:p-6", i === 2 ? "bg-primary text-primary-foreground" : "bg-card")}>
+              <li key={step.title}>
+                <Reveal delay={i * 0.07} className={cn("flex flex-col gap-1 rounded-3xl p-5 sm:p-6", i === 2 ? "bg-primary text-primary-foreground" : "bg-card")}>
                   <h3 className="font-display text-xl sm:text-2xl">{step.title}</h3>
                   <p className={cn("text-pretty", i === 2 ? "text-primary-foreground/90" : "text-muted-foreground")}>{step.body}</p>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ol>
         </section>
@@ -246,15 +249,15 @@ export function HomePage() {
           <h2 id="trust-title" className="font-display max-w-2xl text-3xl text-balance sm:text-4xl">{t("home.trustTitle")}</h2>
           <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
             {trust.map((item, i) => (
-              <Reveal key={item.title} delay={i * 0.05}>
-                <li className="flex list-none gap-3 lg:flex-col">
+              <li key={item.title}>
+                <Reveal delay={i * 0.05} className="flex gap-3 lg:flex-col">
                   <item.icon className="size-7 shrink-0 text-primary" aria-hidden />
                   <div>
                     <h3 className="font-bold">{item.title}</h3>
                     <p className="text-[0.95rem] text-pretty text-muted-foreground">{item.body}</p>
                   </div>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ul>
         </section>

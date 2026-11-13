@@ -1,16 +1,23 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { isViewTransitionActive } from "@/lib/view-transition";
 
+// The very first paint must show the server-rendered HTML untouched: animating
+// it in would hide the content until JavaScript loads and wreck LCP on 4G.
+let firstLoad = true;
+
 /**
- * Page-enter transition for every route change. When the browser is already
- * running a View Transition for this navigation, the page appears instantly
- * and the browser's crossfade does the work instead (no double animation).
+ * Page-enter transition for route changes after the first load. When the
+ * browser is already running a View Transition for this navigation, the page
+ * appears instantly and the browser's crossfade does the work instead.
  */
 export default function Template({ children }: { children: ReactNode }) {
-  const [skip] = useState(isViewTransitionActive);
+  const [skip] = useState(() => firstLoad || isViewTransitionActive());
+  useEffect(() => {
+    firstLoad = false;
+  }, []);
   return (
     <motion.div
       className="flex flex-1 flex-col"

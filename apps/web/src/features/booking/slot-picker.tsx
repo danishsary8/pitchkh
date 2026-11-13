@@ -34,9 +34,9 @@ export function DateStrip({ value, onChange, days = 14, labelId }: { value: stri
           onClick={() => onChange(d)}
           className="press flex h-[4.5rem] w-[3.75rem] shrink-0 snap-start flex-col items-center justify-center rounded-2xl bg-card text-sm outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring aria-checked:bg-primary aria-checked:text-primary-foreground"
         >
-          <span className="text-xs opacity-75">{dates.weekday(d)}</span>
+          <span className="text-xs">{dates.weekday(d)}</span>
           <span className="font-num text-xl leading-tight font-bold">{dates.dayOfMonth(d)}</span>
-          <span className="text-[0.65rem] opacity-75">{dates.month(d)}</span>
+          <span className="text-[0.7rem]">{dates.month(d)}</span>
         </button>
       ))}
     </div>

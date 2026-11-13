@@ -60,9 +60,9 @@ export function OwnerSchedule() {
       <PageHeader title={t("owner.nav.schedule")} subtitle={t("owner.scheduleBody")} action={<Button variant="secondary" onClick={() => setBlockOpen(true)}><Plus />{t("owner.blockTime")}</Button>} />
       <div className="flex flex-col gap-4">
         {live.length > 1 ? (
-          <Select aria-label={t("matches.venue")} value={venue.id} onChange={(e) => setVenueId(e.target.value)} className="sm:max-w-sm">
+          <div className="sm:max-w-sm"><Select aria-label={t("matches.venue")} value={venue.id} onChange={(e) => setVenueId(e.target.value)}>
             {live.map((v) => <option key={v.id} value={v.id}>{text.name(v)}</option>)}
-          </Select>
+          </Select></div>
         ) : null}
         <DateStrip value={date} onChange={setDate} />
         {schedule.isPending ? <Skeleton className="h-72" /> : schedule.isError ? <ErrorState error={schedule.error} onRetry={() => void schedule.refetch()} /> : data?.closed ? (

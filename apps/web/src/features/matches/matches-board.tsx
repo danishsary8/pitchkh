@@ -70,6 +70,7 @@ export function MatchesBoard() {
         </div>
       </div>
 
+      <h2 className="sr-only">{t("venues.results")}</h2>
       {isPending ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3" aria-busy>{Array.from({ length: 6 }, (_, i) => <MatchCardSkeleton key={i} />)}</div>
       ) : isError ? (

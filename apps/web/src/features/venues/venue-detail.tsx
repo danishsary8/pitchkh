@@ -153,7 +153,7 @@ function BookingCard({ venue, sport, date, onDate }: { venue: Venue; sport: Spor
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="radiogroup" aria-labelledby="when-label">
           {days.map((d) => (
             <button key={d} type="button" role="radio" aria-checked={d === date} onClick={() => onDate(d)} className="press flex h-16 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-secondary text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring aria-checked:bg-primary aria-checked:text-primary-foreground">
-              <span className="text-xs opacity-80">{dates.weekday(d)}</span>
+              <span className="text-xs">{dates.weekday(d)}</span>
               <span className="font-num text-lg font-bold">{dates.dayOfMonth(d)}</span>
             </button>
           ))}

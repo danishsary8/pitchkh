@@ -16,6 +16,8 @@ export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsP
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
+      // These tabs filter one list in place (no separate panels), so there is no panel id to point at.
+      aria-controls={undefined}
       className={cn("inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap text-muted-foreground transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring data-[state=active]:bg-card data-[state=active]:text-foreground", className)}
       {...props}
     />

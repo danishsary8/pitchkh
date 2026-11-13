@@ -128,6 +128,7 @@ export function VenuesBrowse() {
         </aside>
 
         <div className="min-w-0 flex-1">
+          <h2 className="sr-only">{t("venues.results")}</h2>
           {filters.view === "map" ? (
             <div className="flex flex-col gap-4 xl:flex-row-reverse">
               <div className="relative isolate h-[58dvh] overflow-hidden rounded-2xl bg-muted xl:sticky xl:top-24 xl:h-[calc(100dvh-8rem)] xl:flex-1">

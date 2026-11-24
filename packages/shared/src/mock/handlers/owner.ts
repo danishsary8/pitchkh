@@ -102,7 +102,7 @@ export function registerOwnerRoutes(server: MockServer): void {
 
   server.route("DELETE", "/owner/fields/:id", OWNER, (ctx) => {
     const field = myField(ctx, ctx.params.id);
-    const busy = ctx.db.bookings.some((b) => b.fieldId === field.id && holdsSlot(b) && Date.parse(b.endAt) > ctx.now.getTime());
+    const busy = ctx.db.bookings.some((b) => b.fieldId === field.id && holdsSlot(b, ctx.now) && Date.parse(b.endAt) > ctx.now.getTime());
     if (busy) throw new ApiError(409, "conflict", "This field has upcoming bookings. Set it to maintenance instead.");
     ctx.db.fields = ctx.db.fields.filter((f) => f.id !== field.id);
     syncSports(ctx.db, myVenue(ctx, field.venueId));
@@ -146,7 +146,7 @@ export function registerOwnerRoutes(server: MockServer): void {
     const hours = hoursFor(venue.openingHours, q.date);
     return {
       date: q.date, open: hours.open, close: hours.close, closed: hours.closed, fields,
-      bookings: ctx.db.bookings.filter((b) => b.venueId === venue.id && b.date === q.date && holdsSlot(b)).map((b) => bookingDetail(ctx.db, b, ctx.now)),
+      bookings: ctx.db.bookings.filter((b) => b.venueId === venue.id && b.date === q.date && holdsSlot(b, ctx.now)).map((b) => bookingDetail(ctx.db, b, ctx.now)),
       blocks: ctx.db.blocks.filter((k) => fieldIds.has(k.fieldId) && k.date === q.date),
     };
   });
@@ -156,7 +156,7 @@ export function registerOwnerRoutes(server: MockServer): void {
     const field = myField(ctx, dto.fieldId);
     const start = Date.parse(toIso(dto.date, dto.startTime));
     const end = Date.parse(toIso(dto.date, dto.endTime));
-    const clash = ctx.db.bookings.some((b) => b.fieldId === field.id && holdsSlot(b) && rangesOverlap(start, end, Date.parse(b.startAt), Date.parse(b.endAt)));
+    const clash = ctx.db.bookings.some((b) => b.fieldId === field.id && holdsSlot(b, ctx.now) && rangesOverlap(start, end, Date.parse(b.startAt), Date.parse(b.endAt)));
     if (clash) throw new ApiError(409, "slot_unavailable", "There is a booking in that window. Cancel or move it first.");
     const block = { id: ctx.newId(), ...dto };
     ctx.db.blocks.push(block);

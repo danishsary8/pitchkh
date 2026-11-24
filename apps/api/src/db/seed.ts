@@ -20,14 +20,14 @@ export async function seed(db: Database, now = new Date()): Promise<void> {
   for (const password of new Set(Object.values(mock.passwords))) hashes.set(password, await bcrypt.hash(password, 10));
 
   await db.transaction(async (tx) => {
-    await tx.execute(dsql`TRUNCATE users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
+    await tx.execute(dsql`TRUNCATE payments, users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
     await tx.insert(t.users).values(mock.users.map((u) => ({ ...u, passwordHash: hashes.get(mock.passwords[u.id] ?? "") ?? "", createdAt: date(u.createdAt) })));
     await tx.insert(t.venues).values(mock.venues.map((v) => ({ ...v, createdAt: date(v.createdAt) })));
     await tx.insert(t.fields).values(mock.fields);
     // Insert in start order so the no-overlap constraint sees the same data the mock accepted.
     const bookings = [...mock.bookings].sort((a, b) => a.startAt.localeCompare(b.startAt));
     for (let i = 0; i < bookings.length; i += 200) {
-      await tx.insert(t.bookings).values(bookings.slice(i, i + 200).map((b) => ({ ...b, startAt: date(b.startAt), endAt: date(b.endAt), createdAt: date(b.createdAt), cancelledAt: b.cancelledAt ? date(b.cancelledAt) : null })));
+      await tx.insert(t.bookings).values(bookings.slice(i, i + 200).map((b) => ({ ...b, startAt: date(b.startAt), endAt: date(b.endAt), createdAt: date(b.createdAt), cancelledAt: b.cancelledAt ? date(b.cancelledAt) : null, paymentDueAt: b.paymentDueAt ? date(b.paymentDueAt) : null })));
     }
     if (mock.blocks.length) await tx.insert(t.blocks).values(mock.blocks);
     if (mock.favorites.length) await tx.insert(t.favorites).values(mock.favorites.map((f) => ({ ...f, createdAt: date(f.createdAt) })));

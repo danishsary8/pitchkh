@@ -81,6 +81,11 @@ export function createBookingsApi(t: Transport) {
     get: (bookingId: string) => t<T.BookingDetail>({ method: "GET", path: `/bookings/${id(bookingId)}` }),
     cancel: (bookingId: string) => t<T.BookingDetail>({ method: "POST", path: `/bookings/${id(bookingId)}/cancel` }),
     reschedule: (bookingId: string, dto: T.RescheduleBookingDto) => t<T.BookingDetail>({ method: "POST", path: `/bookings/${id(bookingId)}/reschedule`, body: dto }),
+    /** Start (or resume) the online payment of a booking that is awaiting payment. */
+    pay: (bookingId: string) => t<T.PaymentIntent>({ method: "POST", path: `/bookings/${id(bookingId)}/payment` }),
+    payment: (paymentId: string) => t<T.PaymentIntent>({ method: "GET", path: `/payments/${id(paymentId)}` }),
+    /** Sandbox provider only: pretend the bank confirmed the payment. */
+    simulatePayment: (paymentId: string) => t<T.PaymentIntent>({ method: "POST", path: `/payments/${id(paymentId)}/simulate` }),
   };
 }
 

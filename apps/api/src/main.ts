@@ -10,6 +10,11 @@ const { createTelegram } = await import("./telegram");
 const { db } = createDb();
 const telegram = createTelegram(env.telegram);
 const app = createApp({ db, clock: () => new Date() }, env.corsOrigins, telegram);
+// Unpaid online bookings give their slot back when the hold runs out.
+const { releaseExpiredHolds } = await import("./routes/bookings");
+setInterval(() => {
+  releaseExpiredHolds(db, new Date()).catch((e: unknown) => console.error("releasing expired holds failed", e));
+}, 60_000).unref();
 if (!telegram) console.log("Telegram alerts off (set TELEGRAM_BOT_TOKEN and TELEGRAM_BOT_USERNAME to turn them on)");
 
 serve({ fetch: app.fetch, port: env.port }, (info) => {

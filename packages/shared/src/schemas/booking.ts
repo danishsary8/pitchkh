@@ -27,7 +27,12 @@ export const PriceBreakdown = z.object({
   durationMinutes: z.number().int(),
 });
 
-export const BookingStatus = z.enum(["pending", "confirmed", "rejected", "cancelled", "completed"]);
+/**
+ * awaiting_payment: an online payment (KHQR/ABA/Wing) was started; the slot is
+ * held until paymentDueAt, then released if nobody paid.
+ * pending: a cash request waiting for the owner.
+ */
+export const BookingStatus = z.enum(["awaiting_payment", "pending", "confirmed", "rejected", "cancelled", "completed"]);
 export const PaymentStatus = z.enum(["unpaid", "paid", "refunded"]);
 export const OpponentMode = z.enum(["have", "find"]);
 
@@ -54,6 +59,8 @@ export const Booking = z.object({
   status: BookingStatus,
   createdAt: IsoDateTime,
   cancelledAt: IsoDateTime.nullable(),
+  /** Online payments only: the slot is released if not paid by then. */
+  paymentDueAt: IsoDateTime.nullable(),
 });
 
 /** Booking with the venue/field/customer info screens need, to avoid N+1 calls. */
@@ -166,3 +173,25 @@ export const CreateBlockDto = z
     reason: z.string().max(120).default(""),
   })
   .refine((v) => v.startTime < v.endTime, { path: ["endTime"], message: "End time must be after start time" });
+
+/* ----------------------------- Payments ----------------------------- */
+export const PaymentIntentStatus = z.enum(["pending", "paid", "expired"]);
+/** One attempt to pay for a booking online. The provider confirms it through a webhook. */
+export const PaymentIntent = z.object({
+  id: Id,
+  bookingId: Id,
+  /** "sandbox" until a real provider (Bakong KHQR, ABA PayWay...) is configured. */
+  provider: z.string(),
+  method: PaymentMethod,
+  amountUsd: z.number(),
+  amountKhr: z.number().int(),
+  status: PaymentIntentStatus,
+  /** String to render as a QR code (KHQR), when the method uses one. */
+  qrPayload: z.string().nullable(),
+  /** App link (ABA / Wing) to open on a phone, when the method uses one. */
+  deeplink: z.string().nullable(),
+  expiresAt: IsoDateTime,
+  paidAt: IsoDateTime.nullable(),
+  /** Mirrors the booking, so one poll tells the client everything. */
+  bookingStatus: BookingStatus,
+});

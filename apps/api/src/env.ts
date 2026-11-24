@@ -14,6 +14,11 @@ export const env = {
   corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((s) => s.trim()).filter(Boolean),
   // A fixed dev secret keeps local sessions working across restarts; production must set its own.
   jwtSecret: required("JWT_SECRET", production ? undefined : "dev-only-secret-change-me-dev-only-secret"),
+  payments: {
+    // Only "sandbox" exists today. A real provider (Bakong KHQR, ABA PayWay) plugs in behind src/payments.ts.
+    provider: process.env.PAYMENT_PROVIDER ?? "sandbox",
+    webhookSecret: required("PAYMENT_WEBHOOK_SECRET", production ? undefined : "dev-payment-webhook-secret"),
+  },
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN ?? "",
     username: process.env.TELEGRAM_BOT_USERNAME ?? "",

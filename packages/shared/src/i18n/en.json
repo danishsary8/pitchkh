@@ -152,7 +152,8 @@
       "confirmed": "Confirmed",
       "rejected": "Declined",
       "cancelled": "Cancelled",
-      "completed": "Played"
+      "completed": "Played",
+      "awaiting_payment": "Awaiting payment"
     },
     "paymentStatus": {
       "unpaid": "Pay at venue",
@@ -719,7 +720,13 @@
     "playersShort": "{count} players",
     "bookAgain": "Book again",
     "stampConfirmed": "Booked",
-    "stampPending": "Held"
+    "stampPending": "Held",
+    "payReal": "Pay in your banking app. This page updates by itself.",
+    "openApp": "Open {method}",
+    "paymentExpired": "Time is up and the slot was released. Book again to pay.",
+    "waitingForPayment": "Waiting for your payment",
+    "awaitingTitle": "Finish paying to keep this slot",
+    "awaitingBody": "We're holding your slot until {time}. After that it is released."
   },
   "review": {
     "venueTitle": "Rate {name}",

@@ -34,6 +34,7 @@ export function toBooking(row: Row<typeof t.bookings>): Booking {
     endAt: iso(row.endAt),
     createdAt: iso(row.createdAt),
     cancelledAt: row.cancelledAt ? iso(row.cancelledAt) : null,
+    paymentDueAt: row.paymentDueAt ? iso(row.paymentDueAt) : null,
   };
 }
 

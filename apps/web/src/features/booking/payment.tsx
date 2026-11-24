@@ -1,12 +1,16 @@
 "use client";
 
-import { PAYMENT_METHODS, type PaymentMethod } from "@pitchkh/shared";
+import { PAYMENT_METHODS, type PaymentIntent, type PaymentMethod } from "@pitchkh/shared";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Banknote, CheckCircle2, QrCode, Smartphone, Wallet } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useNow, useTranslations } from "next-intl";
+import { useEffect, useMemo } from "react";
+import { toast } from "sonner";
+import { useErrorMessage } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/misc";
+import { api } from "@/lib/api";
 import { useMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -68,51 +72,70 @@ function MockQr({ seed }: { seed: string }) {
   );
 }
 
-/** Simulated checkout for KHQR / ABA / Wing. Nothing is charged. */
-export function PaymentSheet({ open, onOpenChange, method, totalUsd, reference, onPaid, pending }: { open: boolean; onOpenChange: (open: boolean) => void; method: PaymentMethod; totalUsd: number; reference: string; onPaid: () => void; pending: boolean }) {
+/**
+ * Pays an online booking. The server made the payment (QR or app link); this
+ * sheet shows it and polls until the provider confirms. With the sandbox
+ * provider, "I've paid" stands in for the bank.
+ */
+export function PaymentSheet({ intent, open, onOpenChange, onPaid }: { intent: PaymentIntent; open: boolean; onOpenChange: (open: boolean) => void; onPaid: (intent: PaymentIntent) => void }) {
   const t = useTranslations("booking");
   const tp = useTranslations("payment");
   const money = useMoney();
-  const [seconds, setSeconds] = useState(180);
+  const errorMessage = useErrorMessage();
+  const nowMs = useNow({ updateInterval: 1000 }).getTime();
+  const { data } = useQuery({ queryKey: ["payment", intent.id], queryFn: () => api.bookings.payment(intent.id), initialData: intent, refetchInterval: open ? 2000 : false });
+  const simulate = useMutation({ mutationFn: () => api.bookings.simulatePayment(intent.id), onError: (e) => toast.error(errorMessage(e)) });
+  const current = simulate.data?.status === "paid" ? simulate.data : data;
+  const done = current.status === "paid" && current.bookingStatus === "confirmed";
   useEffect(() => {
-    if (!open) return;
-    const timer = window.setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => {
-      window.clearInterval(timer);
-      setSeconds(180);
-    };
-  }, [open]);
+    if (done) onPaid(current);
+  }, [done, current, onPaid]);
 
+  const seconds = Math.max(0, Math.round((Date.parse(current.expiresAt) - nowMs) / 1000));
+  const expired = current.status === "expired" || seconds === 0;
+  const sandbox = current.provider === "sandbox";
   return (
     <Sheet
       open={open}
-      onOpenChange={(next) => !pending && onOpenChange(next)}
-      title={t("payWith", { method: tp(method) })}
-      description={t("payDemo")}
+      onOpenChange={(next) => !simulate.isPending && onOpenChange(next)}
+      title={t("payWith", { method: tp(current.method) })}
+      description={sandbox ? t("payDemo") : t("payReal")}
       footer={
-        <Button size="lg" onClick={onPaid} disabled={pending} className="w-full">
-          {pending ? <Spinner /> : <CheckCircle2 />}
-          {pending ? t("confirming") : t("simulatePaid")}
-        </Button>
+        sandbox && !expired ? (
+          <Button size="lg" onClick={() => simulate.mutate()} disabled={simulate.isPending || done} className="w-full">
+            {simulate.isPending || done ? <Spinner /> : <CheckCircle2 />}
+            {simulate.isPending || done ? t("confirming") : t("simulatePaid")}
+          </Button>
+        ) : undefined
       }
     >
       <div className="flex flex-col items-center gap-4 py-2 text-center">
-        {method === "khqr" ? (
+        {current.qrPayload ? (
           <div className="rounded-3xl bg-krama p-3">
             <p className="pb-2 text-sm font-bold tracking-wide text-white">KHQR</p>
-            <MockQr seed={reference} />
+            <MockQr seed={current.qrPayload} />
           </div>
         ) : (
-          <div className="grid size-28 place-items-center rounded-3xl bg-secondary">{method === "aba" ? <Smartphone className="size-12 text-primary" /> : <Wallet className="size-12 text-primary" />}</div>
+          <div className="grid size-28 place-items-center rounded-3xl bg-secondary">{current.method === "aba" ? <Smartphone className="size-12 text-primary" /> : <Wallet className="size-12 text-primary" />}</div>
         )}
         <div>
-          <p className="font-num text-4xl font-bold">{money.usd(totalUsd)}</p>
-          <p className="font-num text-muted-foreground">{money.khr(totalUsd)}</p>
+          <p className="font-num text-4xl font-bold">{money.usd(current.amountUsd)}</p>
+          <p className="font-num text-muted-foreground">{money.khr(current.amountUsd)}</p>
         </div>
-        <p className="max-w-xs text-sm text-pretty text-muted-foreground">{t(method === "khqr" ? "scanHint" : "appHint", { method: tp(method) })}</p>
-        <p className="font-num text-sm font-semibold" aria-live="off">
-          {t("expiresIn", { time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}` })}
-        </p>
+        {current.deeplink && !expired ? (
+          <Button asChild variant="secondary">
+            <a href={current.deeplink}>{t("openApp", { method: tp(current.method) })}</a>
+          </Button>
+        ) : null}
+        <p className="max-w-xs text-sm text-pretty text-muted-foreground">{t(current.method === "khqr" ? "scanHint" : "appHint", { method: tp(current.method) })}</p>
+        {expired ? (
+          <p className="rounded-xl bg-warning-surface px-3 py-2 text-sm font-semibold text-warning" role="alert">{t("paymentExpired")}</p>
+        ) : (
+          <p className="font-num flex items-center gap-2 text-sm font-semibold" aria-live="off">
+            <Spinner className="size-3.5" />
+            {t("waitingForPayment")} · {t("expiresIn", { time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}` })}
+          </p>
+        )}
       </div>
     </Sheet>
   );

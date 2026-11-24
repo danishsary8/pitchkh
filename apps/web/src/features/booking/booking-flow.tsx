@@ -1,6 +1,6 @@
 "use client";
 
-import { APP, calculatePrice, defaultTeamSize, isApiError, minutesOf, supportsMatching, timeOf, type Sport } from "@pitchkh/shared";
+import { APP, calculatePrice, defaultTeamSize, isApiError, minutesOf, supportsMatching, timeOf, type PaymentIntent, type Sport } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -62,7 +62,8 @@ export function BookingFlow({ slug }: { slug: string }) {
   const errorMessage = useErrorMessage();
   const { user, status } = useAuth();
   const { draft, open, update, clear } = useBookingDraft();
-  const [payOpen, setPayOpen] = useState(false);
+  // An online booking waiting for its payment: the sheet shows the QR / app link.
+  const [checkout, setCheckout] = useState<{ bookingId: string; intent: PaymentIntent } | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const { data: venue, isPending, isError, error, refetch } = useQuery({ queryKey: qk.venue(slug), queryFn: () => api.venues.get(slug) });
 
@@ -92,24 +93,33 @@ export function BookingFlow({ slug }: { slug: string }) {
   const date = draft?.date ?? dates.today;
   const price = field && draft?.startTime && draft.endTime ? calculatePrice({ field, date, startTime: draft.startTime, endTime: draft.endTime, referee: draft.referee && field.sport !== "tennis", extras: draft.extras }) : null;
 
+  const finish = async (bookingId: string): Promise<void> => {
+    await queryClient.invalidateQueries();
+    navigate(`/booking/${bookingId}?new=1`, { replace: true });
+    clear();
+  };
+  const onPaid = (paid: PaymentIntent): void => {
+    void finish(paid.bookingId);
+  };
+
   const create = useMutation({
     mutationFn: () => {
       if (!draft || !field || !draft.startTime || !draft.endTime) throw new Error("incomplete");
-      return api.bookings.create({
-        fieldId: field.id, date, startTime: draft.startTime, endTime: draft.endTime, teamSize: draft.teamSize ?? defaultTeamSize(field.format, field.sport),
-        referee: draft.referee && field.sport !== "tennis", extras: { ...draft.extras, bibs: draft.extras.bibs && field.sport === "football" }, notes: draft.notes,
-        opponentMode: supportsMatching(field.sport) ? draft.opponentMode : "have", matchLevel: draft.matchLevel, paymentMethod: draft.paymentMethod,
-      });
+      // 1. Book (online methods hold the slot while we pay). 2. Start the payment.
+      return api.bookings
+        .create({
+          fieldId: field.id, date, startTime: draft.startTime, endTime: draft.endTime, teamSize: draft.teamSize ?? defaultTeamSize(field.format, field.sport),
+          referee: draft.referee && field.sport !== "tennis", extras: { ...draft.extras, bibs: draft.extras.bibs && field.sport === "football" }, notes: draft.notes,
+          opponentMode: supportsMatching(field.sport) ? draft.opponentMode : "have", matchLevel: draft.matchLevel, paymentMethod: draft.paymentMethod,
+        })
+        .then(async (booking) => ({ booking, intent: booking.status === "awaiting_payment" ? await api.bookings.pay(booking.id) : null }));
     },
-    onSuccess: async (booking) => {
-      setPayOpen(false);
-      await queryClient.invalidateQueries();
+    onSuccess: async ({ booking, intent }) => {
       queryClient.setQueryData(qk.booking(booking.id), booking);
-      navigate(`/booking/${booking.id}?new=1`, { replace: true });
-      clear();
+      if (intent) setCheckout({ bookingId: booking.id, intent });
+      else await finish(booking.id);
     },
     onError: (e) => {
-      setPayOpen(false);
       toast.error(errorMessage(e));
       // Someone took the slot while we were paying: back to the grid with fresh data.
       if (isApiError(e) && e.code === "slot_unavailable") {
@@ -138,8 +148,7 @@ export function BookingFlow({ slug }: { slug: string }) {
   };
   const pay = (): void => {
     if (!user) return navigate(`/login?next=${encodeURIComponent(`/book/${slug}`)}`);
-    if (draft.paymentMethod === "cash") create.mutate();
-    else setPayOpen(true);
+    create.mutate();
   };
   const primary =
     step === 0 ? (
@@ -228,7 +237,20 @@ export function BookingFlow({ slug }: { slug: string }) {
         {primary}
       </StickyBar>
 
-      {price ? <PaymentSheet open={payOpen} onOpenChange={setPayOpen} method={draft.paymentMethod} totalUsd={price.totalUsd} reference={`${slug}-${date}-${draft.startTime ?? ""}`} onPaid={() => create.mutate()} pending={create.isPending} /> : null}
+      {checkout ? (
+        <PaymentSheet
+          intent={checkout.intent}
+          open
+          onPaid={onPaid}
+          // Closed before paying: the booking page has a "Pay now" button while the hold lasts.
+          onOpenChange={(open) => {
+            if (!open) {
+              navigate(`/booking/${checkout.bookingId}`, { replace: true });
+              clear();
+            }
+          }}
+        />
+      ) : null}
     </div>
   );
 }

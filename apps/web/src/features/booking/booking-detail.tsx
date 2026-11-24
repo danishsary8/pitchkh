@@ -1,6 +1,6 @@
 "use client";
 
-import { bookingToGoogleCalendarUrl, bookingToIcs, type BookingDetail as Booking, type BookingStatus } from "@pitchkh/shared";
+import { bookingToGoogleCalendarUrl, bookingToIcs, type BookingDetail as Booking, type BookingStatus, type PaymentIntent } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Repeat, Send, Star, Swords, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { KramaStrip } from "@/components/brand/pitch-art";
 import { Confetti } from "@/components/common/confetti";
-import { Link } from "@/components/common/link";
+import { Link, useNavigate } from "@/components/common/link";
 import { Container, PageHeader, SportBadge } from "@/components/common/page";
 import { ErrorState, useErrorMessage } from "@/components/common/states";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
@@ -24,12 +24,13 @@ import { api } from "@/lib/api";
 import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
 import { PriceLines } from "./price-lines";
+import { PaymentSheet } from "./payment";
 import { ReviewSheet } from "./review-sheet";
 import { useShareBooking } from "./use-share-booking";
 import { DateStrip, SlotGrid, type TimeRange } from "./slot-picker";
 import { features } from "@/lib/features";
 
-export const BOOKING_STATUS_VARIANT: Record<BookingStatus, BadgeVariant> = { pending: "warning", confirmed: "success", rejected: "destructive", cancelled: "muted", completed: "secondary" };
+export const BOOKING_STATUS_VARIANT: Record<BookingStatus, BadgeVariant> = { awaiting_payment: "accent", pending: "warning", confirmed: "success", rejected: "destructive", cancelled: "muted", completed: "secondary" };
 
 function RescheduleSheet({ booking, open, onOpenChange }: { booking: Booking; open: boolean; onOpenChange: (open: boolean) => void }) {
   const t = useTranslations("booking");
@@ -83,6 +84,9 @@ export function BookingDetail({ id }: { id: string }) {
   const errorMessage = useErrorMessage();
   const fresh = params.get("new") === "1";
   const share = useShareBooking();
+  const navigate = useNavigate();
+  const [checkout, setCheckout] = useState<PaymentIntent | null>(null);
+  const startPay = useMutation({ mutationFn: () => api.bookings.pay(id), onSuccess: setCheckout, onError: (e) => toast.error(errorMessage(e)) });
   const [cancelOpen, setCancelOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -198,6 +202,16 @@ export function BookingDetail({ id }: { id: string }) {
       </motion.section>
 
       <div className="flex flex-col gap-3 pt-5">
+        {booking.status === "awaiting_payment" ? (
+          <div className="flex flex-col gap-3 rounded-2xl bg-accent/20 p-4">
+            <p className="font-bold">{t("booking.awaitingTitle")}</p>
+            <p className="text-sm text-pretty">{t("booking.awaitingBody", { time: booking.paymentDueAt ? dates.time(booking.paymentDueAt) : "" })}</p>
+            <Button size="lg" variant="accent" disabled={startPay.isPending} onClick={() => startPay.mutate()}>
+              {startPay.isPending ? <Spinner /> : null}
+              {t("booking.payAmount", { amount: `$${booking.price.totalUsd.toFixed(2)}` })}
+            </Button>
+          </div>
+        ) : null}
         {booking.status === "pending" ? <Alert variant="warning" title={t("booking.cashTitle")}>{t("booking.pendingBody")}</Alert> : null}
         {booking.status === "rejected" ? <Alert variant="destructive" title={t("booking.rejectedTitle")}>{t("booking.rejectedBody")}</Alert> : null}
         {booking.matchRequestId && active ? (
@@ -295,6 +309,18 @@ export function BookingDetail({ id }: { id: string }) {
         </p>
       </Sheet>
       {rescheduleOpen ? <RescheduleSheet booking={booking} open onOpenChange={setRescheduleOpen} /> : null}
+      {checkout ? (
+        <PaymentSheet
+          intent={checkout}
+          open
+          onOpenChange={(open) => !open && setCheckout(null)}
+          onPaid={() => {
+            setCheckout(null);
+            void queryClient.invalidateQueries();
+            navigate(`/booking/${id}?new=1`, { replace: true });
+          }}
+        />
+      ) : null}
       <ReviewSheet open={reviewOpen} onOpenChange={setReviewOpen} targetType="venue" targetId={booking.venue.id} targetName={venueName} bookingId={booking.id} />
     </Container>
   );

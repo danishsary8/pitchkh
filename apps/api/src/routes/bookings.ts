@@ -1,12 +1,19 @@
 import { ApiError, bookingCode, calculatePrice, canCancel, canReschedule, initialBookingState, isUpcoming, isWithinBookingWindow, refundStatus, schemas as s, supportsMatching, toIso, validateRange, type Booking, type Field, type Venue } from "@pitchkh/shared";
 import { notFound, paginate, parse } from "@pitchkh/shared/mock";
-import { and, eq } from "drizzle-orm";
+import { and, eq, lte } from "drizzle-orm";
 import type { Tx } from "../db/client";
 import { toBooking } from "../db/mappers";
 import * as t from "../db/schema";
 import type { Ctx, Route } from "../http";
 import { bookingDetailOf, bookingDetails, findVenue } from "../views";
 import { availabilityOf, findField } from "./venues";
+
+/** Cancels unpaid online bookings whose hold ran out, freeing their slots. */
+export async function releaseExpiredHolds(tx: Tx, now: Date): Promise<number> {
+  const released = await tx.update(t.bookings).set({ status: "cancelled", cancelledAt: now }).where(and(eq(t.bookings.status, "awaiting_payment"), lte(t.bookings.paymentDueAt, now))).returning({ id: t.bookings.id });
+  await tx.update(t.payments).set({ status: "expired" }).where(and(eq(t.payments.status, "pending"), lte(t.payments.expiresAt, now)));
+  return released.length;
+}
 
 /** Shared by create and reschedule: the range must be in the window, aligned and free. */
 export async function assertBookable(tx: Tx, now: Date, field: Field, venue: Venue, date: string, startTime: string, endTime: string, excludeBookingId?: string): Promise<void> {
@@ -41,11 +48,13 @@ export function registerBookingRoutes(route: Route): void {
     const user = ctx.requireUser();
     const dto = parse(s.CreateBookingDto, ctx.body);
     const booking = await ctx.db.transaction(async (tx) => {
+      // Unpaid holds past their deadline give their slot back before we check.
+      await releaseExpiredHolds(tx, ctx.now);
       const field = await findField(tx, dto.fieldId);
       const venue = await findVenue(tx, field.venueId);
       await assertBookable(tx, ctx.now, field, venue, dto.date, dto.startTime, dto.endTime);
       if (dto.teamSize > field.maxPlayers) throw new ApiError(422, "validation_failed", "Team is too large for this field.", { teamSize: [`Maximum ${field.maxPlayers} players`] });
-      const state = initialBookingState(dto.paymentMethod);
+      const state = initialBookingState(dto.paymentMethod, ctx.now);
       // The no-overlap constraint is the final word: a parallel booking that got here first makes this insert fail with 409.
       const [row] = await tx.insert(t.bookings).values({
         id: ctx.newId(), code: bookingCode(), userId: user.id, venueId: venue.id, fieldId: field.id, sport: field.sport, date: dto.date,
@@ -53,11 +62,14 @@ export function registerBookingRoutes(route: Route): void {
         // Match requests arrive in v1.1; the choice is kept so the owner sees it.
         opponentMode: dto.opponentMode === "find" && supportsMatching(field.sport) ? "find" : "have", matchRequestId: null,
         price: calculatePrice({ field, ...dto }), paymentMethod: dto.paymentMethod, paymentStatus: state.paymentStatus, status: state.status, createdAt: ctx.now, cancelledAt: null,
+        paymentDueAt: state.paymentDueAt ? new Date(state.paymentDueAt) : null,
       }).returning();
       const created = toBooking(row as typeof t.bookings.$inferSelect);
-      const type = created.status === "confirmed" ? "booking_confirmed" : "booking_pending";
-      await ctx.notify(tx, user.id, type, { venue: venue.name, code: created.code }, `/booking/${created.id}`);
-      await ctx.notify(tx, venue.ownerId, type, { venue: venue.name, customer: user.name, code: created.code }, "/owner/bookings", { bookingId: created.id });
+      // Cash requests go to the owner now; online bookings once the payment lands (routes/payments.ts).
+      if (created.status === "pending") {
+        await ctx.notify(tx, user.id, "booking_pending", { venue: venue.name, code: created.code }, `/booking/${created.id}`);
+        await ctx.notify(tx, venue.ownerId, "booking_pending", { venue: venue.name, customer: user.name, code: created.code }, "/owner/bookings", { bookingId: created.id });
+      }
       return created;
     });
     return bookingDetailOf(ctx.db, booking, ctx.now);

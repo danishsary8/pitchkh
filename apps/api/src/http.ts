@@ -16,6 +16,8 @@ export interface Services {
   /** Injectable clock so tests can freeze time. */
   clock: () => Date;
   /** Called after a notification row is written (e.g. Telegram alerts). Never throws into the request. */
+  /** Online payment provider (sandbox by default). */
+  payments?: import("./payments").PaymentProvider;
   onNotify?: (n: { userId: string; type: NotificationType; params: Record<string, string>; href: string; meta?: Record<string, string> }) => void;
 }
 
@@ -24,6 +26,8 @@ export interface Ctx {
   params: Record<string, string>;
   query: Record<string, string>;
   body: unknown;
+  /** The body exactly as sent, for webhook signatures. */
+  rawBody: string;
   user: User | null;
   now: Date;
   nowIso: string;
@@ -40,12 +44,12 @@ export interface Ctx {
 type Access = "public" | "auth" | readonly Role[];
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-async function readBody(c: Context): Promise<unknown> {
-  if (c.req.method === "GET" || c.req.method === "DELETE") return undefined;
-  const text = await c.req.text();
-  if (!text) return undefined;
+async function readBody(c: Context): Promise<{ raw: string; json: unknown }> {
+  if (c.req.method === "GET" || c.req.method === "DELETE") return { raw: "", json: undefined };
+  const raw = await c.req.text();
+  if (!raw) return { raw, json: undefined };
   try {
-    return JSON.parse(text);
+    return { raw, json: JSON.parse(raw) };
   } catch {
     throw new ApiError(422, "validation_failed", "The request body is not valid JSON.");
   }
@@ -71,11 +75,13 @@ export function createRouter(app: Hono, services: Services) {
         if (access !== "auth" && !access.includes(user.role)) throw new ApiError(403, "forbidden", "You do not have access to this.");
       }
       const afterHooks: (() => void)[] = [];
+      const body = await readBody(c);
       const ctx: Ctx = {
         db: services.db,
         params: c.req.param() as Record<string, string>,
         query: c.req.query(),
-        body: await readBody(c),
+        body: body.json,
+        rawBody: body.raw,
         user,
         now,
         nowIso: isoInPP(now),

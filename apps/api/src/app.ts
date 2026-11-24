@@ -7,7 +7,10 @@ import { registerAuthRoutes } from "./routes/auth";
 import { registerBookingRoutes } from "./routes/bookings";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerOwnerRoutes } from "./routes/owner";
+import { registerPaymentRoutes } from "./routes/payments";
 import { registerTelegramRoutes } from "./routes/telegram";
+import { env } from "./env";
+import { sandboxProvider } from "./payments";
 import { alertOwner, type TelegramClient } from "./telegram";
 import { registerVenueRoutes } from "./routes/venues";
 
@@ -40,6 +43,7 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   registerOwnerRoutes(route);
   registerAdminRoutes(route);
   registerTelegramRoutes(route, telegram);
+  registerPaymentRoutes(route, services.payments ?? sandboxProvider(env.payments.webhookSecret));
   app.route("/api/v1", api);
   return app;
 }

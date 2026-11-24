@@ -19,7 +19,7 @@ export function seedDb(now: Date): MockDb {
 
   const db: MockDb = {
     version: MOCK_DB_VERSION, seededAt: nowIso, users: [], passwords: {}, teams: [], venues: [], fields: [], bookings: [], blocks: [],
-    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [],
+    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [],
   };
 
   /* ------------------------------ users ------------------------------ */
@@ -97,7 +97,7 @@ export function seedDb(now: Date): MockDb {
       opponentMode: opts.opponentMode ?? "have", matchRequestId: null,
       price: calculatePrice({ field, date, startTime: start, endTime: end, referee, extras }),
       paymentMethod, paymentStatus: status === "cancelled" ? (paymentMethod === "cash" ? "unpaid" : "refunded") : paymentMethod === "cash" && !ended ? "unpaid" : "paid",
-      status, createdAt: toIso(addDays(date, -2 - Math.floor(rng() * 3)), "12:15"), cancelledAt: status === "cancelled" ? toIso(addDays(date, -1), "09:30") : null,
+      status, createdAt: toIso(addDays(date, -2 - Math.floor(rng() * 3)), "12:15"), cancelledAt: status === "cancelled" ? toIso(addDays(date, -1), "09:30") : null, paymentDueAt: null,
     };
     db.bookings.push(booking);
     return booking;

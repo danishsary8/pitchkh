@@ -109,7 +109,7 @@ export function registerOwnerRoutes(route: Route): void {
     const { field, venue } = await myField(ctx, ctx.params.id);
     await ctx.db.transaction(async (tx) => {
       const history = (await tx.select().from(t.bookings).where(eq(t.bookings.fieldId, field.id))).map(toBooking);
-      if (history.some((b) => holdsSlot(b) && Date.parse(b.endAt) > ctx.now.getTime())) throw new ApiError(409, "conflict", "This pitch has upcoming bookings. Set it to maintenance instead.");
+      if (history.some((b) => holdsSlot(b, ctx.now) && Date.parse(b.endAt) > ctx.now.getTime())) throw new ApiError(409, "conflict", "This pitch has upcoming bookings. Set it to maintenance instead.");
       // Receipts point at the pitch, so a pitch with any booking history is kept.
       if (history.length) throw new ApiError(409, "conflict", "This pitch has past bookings on record. Set it to maintenance instead.");
       await tx.delete(t.fields).where(eq(t.fields.id, field.id));
@@ -146,7 +146,7 @@ export function registerOwnerRoutes(route: Route): void {
     const fields = (await ctx.db.select().from(t.fields).where(eq(t.fields.venueId, venue.id))).map(toField);
     const fieldIds = fields.map((f) => f.id);
     const hours = hoursFor(venue.openingHours, q.date);
-    const bookings = (await ctx.db.select().from(t.bookings).where(and(eq(t.bookings.venueId, venue.id), eq(t.bookings.date, q.date)))).map(toBooking).filter(holdsSlot);
+    const bookings = (await ctx.db.select().from(t.bookings).where(and(eq(t.bookings.venueId, venue.id), eq(t.bookings.date, q.date)))).map(toBooking).filter((b) => holdsSlot(b, ctx.now));
     return {
       date: q.date, open: hours.open, close: hours.close, closed: hours.closed, fields,
       bookings: await bookingDetails(ctx.db, bookings, ctx.now),
@@ -161,7 +161,7 @@ export function registerOwnerRoutes(route: Route): void {
     const end = Date.parse(toIso(dto.date, dto.endTime));
     return ctx.db.transaction(async (tx) => {
       const day = (await tx.select().from(t.bookings).where(and(eq(t.bookings.fieldId, field.id), eq(t.bookings.date, dto.date)))).map(toBooking);
-      if (day.some((b) => holdsSlot(b) && rangesOverlap(start, end, Date.parse(b.startAt), Date.parse(b.endAt)))) throw new ApiError(409, "slot_unavailable", "There is a booking in that window. Cancel or move it first.");
+      if (day.some((b) => holdsSlot(b, ctx.now) && rangesOverlap(start, end, Date.parse(b.startAt), Date.parse(b.endAt)))) throw new ApiError(409, "slot_unavailable", "There is a booking in that window. Cancel or move it first.");
       const [row] = await tx.insert(t.blocks).values({ id: ctx.newId(), ...dto }).returning();
       return toBlock(row as typeof t.blocks.$inferSelect);
     });

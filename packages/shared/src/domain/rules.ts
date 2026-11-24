@@ -1,7 +1,7 @@
 import { APP } from "../config";
 import type { Booking, MatchRequest, Sport } from "../types";
 import { MATCH_SPORTS } from "../enums";
-import { addDays, dateInPP } from "./time";
+import { addDays, dateInPP, isoInPP } from "./time";
 
 /** A booking is "upcoming" until its end time passes, unless it was cancelled/rejected. */
 export function isUpcoming(b: Pick<Booking, "endAt" | "status">, now: Date): boolean {
@@ -10,6 +10,7 @@ export function isUpcoming(b: Pick<Booking, "endAt" | "status">, now: Date): boo
 
 /** Free cancellation is allowed until APP.freeCancelHours before kick-off. */
 export function canCancel(b: Pick<Booking, "startAt" | "status">, now: Date): boolean {
+  if (b.status === "awaiting_payment") return true; // nothing paid yet: always free to drop
   if (b.status !== "pending" && b.status !== "confirmed") return false;
   return Date.parse(b.startAt) - now.getTime() >= APP.freeCancelHours * 3_600_000;
 }
@@ -21,9 +22,13 @@ export function refundStatus(b: Pick<Booking, "paymentStatus">): Booking["paymen
   return b.paymentStatus === "paid" ? "refunded" : b.paymentStatus;
 }
 
-/** Cash bookings wait for the venue owner; online payments confirm instantly. */
-export function initialBookingState(paymentMethod: Booking["paymentMethod"]): Pick<Booking, "status" | "paymentStatus"> {
-  return paymentMethod === "cash" ? { status: "pending", paymentStatus: "unpaid" } : { status: "confirmed", paymentStatus: "paid" };
+/**
+ * Cash bookings wait for the venue owner. Online payments hold the slot for
+ * APP.paymentHoldMinutes until the provider confirms the payment.
+ */
+export function initialBookingState(paymentMethod: Booking["paymentMethod"], now: Date): Pick<Booking, "status" | "paymentStatus" | "paymentDueAt"> {
+  if (paymentMethod === "cash") return { status: "pending", paymentStatus: "unpaid", paymentDueAt: null };
+  return { status: "awaiting_payment", paymentStatus: "unpaid", paymentDueAt: isoInPP(new Date(now.getTime() + APP.paymentHoldMinutes * 60_000)) };
 }
 
 export function isWithinBookingWindow(date: string, now: Date): boolean {

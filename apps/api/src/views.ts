@@ -15,7 +15,7 @@ import * as t from "./db/schema";
 export function emptySnapshot(): MockDb {
   return {
     version: 0, seededAt: "", users: [], passwords: {}, teams: [], venues: [], fields: [], bookings: [], blocks: [],
-    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [],
+    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [],
   };
 }
 
@@ -38,7 +38,7 @@ async function venueSnapshot(db: Tx, venues: Venue[], user: User | null, days: s
   snap.fields = (await db.select().from(t.fields).where(inArray(t.fields.venueId, venueIds))).map(toField);
   const fieldIds = snap.fields.map((f) => f.id);
   if (fieldIds.length && days.length) {
-    snap.bookings = (await db.select().from(t.bookings).where(and(inArray(t.bookings.fieldId, fieldIds), inArray(t.bookings.date, days)))).map(toBooking).filter(holdsSlot);
+    snap.bookings = (await db.select().from(t.bookings).where(and(inArray(t.bookings.fieldId, fieldIds), inArray(t.bookings.date, days)))).map(toBooking).filter((b) => holdsSlot(b));
     snap.blocks = (await db.select().from(t.blocks).where(and(inArray(t.blocks.fieldId, fieldIds), inArray(t.blocks.date, days)))).map(toBlock);
   }
   if (user) {

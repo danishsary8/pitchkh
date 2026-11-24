@@ -106,8 +106,14 @@ describe("api client on the mock server", () => {
     const dto = { fieldId: target.id, date, startTime: "10:00", endTime: "11:30", teamSize: 5, referee: false, extras: { waterBottles: 0, ball: false, bibs: false }, notes: "", opponentMode: "have" as const, paymentMethod: "khqr" as const };
 
     const created = await api.bookings.create(dto);
-    expect(created.status).toBe("confirmed");
+    expect(created.status).toBe("awaiting_payment");
     expect(created.price.totalUsd).toBe(15.45);
+    // Online payment: the provider (sandbox) confirms it.
+    const intent = await api.bookings.pay(created.id);
+    expect(intent.qrPayload).toContain(created.code);
+    const paid = await api.bookings.simulatePayment(intent.id);
+    expect(paid.status).toBe("paid");
+    expect(paid.bookingStatus).toBe("confirmed");
 
     const clash = await api.bookings.create({ ...dto, startTime: "11:00", endTime: "12:00" }).catch((e: unknown) => e);
     expect(clash).toBeInstanceOf(ApiError);
@@ -120,6 +126,24 @@ describe("api client on the mock server", () => {
     expect(cancelled.paymentStatus).toBe("refunded");
     const again = await api.bookings.create(dto);
     expect(again.id).not.toBe(created.id);
+  });
+
+  it("releases an unpaid online booking when its payment hold runs out", async () => {
+    let clock = now;
+    const api = createApiClient({ apiMode: "mock", apiUrl: "", storage: createMemoryStorage(), latency: [0, 0], now: () => clock });
+    await api.auth.login({ email: "dara@pitchkh.app", password: "password" });
+    const venue = await api.venues.get("russey-keo-futsal");
+    const target = venue.fields[1] as Field;
+    const date = addDays(dateInPP(now), 11);
+    const dto = { fieldId: target.id, date, startTime: "14:00", endTime: "15:00", teamSize: 5, referee: false, extras: { waterBottles: 0, ball: false, bibs: false }, notes: "", opponentMode: "have" as const, paymentMethod: "aba" as const };
+    const held = await api.bookings.create(dto);
+    await expect(api.bookings.create(dto)).rejects.toMatchObject({ code: "slot_unavailable" });
+    const intent = await api.bookings.pay(held.id);
+    clock = new Date(now.getTime() + 11 * 60_000);
+    // The hold is gone: someone else can book, and the late payment can't go through.
+    expect((await api.venues.availability(target.id, date)).slots.find((s) => s.start === "14:00")?.status).toBe("available");
+    await expect(api.bookings.simulatePayment(intent.id)).rejects.toMatchObject({ code: "conflict" });
+    expect((await api.bookings.create(dto)).status).toBe("awaiting_payment");
   });
 
   it("enforces roles", async () => {

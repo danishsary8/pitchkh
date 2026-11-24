@@ -93,9 +93,26 @@ export const bookings = pgTable("bookings", {
   price: jsonb("price").$type<PriceBreakdown>().notNull(),
   paymentMethod: text("payment_method").$type<"khqr" | "aba" | "wing" | "cash">().notNull(),
   paymentStatus: text("payment_status").$type<"unpaid" | "paid" | "refunded">().notNull(),
-  status: text("status").$type<"pending" | "confirmed" | "rejected" | "cancelled" | "completed">().notNull(),
+  status: text("status").$type<"awaiting_payment" | "pending" | "confirmed" | "rejected" | "cancelled" | "completed">().notNull(),
   createdAt: ts("created_at").notNull(),
   cancelledAt: ts("cancelled_at"),
+  paymentDueAt: ts("payment_due_at"),
+});
+
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey(),
+  bookingId: uuid("booking_id").notNull(),
+  provider: text("provider").notNull(),
+  method: text("method").$type<"khqr" | "aba" | "wing" | "cash">().notNull(),
+  reference: text("reference").notNull(),
+  amountUsd: money("amount_usd").notNull(),
+  amountKhr: integer("amount_khr").notNull(),
+  status: text("status").$type<"pending" | "paid" | "expired">().notNull(),
+  qrPayload: text("qr_payload"),
+  deeplink: text("deeplink"),
+  expiresAt: ts("expires_at").notNull(),
+  paidAt: ts("paid_at"),
+  createdAt: ts("created_at").notNull().defaultNow(),
 });
 
 export const blocks = pgTable("availability_blocks", {

@@ -9,7 +9,7 @@ import { findVenue, venueDetailOf, venueSummaries } from "../views";
 
 /** One field's slot grid for a day, from the bookings and blocks in the database. */
 export async function availabilityOf(db: Tx, field: Field, venue: Venue, date: string, now: Date, excludeBookingId?: string) {
-  const bookings = (await db.select().from(t.bookings).where(and(eq(t.bookings.fieldId, field.id), eq(t.bookings.date, date)))).map(toBooking).filter(holdsSlot);
+  const bookings = (await db.select().from(t.bookings).where(and(eq(t.bookings.fieldId, field.id), eq(t.bookings.date, date)))).map(toBooking).filter((b) => holdsSlot(b, now));
   const blocks = (await db.select().from(t.blocks).where(and(eq(t.blocks.fieldId, field.id), eq(t.blocks.date, date)))).map(toBlock);
   return generateSlots({ field, openingHours: venue.openingHours, date, bookings, blocks, now, excludeBookingId });
 }
@@ -81,7 +81,7 @@ export function registerVenueRoutes(route: Route): void {
     const venue = await findVenue(db, params.id ?? "");
     const fields = (await db.select().from(t.fields).where(eq(t.fields.venueId, venue.id))).map(toField);
     const ids = fields.map((f) => f.id);
-    const bookings = ids.length ? (await db.select().from(t.bookings).where(and(inArray(t.bookings.fieldId, ids), eq(t.bookings.date, date)))).map(toBooking).filter(holdsSlot) : [];
+    const bookings = ids.length ? (await db.select().from(t.bookings).where(and(inArray(t.bookings.fieldId, ids), eq(t.bookings.date, date)))).map(toBooking).filter((b) => holdsSlot(b, now)) : [];
     const blocks = ids.length ? (await db.select().from(t.blocks).where(and(inArray(t.blocks.fieldId, ids), eq(t.blocks.date, date)))).map(toBlock) : [];
     return { venueId: venue.id, date, fields: fields.map((field) => generateSlots({ field, openingHours: venue.openingHours, date, bookings, blocks, now })) };
   });

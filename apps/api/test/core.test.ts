@@ -74,8 +74,10 @@ describe("bookings", () => {
     const date = addDays(dateInPP(NOW), 12);
 
     const created = schemas.BookingDetail.parse(await client.bookings.create(dto(field, date)));
-    expect(created.status).toBe("confirmed");
+    expect(created.status).toBe("awaiting_payment");
     expect(created.price.totalUsd).toBe(15.45);
+    const intent = schemas.PaymentIntent.parse(await client.bookings.pay(created.id));
+    expect((await client.bookings.simulatePayment(intent.id)).bookingStatus).toBe("confirmed");
 
     const clash = await client.bookings.create(dto(field, date, "11:00", "12:00")).catch((e: unknown) => e);
     expect(clash).toBeInstanceOf(ApiError);

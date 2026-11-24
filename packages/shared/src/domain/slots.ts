@@ -4,8 +4,13 @@ import { isPeakMinute, rateAt, round2 } from "./pricing";
 import { minutesOf, timeOf, toIso, weekdayOf } from "./time";
 
 /** Bookings in these states hold their time on the field. */
-const HOLDING: ReadonlySet<Booking["status"]> = new Set(["pending", "confirmed", "completed"]);
-export const holdsSlot = (b: Pick<Booking, "status">): boolean => HOLDING.has(b.status);
+const HOLDING: ReadonlySet<Booking["status"]> = new Set(["awaiting_payment", "pending", "confirmed", "completed"]);
+/**
+ * Does this booking occupy its time? An unpaid online booking stops holding
+ * the slot once its payment deadline passes (pass `now` to check that).
+ */
+export const holdsSlot = (b: Pick<Booking, "status"> & { paymentDueAt?: string | null }, now?: Date): boolean =>
+  HOLDING.has(b.status) && !(b.status === "awaiting_payment" && now && b.paymentDueAt && Date.parse(b.paymentDueAt) <= now.getTime());
 
 /** Half-open interval overlap: [aStart, aEnd) vs [bStart, bEnd). Touching ranges do not overlap. */
 export function rangesOverlap(aStart: number, aEnd: number, bStart: number, bEnd: number): boolean {
@@ -73,7 +78,7 @@ export function generateSlots(input: SlotInput): Availability {
   // listing venues that are free in a time window).
   const busy: { start: number; end: number; status: Slot["status"] }[] = [];
   for (const b of input.bookings) {
-    if (b.fieldId !== input.field.id || b.id === input.excludeBookingId || !holdsSlot(b)) continue;
+    if (b.fieldId !== input.field.id || b.id === input.excludeBookingId || !holdsSlot(b, input.now)) continue;
     const start = Date.parse(b.startAt);
     const end = Date.parse(b.endAt);
     if (rangesOverlap(start, end, dayStartMs, dayStartMs + 86_400_000)) busy.push({ start, end, status: "booked" });

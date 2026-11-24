@@ -51,6 +51,8 @@ export const APP = {
   maxBookingMinutes: 240,
   bookingWindowDays: 30,
   freeCancelHours: 2,
+  /** How long an online payment holds the slot. */
+  paymentHoldMinutes: 10,
   serviceFeeRate: 0.03,
   refereeUsdPerHour: 5,
   waterBottleUsd: 0.5,

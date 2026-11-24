@@ -19,13 +19,18 @@ export async function startTestApi(now = NOW, telegram?: TelegramClient) {
   await migrate(TEST_DB, () => undefined);
   const { sql, db } = createDb(TEST_DB);
   await seed(db, now);
-  const app = createApp({ db, clock: () => now }, ["http://localhost:3000"], telegram);
+  // Tests can move time forward (e.g. to let a payment hold expire).
+  let current = now;
+  const app = createApp({ db, clock: () => current }, ["http://localhost:3000"], telegram);
   const server = serve({ fetch: app.fetch, port: 0 });
   await new Promise<void>((resolve) => server.once("listening", () => resolve()));
   const base = `http://localhost:${(server.address() as AddressInfo).port}/api/v1`;
   return {
     base,
     sql,
+    setNow: (d: Date) => {
+      current = d;
+    },
     client: () => createApiClient({ apiMode: "real", apiUrl: base, storage: createMemoryStorage(), fetch: (input, init) => fetch(input, init) }),
     stop: async () => {
       await new Promise<void>((resolve) => server.close(() => resolve()));

@@ -1,9 +1,9 @@
-import type { AvailabilityBlock, Booking, Field, JoinRequest, MatchRequest, Notification, Team, User, Venue } from "../types";
+import type { AvailabilityBlock, Booking, Field, JoinRequest, MatchRequest, Notification, PaymentIntent, Team, User, Venue } from "../types";
 import { STORAGE_KEYS, type StorageAdapter } from "./storage";
 import { seedDb } from "./seed";
 
 /** Bump when the seed shape changes so stale browsers reseed. */
-export const MOCK_DB_VERSION = 6;
+export const MOCK_DB_VERSION = 7;
 /** The demo data is time-relative, so reseed once it is this old. */
 const MAX_AGE_MS = 6 * 86_400_000;
 
@@ -72,6 +72,7 @@ export interface MockDb {
   favorites: FavoriteRow[];
   notifications: Notification[];
   reports: ReportRow[];
+  payments: Omit<PaymentIntent, "bookingStatus">[];
 }
 
 export async function loadDb(storage: StorageAdapter, now: Date): Promise<MockDb> {

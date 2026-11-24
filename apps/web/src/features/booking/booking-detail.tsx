@@ -2,13 +2,14 @@
 
 import { bookingToGoogleCalendarUrl, bookingToIcs, type BookingDetail as Booking, type BookingStatus } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Repeat, Star, Swords, X } from "lucide-react";
+import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Repeat, Send, Star, Swords, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { KramaStrip } from "@/components/brand/pitch-art";
+import { Confetti } from "@/components/common/confetti";
 import { Link } from "@/components/common/link";
 import { Container, PageHeader, SportBadge } from "@/components/common/page";
 import { ErrorState, useErrorMessage } from "@/components/common/states";
@@ -24,6 +25,7 @@ import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
 import { PriceLines } from "./price-lines";
 import { ReviewSheet } from "./review-sheet";
+import { useShareBooking } from "./use-share-booking";
 import { DateStrip, SlotGrid, type TimeRange } from "./slot-picker";
 
 export const BOOKING_STATUS_VARIANT: Record<BookingStatus, BadgeVariant> = { pending: "warning", confirmed: "success", rejected: "destructive", cancelled: "muted", completed: "secondary" };
@@ -79,6 +81,7 @@ export function BookingDetail({ id }: { id: string }) {
   const queryClient = useQueryClient();
   const errorMessage = useErrorMessage();
   const fresh = params.get("new") === "1";
+  const share = useShareBooking();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -128,7 +131,8 @@ export function BookingDetail({ id }: { id: string }) {
   return (
     <Container size="sm" className="pb-8">
       {fresh ? (
-        <div className="flex flex-col items-center gap-3 pt-8 pb-6 text-center">
+        <div className="relative flex flex-col items-center gap-3 pt-8 pb-6 text-center">
+          {booking.status === "confirmed" ? <Confetti /> : null}
           <motion.div initial={{ opacity: 0, transform: "scale(0.6)" }} animate={{ opacity: 1, transform: "scale(1)" }} transition={{ type: "spring", duration: 0.6, bounce: 0.35 }} className="grid size-18 place-items-center rounded-full bg-primary text-primary-foreground">
             {booking.status === "pending" ? <Clock className="size-9" /> : <Check className="size-10" strokeWidth={3} />}
           </motion.div>
@@ -140,8 +144,19 @@ export function BookingDetail({ id }: { id: string }) {
       )}
 
       {/* The receipt: a match ticket with a krama edge. */}
-      <motion.section aria-label={t("booking.receipt")} initial={fresh ? { opacity: 0, transform: "translateY(24px)" } : false} animate={{ opacity: 1, transform: "translateY(0px)" }} transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1], delay: 0.15 }} className="overflow-hidden rounded-3xl bg-card">
+      <motion.section aria-label={t("booking.receipt")} initial={fresh ? { opacity: 0, transform: "translateY(24px)" } : false} animate={{ opacity: 1, transform: "translateY(0px)" }} transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1], delay: 0.15 }} className="relative overflow-hidden rounded-3xl bg-card">
         <KramaStrip />
+        {fresh && active ? (
+          <motion.p
+            aria-hidden
+            initial={{ opacity: 0, transform: "rotate(-14deg) scale(1.9)" }}
+            animate={{ opacity: 0.9, transform: "rotate(-14deg) scale(1)" }}
+            transition={{ delay: 0.65, duration: 0.32, ease: [0.5, 0, 0.75, 0] }}
+            className="pointer-events-none absolute top-[44%] right-5 z-10 rounded-lg border-[3px] border-primary px-3 py-1 font-display text-2xl tracking-wider text-primary uppercase mix-blend-multiply dark:mix-blend-screen"
+          >
+            {booking.status === "pending" ? t("booking.stampPending") : t("booking.stampConfirmed")}
+          </motion.p>
+        ) : null}
         <div className="flex flex-col gap-5 p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-1.5">
@@ -163,7 +178,7 @@ export function BookingDetail({ id }: { id: string }) {
             </div>
           </div>
 
-          <dl className="flex flex-col gap-2.5 border-y border-dashed border-foreground/25 py-4 text-[0.95rem]">
+          <dl className="relative flex flex-col gap-2.5 border-y border-dashed border-foreground/25 py-4 text-[0.95rem] before:absolute before:-top-3 before:-left-8 before:size-6 before:rounded-full before:bg-background after:absolute after:-top-3 after:-right-8 after:size-6 after:rounded-full after:bg-background sm:before:-left-9 sm:after:-right-9">
             {rows.map(([label, value]) => (
               <div key={label} className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">{label}</dt>
@@ -190,6 +205,12 @@ export function BookingDetail({ id }: { id: string }) {
           </Alert>
         ) : null}
 
+        {active ? (
+          <Button size="lg" onClick={() => void share(booking)}>
+            <Send />
+            {t("share.withTeam")}
+          </Button>
+        ) : null}
         {active ? (
           <div className="grid grid-cols-2 gap-2.5">
             <DropdownMenu>

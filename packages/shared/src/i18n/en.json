@@ -714,7 +714,9 @@
     "noneFree": "Every pitch is taken at this time. Try another start time or day.",
     "extrasTitle": "Players and extras",
     "playersShort": "{count} players",
-    "bookAgain": "Book again"
+    "bookAgain": "Book again",
+    "stampConfirmed": "Booked",
+    "stampPending": "Held"
   },
   "review": {
     "venueTitle": "Rate {name}",

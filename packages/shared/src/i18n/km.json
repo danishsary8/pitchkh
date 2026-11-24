@@ -714,7 +714,9 @@
     "noneFree": "ទីលានទាំងអស់ត្រូវបានកក់នៅម៉ោងនេះ។ សូមសាកល្បងម៉ោង ឬថ្ងៃផ្សេង។",
     "extrasTitle": "អ្នកលេង និងសេវាបន្ថែម",
     "playersShort": "អ្នកលេង {count} នាក់",
-    "bookAgain": "កក់ម្តងទៀត"
+    "bookAgain": "កក់ម្តងទៀត",
+    "stampConfirmed": "បានកក់",
+    "stampPending": "រក្សាទុក"
   },
   "review": {
     "venueTitle": "ដាក់ពិន្ទុ {name}",

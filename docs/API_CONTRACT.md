@@ -1,9 +1,7 @@
 # API contract
 
-> **Status:** `apps/api` implements the v1 part of this contract (everything
-> except Matches, Chat and Reviews, which are v1.1). Those three sections are
-> still served by the mock and hidden in the web app when it runs on the real
-> API (see `NEXT_PUBLIC_FEATURES`).
+> **Status:** `apps/api` implements this whole contract, and so does the mock
+> in `packages/shared/src/mock`. Both are tested against the same scenarios.
 
 Every endpoint the frontend calls. The mock server in
 `packages/shared/src/mock/handlers/*` implements exactly this, and the api
@@ -57,6 +55,8 @@ response shapes are the zod schemas in `packages/shared/src/schemas` (names in
 | POST | `/auth/register` | public | `RegisterDto` `{ name, email, phone, password, role: player\|owner }` | `AuthSession` | email_taken, validation_failed |
 | POST | `/auth/refresh` | public | `{ refreshToken }` | `AuthSession` (new tokens) | unauthorized |
 | POST | `/auth/logout` | public | optional `{ refreshToken }` (revoked when sent) | 204 | – |
+| POST | `/auth/forgot-password` | public | `{ email }` | `{ sent: true }` always (no account discovery). Emails a single-use link valid 30 min. The mock adds `demoResetUrl` | validation_failed |
+| POST | `/auth/reset-password` | public | `{ token, password }` | `AuthSession` (signed in; other sessions revoked) | invalid_token |
 | GET | `/auth/me` | auth | – | `User` | unauthorized |
 | PATCH | `/auth/me` | auth | `UpdateProfileDto` `{ name?, phone?, locale?, homeProvince?, avatarUrl? }` | `User` | validation_failed |
 | GET | `/me/team` | auth | – | `Team` or `null` | – |
@@ -95,6 +95,10 @@ Notes
 
 | Method | Path | Roles | Request | Response | Errors |
 | --- | --- | --- | --- | --- | --- |
+| POST | `/bookings/:id/payment` | auth (booker) | – | `PaymentIntent` `{ id, provider, method, amountUsd, amountKhr, status, qrPayload, deeplink, expiresAt, paidAt, bookingStatus }` (reuses the open one) | conflict (not awaiting payment), not_found |
+| GET | `/payments/:id` | auth (booker) | – | `PaymentIntent` (poll it every ~2 s) | not_found |
+| POST | `/payments/:id/simulate` | auth (booker) | – | `PaymentIntent`. **Sandbox provider only**: stands in for the bank | conflict (expired) |
+| POST | `/payments/webhook` | provider | provider event, signed (sandbox: `X-PitchKH-Signature` = HMAC-SHA256 of the raw body with `PAYMENT_WEBHOOK_SECRET`, body `{ type: "payment.succeeded", reference }`) | `{ ok: true }`; duplicates change nothing | unauthorized (bad signature) |
 | POST | `/bookings/quote` | public | `QuoteDto` `{ fieldId, date, startTime, endTime, referee, extras }` | `PriceBreakdown` | not_found |
 | POST | `/bookings` | auth | `CreateBookingDto` `{ fieldId, date, startTime, endTime, teamSize, referee, extras: { waterBottles, ball, bibs }, notes, opponentMode: have\|find, matchLevel?, paymentMethod }` | `BookingDetail` | slot_unavailable, outside_booking_window, validation_failed |
 | GET | `/bookings` | auth | `BookingListQuery`: `scope: upcoming\|past\|all`, `status`, `page`, `pageSize` | `Paginated<BookingDetail>` (own bookings) | – |
@@ -105,7 +109,8 @@ Notes
 Notes
 
 - The server **recomputes the price**; never trust a client total. The formula is in `DATA_MODEL.md` and `domain/pricing.ts`.
-- `paymentMethod` `khqr`/`aba`/`wing` -> `status: confirmed`, `paymentStatus: paid`. `cash` -> `pending` + `unpaid` until the venue owner decides.
+- `paymentMethod` `khqr`/`aba`/`wing` -> `status: awaiting_payment`, `paymentStatus: unpaid`, `paymentDueAt` = now + 10 min. The slot is held until then. When the provider confirms (webhook) it becomes `confirmed` + `paid` and both sides are notified; if nobody pays in time the booking is `cancelled` and the slot is free again. A payment that arrives too late is marked `refunded`.
+- `cash` -> `pending` + `unpaid` until the venue owner decides.
 - `opponentMode: "find"` (football/volleyball only) also creates an open `MatchRequest` linked through `matchRequestId` (and a team for the user if they have none).
 - A booking can be read, cancelled and rescheduled by its customer, the venue's owner, or an admin.
 - `BookingDetail` adds `venue`, `field`, `customer`, `canCancel`, `canReschedule`, `reviewed` to avoid extra requests.
@@ -172,6 +177,8 @@ The web client polls the open thread every 8 s. A backend may add WebSockets lat
 | DELETE | `/owner/blocks/:id` | – | 204 | not_found |
 | GET | `/owner/earnings` | – | `OwnerEarnings` | – |
 
+| POST | `/owner/venues/:id/photos` | `{ dataUrl }` (JPEG/PNG/WebP, max 4 MB, the bytes are checked) | `VenueDetail` (photo appended; max 8) | validation_failed |
+| PUT | `/owner/venues/:id/photos` | `{ photos: string[] }` (new order; the first is the cover; leaving one out deletes it) | `VenueDetail` | validation_failed (unknown photo) |
 | GET | `/owner/telegram` | – | `TelegramStatus` `{ enabled, linked, linkUrl }` (`linkUrl` = `t.me/<bot>?start=<one-time code>`) | – |
 | DELETE | `/owner/telegram` | – | `TelegramStatus` (unlinked, with a fresh link) | – |
 

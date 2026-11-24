@@ -5,7 +5,7 @@
  * server lazily through the api client).
  */
 export { seedDb } from "./seed";
-export type { MockDb, ReportRow, ReviewRow, FavoriteRow } from "./db";
+export type { MockDb, ReportRow, ReviewRow, FavoriteRow, ConversationRow, MessageRow } from "./db";
 export { parse, paginate, notFound } from "./server";
-export { venueSummary, venueDetail, bookingDetail, reportOut, userName, type TimeWindow } from "./handlers/expand";
+export { venueSummary, venueDetail, bookingDetail, reportOut, userName, matchDetail, conversationOut, messageOut, reviewOut, type TimeWindow } from "./handlers/expand";
 export { dayPoints, earns } from "./handlers/owner";

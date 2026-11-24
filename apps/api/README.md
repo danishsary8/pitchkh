@@ -1,9 +1,10 @@
 # PitchKH API (v1)
 
 The real backend for PitchKH: **Node + TypeScript, Hono, PostgreSQL, Drizzle**.
-It implements `docs/API_CONTRACT.md` for v1: accounts, venues, the pitch map,
-bookings, owner management, admin, notifications and **Telegram alerts for owners**.
-Matches, chat and reviews are v1.1 (the web app hides them on this API).
+It implements all of `docs/API_CONTRACT.md`: accounts (with password reset),
+venues, the pitch map, bookings, **online payments**, owner management (with
+photo upload), admin, notifications, **Telegram alerts for owners**, teams,
+matches, chat and reviews.
 
 ## Run it locally
 
@@ -63,6 +64,9 @@ and the frontend agree. Highlights:
 - roles: players can't reach owner/admin endpoints; owners only see their own venues
 - the pitch map: save, overlap rejected
 - Telegram: link with `/start <code>`, alert on a cash request, Accept from the button
+- payments: signed webhook confirms once, unpaid holds release after 10 minutes, late payments refunded
+- password reset (single-use link, old sessions end) and photo upload (fake images refused)
+- match board: post, join, accept one team, chat between captains; reviews update ratings
 
 Every response is checked against the shared zod schemas.
 
@@ -102,6 +106,12 @@ constraint is what holds when two requests arrive at the same moment.
 | `JWT_SECRET` | yes (prod) | Long random string (`openssl rand -base64 48`) |
 | `PORT` | no | Default 8000 |
 | `CORS_ORIGINS` | no | Web app origins, comma-separated. Default `http://localhost:3000` |
+| `WEB_URL` | yes (prod) | The web app's URL, for password reset links |
+| `PUBLIC_URL` | yes (prod) | This API's public URL, for photo links |
+| `UPLOAD_DIR` | no | Where photos are saved (default `uploads`). Needs a persistent disk in production |
+| `RESEND_API_KEY`, `MAIL_FROM` | for email | Without a key, emails are printed to the log |
+| `PAYMENT_PROVIDER` | no | `sandbox` (only option until real keys) |
+| `PAYMENT_WEBHOOK_SECRET` | yes (prod) | Random string; checks the provider's webhook signature |
 | `TELEGRAM_BOT_TOKEN` | for alerts | From @BotFather |
 | `TELEGRAM_BOT_USERNAME` | for alerts | The bot's username, without `@` |
 | `TELEGRAM_WEBHOOK_SECRET` | for alerts | Random string; Telegram echoes it on every webhook call |
@@ -149,7 +159,17 @@ and the API tests on a real PostgreSQL for every push.
 Load demo data on a fresh deploy only if you want it (it empties every table):
 `node dist/seed.js` in the API container.
 
-## v1.1 next
+## Plugging in a real payment provider
 
-Matches + chat, reviews, online payment (KHQR / ABA PayWay webhooks), photo
-upload for venues, password reset by email or SMS.
+`src/payments.ts` defines `PaymentProvider` with two methods: `createIntent`
+(returns the KHQR string or app link plus a `reference`) and `verifyWebhook`
+(checks the provider's signature and returns the paid `reference`). Write one
+for Bakong KHQR or ABA PayWay with your merchant keys, select it with
+`PAYMENT_PROVIDER`, and point the provider's callback at
+`/api/v1/payments/webhook`. Everything else (holds, expiry, refunds,
+notifications, the web app's QR sheet) already works.
+
+## Next
+
+Real payment keys, an email service, photo storage on S3/R2 for hosts without
+a persistent disk, and the mobile app.

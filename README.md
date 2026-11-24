@@ -285,9 +285,15 @@ NEXT_PUBLIC_API_MODE=real
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 ```
 
-| v1 on the real API | v1.1 (still mock-only, hidden in real mode) |
+Everything in the app runs on the real API:
+
+| Area | On the real API |
 | --- | --- |
-| Accounts (JWT + refresh), venues, pitch map, availability, bookings with **database-level double-booking protection**, cash requests, owner dashboard and map editor, admin, notifications, **Telegram alerts with Accept/Decline for owners** | Matches, chat, reviews, online payment |
+| Accounts | Register, sign in (JWT + rotating refresh tokens), **password reset by email link** |
+| Booking | Pitch map, availability, **database-level double-booking protection**, cash requests, **online payment flow** (slot held 10 min, signed provider webhook, sandbox provider until real KHQR/ABA keys) |
+| Owners | Dashboard, map editor, **venue photo upload**, requests, schedule, earnings, **Telegram alerts with Accept/Decline** |
+| Social | Teams, match board, join requests, chat, reviews and ratings |
+| Admin | Venue approval, users, reports, analytics |
 
 Run the API tests (they need PostgreSQL):
 
@@ -310,7 +316,9 @@ The contract lives in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) and the tab
 - [x] Web frontend on a mock API (all roles)
 - [x] Pitch map, 2-screen booking, owner map editor
 - [x] Real backend v1 (`apps/api`): accounts, venues, bookings, owner, admin, Telegram alerts
-- [ ] v1.1 on the API: matches, chat, reviews
+- [x] Online payment flow (sandbox provider), photo upload, password reset
+- [x] Matches, chat and reviews on the API
+- [ ] Real payment provider keys (Bakong KHQR or ABA PayWay) and an email service (Resend)
 - [ ] Deploy (Vercel + Railway/Render/Neon) and a real Telegram bot
 - [ ] Real payments (KHQR / ABA PayWay / Wing)
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`

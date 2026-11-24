@@ -299,3 +299,30 @@ Port them 1:1 (or call the same numbers from `APP` in `config.ts`).
 The full, runnable schema (constraints included) is
 `apps/api/src/db/migrations/0001_init.sql`.
 
+### payments (apps/api)
+| Column | Type | Notes |
+| --- | --- | --- |
+| id | uuid PK | |
+| booking_id | uuid FK bookings | |
+| provider | text | `sandbox` until a real provider is configured |
+| method | text | `khqr` / `aba` / `wing` |
+| reference | text UNIQUE | the id the provider sends back in its webhook |
+| amount_usd, amount_khr | numeric / int | frozen from the booking price |
+| status | text | `pending` / `paid` / `expired` |
+| qr_payload, deeplink | text NULL | what the player scans or opens |
+| expires_at, paid_at | timestamptz | |
+
+`bookings` also has `payment_due_at` (online payments) and the status
+`awaiting_payment`; the no-overlap constraint covers `awaiting_payment`,
+`pending` and `confirmed`.
+
+### password_resets (apps/api)
+`token_hash` (sha-256, PK), `user_id`, `expires_at` (30 min). Deleted on use.
+
+### teams, match_requests, join_requests, conversations, messages, reviews (apps/api)
+Same columns as the shapes in `schemas/user.ts`, `match.ts`, `chat.ts` and
+`misc.ts`. `join_requests` is unique per (match, player); `reviews` is unique per
+(booking, author, target type). Conversations keep `participant_ids uuid[]` and
+`read_at jsonb` ({ userId: last read time }). Full SQL in
+`apps/api/src/db/migrations/`.
+

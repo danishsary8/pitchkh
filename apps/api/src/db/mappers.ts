@@ -2,8 +2,8 @@
  * Database rows -> the JSON shapes in packages/shared/src/schemas.
  * Timestamps go out as ISO-8601 in Phnom Penh time (+07:00), like the mock.
  */
-import { isoInPP, type AvailabilityBlock, type Booking, type Field, type Notification, type Province, type User, type Venue } from "@pitchkh/shared";
-import type { ReportRow } from "@pitchkh/shared/mock";
+import { isoInPP, type AvailabilityBlock, type Booking, type Field, type JoinRequest, type MatchRequest, type Notification, type Province, type Team, type User, type Venue } from "@pitchkh/shared";
+import type { ConversationRow, MessageRow, ReportRow, ReviewRow } from "@pitchkh/shared/mock";
 import type * as t from "./schema";
 
 type Row<T extends { $inferSelect: unknown }> = T["$inferSelect"];
@@ -48,4 +48,28 @@ export function toNotification(row: Row<typeof t.notifications>): Notification {
 
 export function toReportRow(row: Row<typeof t.reports>): ReportRow {
   return { ...row, reason: row.reason as ReportRow["reason"], createdAt: iso(row.createdAt) };
+}
+
+export function toTeam(row: Row<typeof t.teams>): Team {
+  return { ...row, homeProvince: row.homeProvince as Province, createdAt: iso(row.createdAt) };
+}
+
+export function toMatch(row: Row<typeof t.matchRequests>): MatchRequest {
+  return { ...row, startAt: iso(row.startAt), endAt: iso(row.endAt), createdAt: iso(row.createdAt) };
+}
+
+export function toJoin(row: Row<typeof t.joinRequests>): JoinRequest {
+  return { ...row, createdAt: iso(row.createdAt) };
+}
+
+export function toConversationRow(row: Row<typeof t.conversations>): ConversationRow {
+  return { ...row, createdAt: iso(row.createdAt) };
+}
+
+export function toMessageRow(row: Row<typeof t.messages>): MessageRow {
+  return { ...row, createdAt: iso(row.createdAt) };
+}
+
+export function toReviewRow(row: Row<typeof t.reviews>): ReviewRow {
+  return { ...row, createdAt: iso(row.createdAt) };
 }

@@ -1,11 +1,12 @@
-import { ApiError, bookingCode, calculatePrice, canCancel, canReschedule, initialBookingState, isUpcoming, isWithinBookingWindow, refundStatus, schemas as s, supportsMatching, toIso, validateRange, type Booking, type Field, type Venue } from "@pitchkh/shared";
+import { ApiError, bookingCode, defaultTeamSize, calculatePrice, canCancel, canReschedule, initialBookingState, isUpcoming, isWithinBookingWindow, refundStatus, schemas as s, supportsMatching, toIso, validateRange, type Booking, type Field, type Venue } from "@pitchkh/shared";
 import { notFound, paginate, parse } from "@pitchkh/shared/mock";
-import { and, eq, lte } from "drizzle-orm";
+import { and, eq, lte, ne } from "drizzle-orm";
 import type { Tx } from "../db/client";
 import { toBooking } from "../db/mappers";
 import * as t from "../db/schema";
 import type { Ctx, Route } from "../http";
 import { bookingDetailOf, bookingDetails, findVenue } from "../views";
+import { ensureTeam } from "./social";
 import { availabilityOf, findField } from "./venues";
 
 /** Cancels unpaid online bookings whose hold ran out, freeing their slots. */
@@ -55,16 +56,28 @@ export function registerBookingRoutes(route: Route): void {
       await assertBookable(tx, ctx.now, field, venue, dto.date, dto.startTime, dto.endTime);
       if (dto.teamSize > field.maxPlayers) throw new ApiError(422, "validation_failed", "Team is too large for this field.", { teamSize: [`Maximum ${field.maxPlayers} players`] });
       const state = initialBookingState(dto.paymentMethod, ctx.now);
+      const findOpponent = dto.opponentMode === "find" && supportsMatching(field.sport);
       // The no-overlap constraint is the final word: a parallel booking that got here first makes this insert fail with 409.
       const [row] = await tx.insert(t.bookings).values({
         id: ctx.newId(), code: bookingCode(), userId: user.id, venueId: venue.id, fieldId: field.id, sport: field.sport, date: dto.date,
         startAt: new Date(toIso(dto.date, dto.startTime)), endAt: new Date(toIso(dto.date, dto.endTime)), teamSize: dto.teamSize, referee: dto.referee, extras: dto.extras, notes: dto.notes,
-        // Match requests arrive in v1.1; the choice is kept so the owner sees it.
-        opponentMode: dto.opponentMode === "find" && supportsMatching(field.sport) ? "find" : "have", matchRequestId: null,
+        opponentMode: findOpponent ? "find" : "have", matchRequestId: null,
         price: calculatePrice({ field, ...dto }), paymentMethod: dto.paymentMethod, paymentStatus: state.paymentStatus, status: state.status, createdAt: ctx.now, cancelledAt: null,
         paymentDueAt: state.paymentDueAt ? new Date(state.paymentDueAt) : null,
       }).returning();
-      const created = toBooking(row as typeof t.bookings.$inferSelect);
+      let created = toBooking(row as typeof t.bookings.$inferSelect);
+      // "Find me an opponent" also posts an open match request on the board.
+      if (findOpponent && (field.sport === "football" || field.sport === "volleyball")) {
+        const teamId = await ensureTeam(tx, user, field.sport, dto.matchLevel ?? "intermediate", dto.teamSize, ctx.now, ctx.newId);
+        const matchId = ctx.newId();
+        await tx.insert(t.matchRequests).values({
+          id: matchId, hostUserId: user.id, hostTeamId: teamId, sport: field.sport, venueId: venue.id, fieldId: field.id, bookingId: created.id, date: dto.date,
+          startAt: new Date(created.startAt), endAt: new Date(created.endAt), level: dto.matchLevel ?? "intermediate", teamSize: dto.teamSize || defaultTeamSize(field.format, field.sport),
+          costSplit: "split", note: dto.notes, status: "open", createdAt: ctx.now,
+        });
+        const [linked] = await tx.update(t.bookings).set({ matchRequestId: matchId }).where(eq(t.bookings.id, created.id)).returning();
+        created = toBooking(linked as typeof t.bookings.$inferSelect);
+      }
       // Cash requests go to the owner now; online bookings once the payment lands (routes/payments.ts).
       if (created.status === "pending") {
         await ctx.notify(tx, user.id, "booking_pending", { venue: venue.name, code: created.code }, `/booking/${created.id}`);
@@ -95,6 +108,7 @@ export function registerBookingRoutes(route: Route): void {
       const { booking, venue } = await ownBooking(ctx, tx);
       if (!canCancel(booking, ctx.now)) throw new ApiError(409, "cancellation_window_passed", "Bookings can be cancelled up to 2 hours before the start.");
       const [row] = await tx.update(t.bookings).set({ status: "cancelled", cancelledAt: ctx.now, paymentStatus: refundStatus(booking) }).where(eq(t.bookings.id, booking.id)).returning();
+      if (booking.matchRequestId) await tx.update(t.matchRequests).set({ status: "cancelled" }).where(and(eq(t.matchRequests.id, booking.matchRequestId), ne(t.matchRequests.status, "cancelled")));
       await ctx.notify(tx, venue.ownerId, "booking_cancelled", { venue: venue.name, code: booking.code }, "/owner/bookings", { bookingId: booking.id });
       return toBooking(row as typeof t.bookings.$inferSelect);
     });
@@ -112,6 +126,9 @@ export function registerBookingRoutes(route: Route): void {
         date: dto.date, startAt: new Date(toIso(dto.date, dto.startTime)), endAt: new Date(toIso(dto.date, dto.endTime)),
         price: calculatePrice({ field, date: dto.date, startTime: dto.startTime, endTime: dto.endTime, referee: booking.referee, extras: booking.extras }),
       }).where(eq(t.bookings.id, booking.id)).returning();
+      if (booking.matchRequestId) {
+        await tx.update(t.matchRequests).set({ date: dto.date, startAt: new Date(toIso(dto.date, dto.startTime)), endAt: new Date(toIso(dto.date, dto.endTime)) }).where(eq(t.matchRequests.id, booking.matchRequestId));
+      }
       await ctx.notify(tx, venue.ownerId, "booking_rescheduled", { venue: venue.name, code: booking.code }, "/owner/bookings", { bookingId: booking.id });
       return toBooking(row as typeof t.bookings.$inferSelect);
     });

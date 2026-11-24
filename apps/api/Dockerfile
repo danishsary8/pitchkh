@@ -17,6 +17,9 @@ FROM node:22-slim
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /out /app
+# Venue photos (mount a persistent disk here in production).
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
+ENV UPLOAD_DIR=/app/uploads
 USER node
 EXPOSE 8000
 # Apply pending migrations, then serve. Both are safe to run on every start.

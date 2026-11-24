@@ -33,13 +33,14 @@ export function registerAdminRoutes(route: Route): void {
     const venues = await db.select({ id: t.venues.id, status: t.venues.status, province: t.venues.province }).from(t.venues);
     const bookings = (await db.select().from(t.bookings)).map(toBooking);
     const openReports = await db.select({ id: t.reports.id }).from(t.reports).where(eq(t.reports.status, "open"));
+    const openMatches = await db.select({ id: t.matchRequests.id }).from(t.matchRequests).where(eq(t.matchRequests.status, "open"));
     const paid = bookings.filter(earns);
     const sum = (rows: typeof paid): number => round2(rows.reduce((total, b) => total + b.price.totalUsd, 0));
     return {
       users: users.length, players: users.filter((u) => u.role === "player").length, owners: users.filter((u) => u.role === "owner").length,
       venues: venues.filter((v) => v.status === "approved").length, pendingVenues: venues.filter((v) => v.status === "pending").length,
       bookings: paid.length, gmvUsd: sum(paid), platformFeesUsd: round2(paid.reduce((total, b) => total + b.price.serviceFeeUsd, 0)),
-      openMatches: 0, // match requests arrive in v1.1
+      openMatches: openMatches.length,
       openReports: openReports.length,
       bySport: SPORTS.map((sport) => ({ sport, bookings: paid.filter((b) => b.sport === sport).length, revenueUsd: sum(paid.filter((b) => b.sport === sport)) })),
       byProvince: PROVINCES.map((province) => {

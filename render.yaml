@@ -7,6 +7,12 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
     healthCheckPath: /health
+    # Uploaded venue photos survive deploys on a disk (Render disks need a paid plan;
+    # on the free plan, photos are lost on redeploy).
+    disk:
+      name: uploads
+      mountPath: /app/uploads
+      sizeGB: 1
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -16,6 +22,12 @@ services:
         generateValue: true
       - key: CORS_ORIGINS
         sync: false # e.g. https://pitchkh.vercel.app
+      - key: WEB_URL
+        sync: false # e.g. https://pitchkh.vercel.app (password reset links)
+      - key: PUBLIC_URL
+        sync: false # this API's URL, e.g. https://pitchkh-api.onrender.com (photo links)
+      - key: RESEND_API_KEY
+        sync: false # optional: emails are logged without it
       - key: PAYMENT_PROVIDER
         value: sandbox
       - key: PAYMENT_WEBHOOK_SECRET

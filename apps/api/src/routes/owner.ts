@@ -217,6 +217,8 @@ export async function decideBooking(ctx: Pick<Ctx, "db" | "notify" | "requireUse
     if (!venue) throw notFound("Booking");
     if (row.status !== "pending") throw new ApiError(409, "conflict", "This request was already answered.");
     const [updated] = await tx.update(t.bookings).set({ status: decision === "accept" ? "confirmed" : "rejected" }).where(eq(t.bookings.id, id)).returning();
+    // A rejected booking takes its match-board post down with it.
+    if (decision === "reject" && row.matchRequestId) await tx.update(t.matchRequests).set({ status: "cancelled" }).where(eq(t.matchRequests.id, row.matchRequestId));
     await ctx.notify(tx, row.userId, decision === "accept" ? "booking_confirmed" : "booking_rejected", { venue: venue.name, code: row.code }, `/booking/${row.id}`);
     return toBooking(updated as typeof t.bookings.$inferSelect);
   });

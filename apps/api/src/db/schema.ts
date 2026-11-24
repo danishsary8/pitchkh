@@ -165,3 +165,78 @@ export const passwordResets = pgTable("password_resets", {
   expiresAt: ts("expires_at").notNull(),
   createdAt: ts("created_at").notNull().defaultNow(),
 });
+
+export const teams = pgTable("teams", {
+  id: uuid("id").primaryKey(),
+  name: text("name").notNull(),
+  sport: text("sport").$type<"football" | "volleyball">().notNull(),
+  captainId: uuid("captain_id").notNull(),
+  level: text("level").$type<"beginner" | "intermediate" | "advanced">().notNull(),
+  memberCount: integer("member_count").notNull(),
+  color: text("color").notNull(),
+  bio: text("bio").notNull(),
+  homeProvince: text("home_province").notNull(),
+  matchesPlayed: integer("matches_played").notNull(),
+  wins: integer("wins").notNull(),
+  sportsmanship: numeric("sportsmanship", { precision: 2, scale: 1, mode: "number" }).notNull(),
+  sportsmanshipCount: integer("sportsmanship_count").notNull(),
+  createdAt: ts("created_at").notNull(),
+});
+
+export const matchRequests = pgTable("match_requests", {
+  id: uuid("id").primaryKey(),
+  hostUserId: uuid("host_user_id").notNull(),
+  hostTeamId: uuid("host_team_id").notNull(),
+  sport: text("sport").$type<"football" | "volleyball">().notNull(),
+  venueId: uuid("venue_id").notNull(),
+  fieldId: uuid("field_id"),
+  bookingId: uuid("booking_id"),
+  date: date("date", { mode: "string" }).notNull(),
+  startAt: ts("start_at").notNull(),
+  endAt: ts("end_at").notNull(),
+  level: text("level").$type<"beginner" | "intermediate" | "advanced">().notNull(),
+  teamSize: integer("team_size").notNull(),
+  costSplit: text("cost_split").$type<"split" | "host_pays" | "loser_pays">().notNull(),
+  note: text("note").notNull(),
+  status: text("status").$type<"open" | "matched" | "cancelled" | "expired">().notNull(),
+  createdAt: ts("created_at").notNull(),
+});
+
+export const joinRequests = pgTable("join_requests", {
+  id: uuid("id").primaryKey(),
+  matchRequestId: uuid("match_request_id").notNull(),
+  userId: uuid("user_id").notNull(),
+  teamId: uuid("team_id").notNull(),
+  message: text("message").notNull(),
+  status: text("status").$type<"pending" | "accepted" | "declined">().notNull(),
+  createdAt: ts("created_at").notNull(),
+});
+
+export const conversations = pgTable("conversations", {
+  id: uuid("id").primaryKey(),
+  kind: text("kind").$type<"match" | "venue" | "support">().notNull(),
+  title: text("title").notNull(),
+  matchRequestId: uuid("match_request_id"),
+  participantIds: uuid("participant_ids").array().notNull(),
+  readAt: jsonb("read_at").$type<Record<string, string>>().notNull(),
+  createdAt: ts("created_at").notNull(),
+});
+
+export const messages = pgTable("messages", {
+  id: uuid("id").primaryKey(),
+  conversationId: uuid("conversation_id").notNull(),
+  senderId: uuid("sender_id").notNull(),
+  body: text("body").notNull(),
+  createdAt: ts("created_at").notNull(),
+});
+
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey(),
+  targetType: text("target_type").$type<"venue" | "team">().notNull(),
+  targetId: uuid("target_id").notNull(),
+  authorId: uuid("author_id").notNull(),
+  bookingId: uuid("booking_id"),
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull(),
+  createdAt: ts("created_at").notNull(),
+});

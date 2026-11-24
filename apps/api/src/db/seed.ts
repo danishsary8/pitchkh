@@ -20,7 +20,7 @@ export async function seed(db: Database, now = new Date()): Promise<void> {
   for (const password of new Set(Object.values(mock.passwords))) hashes.set(password, await bcrypt.hash(password, 10));
 
   await db.transaction(async (tx) => {
-    await tx.execute(dsql`TRUNCATE password_resets, payments, users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
+    await tx.execute(dsql`TRUNCATE reviews, messages, conversations, join_requests, match_requests, teams, password_resets, payments, users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
     await tx.insert(t.users).values(mock.users.map((u) => ({ ...u, passwordHash: hashes.get(mock.passwords[u.id] ?? "") ?? "", createdAt: date(u.createdAt) })));
     await tx.insert(t.venues).values(mock.venues.map((v) => ({ ...v, createdAt: date(v.createdAt) })));
     await tx.insert(t.fields).values(mock.fields);
@@ -30,6 +30,12 @@ export async function seed(db: Database, now = new Date()): Promise<void> {
       await tx.insert(t.bookings).values(bookings.slice(i, i + 200).map((b) => ({ ...b, startAt: date(b.startAt), endAt: date(b.endAt), createdAt: date(b.createdAt), cancelledAt: b.cancelledAt ? date(b.cancelledAt) : null, paymentDueAt: b.paymentDueAt ? date(b.paymentDueAt) : null })));
     }
     if (mock.blocks.length) await tx.insert(t.blocks).values(mock.blocks);
+    if (mock.teams.length) await tx.insert(t.teams).values(mock.teams.map((x) => ({ ...x, createdAt: date(x.createdAt) })));
+    if (mock.matchRequests.length) await tx.insert(t.matchRequests).values(mock.matchRequests.map((m) => ({ ...m, startAt: date(m.startAt), endAt: date(m.endAt), createdAt: date(m.createdAt) })));
+    if (mock.joinRequests.length) await tx.insert(t.joinRequests).values(mock.joinRequests.map((j) => ({ ...j, createdAt: date(j.createdAt) })));
+    if (mock.conversations.length) await tx.insert(t.conversations).values(mock.conversations.map((c) => ({ ...c, createdAt: date(c.createdAt) })));
+    if (mock.messages.length) await tx.insert(t.messages).values(mock.messages.map((m) => ({ ...m, createdAt: date(m.createdAt) })));
+    if (mock.reviews.length) await tx.insert(t.reviews).values(mock.reviews.map((r) => ({ ...r, createdAt: date(r.createdAt) })));
     if (mock.favorites.length) await tx.insert(t.favorites).values(mock.favorites.map((f) => ({ ...f, createdAt: date(f.createdAt) })));
     if (mock.notifications.length) await tx.insert(t.notifications).values(mock.notifications.map((n) => ({ ...n, createdAt: date(n.createdAt) })));
     if (mock.reports.length) await tx.insert(t.reports).values(mock.reports.map((r) => ({ ...r, createdAt: date(r.createdAt) })));

@@ -4,11 +4,11 @@
  * @pitchkh/shared/mock (venueSummary, venueDetail, bookingDetail). That keeps
  * slot, price and summary rules in one tested place for both backends.
  */
-import { addDays, ApiError, dateInPP, holdsSlot, type Booking, type BookingDetail, type User, type Venue, type VenueDetail, type VenueSummary } from "@pitchkh/shared";
-import { bookingDetail, venueDetail, venueSummary, type MockDb, type TimeWindow } from "@pitchkh/shared/mock";
+import { addDays, ApiError, dateInPP, holdsSlot, type Booking, type BookingDetail, type MatchRequest, type MatchRequestDetail, type User, type Venue, type VenueDetail, type VenueSummary } from "@pitchkh/shared";
+import { bookingDetail, matchDetail, venueDetail, venueSummary, type MockDb, type TimeWindow } from "@pitchkh/shared/mock";
 import { and, eq, inArray, or } from "drizzle-orm";
 import type { Tx } from "./db/client";
-import { toBlock, toBooking, toField, toUser, toVenue } from "./db/mappers";
+import { toBlock, toBooking, toConversationRow, toField, toJoin, toReviewRow, toTeam, toUser, toVenue } from "./db/mappers";
 import * as t from "./db/schema";
 
 /** An empty mock-shaped snapshot; loaders fill the tables they need. */
@@ -76,9 +76,28 @@ export async function bookingDetails(db: Tx, bookings: Booking[], now: Date): Pr
   snap.venues = (await db.select().from(t.venues).where(inArray(t.venues.id, venueIds))).map(toVenue);
   snap.fields = (await db.select().from(t.fields).where(inArray(t.fields.id, fieldIds))).map(toField);
   snap.users = (await db.select().from(t.users).where(inArray(t.users.id, userIds))).map(toUser);
+  snap.reviews = (await db.select().from(t.reviews).where(inArray(t.reviews.bookingId, bookings.map((b) => b.id)))).map(toReviewRow);
   return bookings.map((b) => bookingDetail(snap, b, now));
 }
 
 export async function bookingDetailOf(db: Tx, booking: Booking, now: Date): Promise<BookingDetail> {
   return (await bookingDetails(db, [booking], now))[0] as BookingDetail;
+}
+
+/** Match requests with their teams, venue, join requests and chat thread joined in. */
+export async function matchDetails(db: Tx, matches: MatchRequest[], user: User | null): Promise<MatchRequestDetail[]> {
+  if (matches.length === 0) return [];
+  const snap = emptySnapshot();
+  snap.matchRequests = matches;
+  const ids = matches.map((m) => m.id);
+  snap.joinRequests = (await db.select().from(t.joinRequests).where(inArray(t.joinRequests.matchRequestId, ids))).map(toJoin);
+  const teamIds = [...new Set([...matches.map((m) => m.hostTeamId), ...snap.joinRequests.map((j) => j.teamId)])];
+  const userIds = [...new Set([...matches.map((m) => m.hostUserId), ...snap.joinRequests.map((j) => j.userId)])];
+  snap.teams = (await db.select().from(t.teams).where(inArray(t.teams.id, teamIds))).map(toTeam);
+  snap.users = (await db.select().from(t.users).where(inArray(t.users.id, userIds))).map(toUser);
+  snap.venues = (await db.select().from(t.venues).where(inArray(t.venues.id, [...new Set(matches.map((m) => m.venueId))]))).map(toVenue);
+  const fieldIds = matches.flatMap((m) => (m.fieldId ? [m.fieldId] : []));
+  if (fieldIds.length) snap.fields = (await db.select().from(t.fields).where(inArray(t.fields.id, fieldIds))).map(toField);
+  snap.conversations = (await db.select().from(t.conversations).where(inArray(t.conversations.matchRequestId, ids))).map(toConversationRow);
+  return matches.map((m) => matchDetail(snap, m, user));
 }

@@ -8,6 +8,7 @@ import { registerBookingRoutes } from "./routes/bookings";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerOwnerRoutes } from "./routes/owner";
 import { registerPaymentRoutes } from "./routes/payments";
+import { registerSocialRoutes } from "./routes/social";
 import { registerTelegramRoutes } from "./routes/telegram";
 import { env } from "./env";
 import { sandboxProvider } from "./payments";
@@ -60,6 +61,7 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   registerNotificationRoutes(route);
   registerOwnerRoutes(route, services.storage as PhotoStorage);
   registerAdminRoutes(route);
+  registerSocialRoutes(route);
   registerTelegramRoutes(route, telegram);
   registerPaymentRoutes(route, services.payments ?? sandboxProvider(env.payments.webhookSecret));
   app.route("/api/v1", api);

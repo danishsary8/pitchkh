@@ -85,6 +85,22 @@ export function registerOwnerRoutes(server: MockServer): void {
     return field;
   });
 
+  server.route("POST", "/owner/venues/:id/photos", OWNER, (ctx) => {
+    const venue = myVenue(ctx, ctx.params.id);
+    const { dataUrl } = parse(s.UploadPhotoDto, ctx.body);
+    if (venue.photos.length >= s.MAX_VENUE_PHOTOS) throw new ApiError(422, "validation_failed", `A venue can have ${s.MAX_VENUE_PHOTOS} photos.`);
+    venue.photos.push(dataUrl); // the mock keeps the image inline
+    return venueDetail(ctx.db, venue, ctx.user, ctx.now);
+  });
+
+  server.route("PUT", "/owner/venues/:id/photos", OWNER, (ctx) => {
+    const venue = myVenue(ctx, ctx.params.id);
+    const { photos } = parse(s.SetPhotosDto, ctx.body);
+    if (photos.some((p) => !venue.photos.includes(p))) throw new ApiError(422, "validation_failed", "Only this venue's photos can be ordered.");
+    venue.photos = photos;
+    return venueDetail(ctx.db, venue, ctx.user, ctx.now);
+  });
+
   server.route("PUT", "/owner/venues/:id/layout", OWNER, (ctx) => {
     const venue = myVenue(ctx, ctx.params.id);
     const { items } = parse(s.SaveLayoutDto, ctx.body);

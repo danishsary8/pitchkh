@@ -36,6 +36,26 @@ export function registerAuthRoutes(server: MockServer): void {
 
   server.route("POST", "/auth/logout", "public", () => undefined);
 
+  // No email in the mock: the reset link comes back in the response so the demo can follow it.
+  server.route("POST", "/auth/forgot-password", "public", ({ db, body, now, newId }) => {
+    const { email } = parse(s.ForgotPasswordDto, body);
+    const user = db.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) return { sent: true };
+    const token = `${newId()}${newId()}`.replace(/-/g, "");
+    db.resetTokens[token] = { userId: user.id, expiresAt: new Date(now.getTime() + 30 * 60_000).toISOString() };
+    return { sent: true, demoResetUrl: `/reset-password?token=${token}` };
+  });
+
+  server.route("POST", "/auth/reset-password", "public", ({ db, body, now }) => {
+    const dto = parse(s.ResetPasswordDto, body);
+    const entry = db.resetTokens[dto.token];
+    delete db.resetTokens[dto.token];
+    const user = entry && Date.parse(entry.expiresAt) > now.getTime() ? db.users.find((u) => u.id === entry.userId) : undefined;
+    if (!user) throw new ApiError(400, "invalid_token", "This reset link has expired. Ask for a new one.");
+    db.passwords[user.id] = dto.password;
+    return session(user, now);
+  });
+
   server.route("GET", "/auth/me", "auth", ({ requireUser }) => requireUser());
 
   server.route("PATCH", "/auth/me", "auth", ({ requireUser, body }) => {

@@ -1,5 +1,6 @@
 export const API_ERROR_CODES = [
   "validation_failed",
+  "invalid_token",
   "invalid_credentials",
   "unauthorized",
   "token_expired",

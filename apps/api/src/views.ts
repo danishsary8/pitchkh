@@ -15,7 +15,7 @@ import * as t from "./db/schema";
 export function emptySnapshot(): MockDb {
   return {
     version: 0, seededAt: "", users: [], passwords: {}, teams: [], venues: [], fields: [], bookings: [], blocks: [],
-    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [],
+    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [], resetTokens: {},
   };
 }
 

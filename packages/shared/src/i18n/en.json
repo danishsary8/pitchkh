@@ -209,7 +209,8 @@
     "required": "This field is required",
     "invalidEmail": "Enter a valid email",
     "tooShort": "Too short",
-    "invalidPhone": "Enter a valid phone number"
+    "invalidPhone": "Enter a valid phone number",
+    "invalid_token": "This link has expired. Ask for a new one."
   },
   "footer": {
     "blurb": "Sports pitches across Cambodia, booked in a minute.",
@@ -260,7 +261,20 @@
     "backHome": "Back to home",
     "passwordHint": "At least 6 characters",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "forgotLink": "Forgot password?",
+    "forgotTitle": "Reset your password",
+    "forgotBody": "Enter your account email and we'll send you a link to choose a new password.",
+    "forgotSend": "Send reset link",
+    "forgotSent": "If that email has an account, a reset link is on its way. It works for 30 minutes.",
+    "forgotDemoLink": "Open the reset link (demo)",
+    "forgotAgain": "Get a new link",
+    "backToSignIn": "Back to sign in",
+    "resetTitle": "Choose a new password",
+    "resetBody": "At least 6 characters. You'll be signed in right after.",
+    "resetNoToken": "Open this page from the link in your email.",
+    "newPassword": "New password",
+    "resetSave": "Save and sign in"
   },
   "home": {
     "heroTitle": "Book a pitch. Bring a rival.",
@@ -949,6 +963,16 @@
       "disconnect": "Disconnect",
       "disconnected": "Telegram alerts turned off",
       "on": "On"
+    },
+    "photos": {
+      "title": "Photos",
+      "add": "Add photos",
+      "added": "Photos added",
+      "empty": "Add photos of your pitches so players can see them",
+      "cover": "Cover",
+      "alt": "Venue photo {n}",
+      "makeCover": "Make photo {n} the cover",
+      "remove": "Remove photo {n}"
     }
   },
   "admin": {

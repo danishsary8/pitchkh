@@ -19,7 +19,7 @@ export function seedDb(now: Date): MockDb {
 
   const db: MockDb = {
     version: MOCK_DB_VERSION, seededAt: nowIso, users: [], passwords: {}, teams: [], venues: [], fields: [], bookings: [], blocks: [],
-    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [],
+    matchRequests: [], joinRequests: [], conversations: [], messages: [], reviews: [], favorites: [], notifications: [], reports: [], payments: [], resetTokens: {},
   };
 
   /* ------------------------------ users ------------------------------ */

@@ -105,3 +105,12 @@ export const ModerateVenueDto = z.object({
 });
 
 export const FeatureVenueDto = z.object({ featured: z.boolean() });
+
+/** Max photos per venue; the first one is the cover. */
+export const MAX_VENUE_PHOTOS = 8;
+/** A photo as a data URL (JPEG/PNG/WebP). The web app shrinks it before sending. */
+export const UploadPhotoDto = z.object({
+  dataUrl: z.string().regex(/^data:image\/(jpeg|png|webp);base64,/, "Only JPEG, PNG or WebP images").max(6_000_000),
+});
+/** The venue's photos in their new order; leaving one out deletes it. */
+export const SetPhotosDto = z.object({ photos: z.array(z.string()).max(MAX_VENUE_PHOTOS) });

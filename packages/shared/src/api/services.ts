@@ -20,6 +20,13 @@ export function createAuthApi(t: Transport, session: SessionStore) {
   return {
     login: (dto: T.LoginDto) => start("/auth/login", dto),
     register: (dto: T.RegisterDto) => start("/auth/register", dto),
+    forgotPassword: (email: string) => t<T.ForgotPasswordResult>({ method: "POST", path: "/auth/forgot-password", body: { email }, anonymous: true }),
+    /** Sets the new password and signs in. */
+    async resetPassword(dto: T.ResetPasswordDto): Promise<T.AuthSession> {
+      const next = await t<T.AuthSession>({ method: "POST", path: "/auth/reset-password", body: dto, anonymous: true });
+      await session.set(next);
+      return next;
+    },
     async logout(): Promise<void> {
       try {
         await t<void>({ method: "POST", path: "/auth/logout" });
@@ -146,6 +153,8 @@ export function createOwnerApi(t: Transport) {
     createField: (venueId: string, dto: T.UpsertFieldDto) => t<T.Field>({ method: "POST", path: `/owner/venues/${id(venueId)}/fields`, body: dto }),
     updateField: (fieldId: string, dto: T.UpsertFieldDto) => t<T.Field>({ method: "PATCH", path: `/owner/fields/${id(fieldId)}`, body: dto }),
     /** Saves where pitches sit on the venue plan. Fails with validation_failed on overlaps. */
+    uploadPhoto: (venueId: string, dataUrl: string) => t<T.VenueDetail>({ method: "POST", path: `/owner/venues/${id(venueId)}/photos`, body: { dataUrl } }),
+    setPhotos: (venueId: string, photos: string[]) => t<T.VenueDetail>({ method: "PUT", path: `/owner/venues/${id(venueId)}/photos`, body: { photos } }),
     saveLayout: (venueId: string, dto: T.SaveLayoutDto) => t<T.VenueDetail>({ method: "PUT", path: `/owner/venues/${id(venueId)}/layout`, body: dto }),
     deleteField: (fieldId: string) => t<void>({ method: "DELETE", path: `/owner/fields/${id(fieldId)}` }),
     bookings: (params?: T.OwnerBookingListQuery) => t<T.Paginated<T.BookingDetail>>({ method: "GET", path: "/owner/bookings", query: q(params) }),

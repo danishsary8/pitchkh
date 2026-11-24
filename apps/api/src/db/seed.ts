@@ -20,7 +20,7 @@ export async function seed(db: Database, now = new Date()): Promise<void> {
   for (const password of new Set(Object.values(mock.passwords))) hashes.set(password, await bcrypt.hash(password, 10));
 
   await db.transaction(async (tx) => {
-    await tx.execute(dsql`TRUNCATE payments, users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
+    await tx.execute(dsql`TRUNCATE password_resets, payments, users, refresh_tokens, venues, fields, bookings, availability_blocks, favorites, notifications, reports, telegram_links CASCADE`);
     await tx.insert(t.users).values(mock.users.map((u) => ({ ...u, passwordHash: hashes.get(mock.passwords[u.id] ?? "") ?? "", createdAt: date(u.createdAt) })));
     await tx.insert(t.venues).values(mock.venues.map((v) => ({ ...v, createdAt: date(v.createdAt) })));
     await tx.insert(t.fields).values(mock.fields);

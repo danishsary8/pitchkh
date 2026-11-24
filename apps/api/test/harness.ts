@@ -10,18 +10,21 @@ import { createDb } from "../src/db/client";
 import { migrate } from "../src/db/migrate";
 import { seed } from "../src/db/seed";
 import type { TelegramClient } from "../src/telegram";
+import type { Services } from "../src/http";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 export const TEST_DB = process.env.TEST_DATABASE_URL ?? "postgres://pitchkh:pitchkh@localhost:5432/pitchkh_test";
 /** 10:00 in Phnom Penh on 12 Nov 2026, the same instant the shared mock tests use. */
 export const NOW = new Date("2026-11-12T03:00:00Z");
 
-export async function startTestApi(now = NOW, telegram?: TelegramClient) {
+export async function startTestApi(now = NOW, telegram?: TelegramClient, extra: Partial<Services> = {}, uploadDir = join(tmpdir(), "pitchkh-test-uploads")) {
   await migrate(TEST_DB, () => undefined);
   const { sql, db } = createDb(TEST_DB);
   await seed(db, now);
   // Tests can move time forward (e.g. to let a payment hold expire).
   let current = now;
-  const app = createApp({ db, clock: () => current }, ["http://localhost:3000"], telegram);
+  const app = createApp({ db, clock: () => current, ...extra }, ["http://localhost:3000"], telegram, uploadDir);
   const server = serve({ fetch: app.fetch, port: 0 });
   await new Promise<void>((resolve) => server.once("listening", () => resolve()));
   const base = `http://localhost:${(server.address() as AddressInfo).port}/api/v1`;

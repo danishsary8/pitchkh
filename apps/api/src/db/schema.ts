@@ -158,3 +158,10 @@ export const telegramLinks = pgTable("telegram_links", {
   linkCode: text("link_code").notNull(),
   createdAt: ts("created_at").notNull().defaultNow(),
 });
+
+export const passwordResets = pgTable("password_resets", {
+  tokenHash: text("token_hash").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  expiresAt: ts("expires_at").notNull(),
+  createdAt: ts("created_at").notNull().defaultNow(),
+});

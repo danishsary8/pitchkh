@@ -21,7 +21,7 @@ import { useAuth } from "./auth-provider";
 
 const homeFor = (role: Role): string => (role === "admin" ? "/admin" : role === "owner" ? "/owner" : "/");
 
-function useAfterAuth() {
+export function useAfterAuth() {
   const navigate = useNavigate();
   const params = useSearchParams();
   const t = useTranslations("auth");
@@ -35,7 +35,7 @@ function useAfterAuth() {
   };
 }
 
-function AuthFrame({ title, body, children }: { title: string; body: string; children: React.ReactNode }) {
+export function AuthFrame({ title, body, children }: { title: string; body: string; children: React.ReactNode }) {
   return (
     <Container size="sm" className="flex flex-1 flex-col justify-center py-8">
       <div className="overflow-hidden rounded-3xl bg-card">
@@ -52,7 +52,7 @@ function AuthFrame({ title, body, children }: { title: string; body: string; chi
   );
 }
 
-function PasswordInput(props: React.ComponentProps<typeof Input>) {
+export function PasswordInput(props: React.ComponentProps<typeof Input>) {
   const t = useTranslations("auth");
   const [visible, setVisible] = useState(false);
   return (
@@ -130,6 +130,7 @@ export function LoginPage() {
             <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
             <PasswordInput id="password" autoComplete="current-password" aria-invalid={!!errors.password} {...form.register("password")} />
             <FieldError>{errors.password ? te("tooShort") : null}</FieldError>
+            <Link href="/forgot-password" className="w-fit text-sm font-semibold text-primary underline-offset-4 hover:underline">{t("forgotLink")}</Link>
           </Field>
           <Button type="submit" size="lg" disabled={isSubmitting}>
             {isSubmitting ? <Spinner /> : null}

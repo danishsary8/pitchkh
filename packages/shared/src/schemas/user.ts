@@ -50,6 +50,18 @@ export const RegisterDto = z.object({
 
 export const RefreshDto = z.object({ refreshToken: z.string().min(1) });
 
+/** Always answered the same way, whether or not the email has an account. */
+export const ForgotPasswordDto = z.object({ email: z.email() });
+export const ForgotPasswordResult = z.object({
+  sent: z.literal(true),
+  /** Mock mode only (there is no email): the link the email would contain. */
+  demoResetUrl: z.string().optional(),
+});
+export const ResetPasswordDto = z.object({
+  token: z.string().min(10).max(200),
+  password: z.string().min(6).max(72),
+});
+
 export const AuthSession = z.object({
   accessToken: z.string(),
   refreshToken: z.string(),

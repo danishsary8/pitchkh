@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { useMoney } from "@/lib/format";
 import { qk } from "@/lib/query";
+import { VenuePhotos } from "./venue-photos";
 
 const STATUS_VARIANT: Record<VenueDetail["status"], BadgeVariant> = { approved: "success", pending: "warning", rejected: "destructive", suspended: "muted" };
 const DEFAULT_SURFACE: Record<Sport, Surface> = { football: "artificial_turf", volleyball: "parquet", tennis: "hard_court" };
@@ -145,6 +146,7 @@ export function OwnerVenues() {
               </div>
               {venue.status === "rejected" && venue.moderationNote ? <Alert variant="destructive" title={t("owner.rejectedTitle")}>{venue.moderationNote}</Alert> : null}
               {venue.status === "pending" ? <Alert variant="warning" title={t("owner.pendingTitle")}>{t("owner.pendingBody")}</Alert> : null}
+              <VenuePhotos venue={venue} />
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-bold">{t("owner.fieldsAndPricing")}</h3>

@@ -1,6 +1,7 @@
 import { addDays, ApiError, dateInPP, durationMinutes, findLayoutOverlap, holdsSlot, hoursFor, minutesOf, rangesOverlap, round2, schemas as s, slugify, toIso, type Booking, type Field, type FieldLayout, type OwnerEarnings, type Venue } from "@pitchkh/shared";
 import { dayPoints, earns, notFound, paginate, parse } from "@pitchkh/shared/mock";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { decodeImage, type PhotoStorage } from "../storage";
 import type { Tx } from "../db/client";
 import { toBlock, toBooking, toField, toVenue } from "../db/mappers";
 import * as t from "../db/schema";
@@ -34,7 +35,27 @@ async function syncSports(tx: Tx, venueId: string): Promise<void> {
   if (sports.length) await tx.update(t.venues).set({ sports }).where(eq(t.venues.id, venueId));
 }
 
-export function registerOwnerRoutes(route: Route): void {
+export function registerOwnerRoutes(route: Route, storage: PhotoStorage): void {
+  route("POST", "/owner/venues/:id/photos", OWNER, async (ctx) => {
+    const venue = await myVenue(ctx, ctx.params.id);
+    const { dataUrl } = parse(s.UploadPhotoDto, ctx.body);
+    if (venue.photos.length >= s.MAX_VENUE_PHOTOS) throw new ApiError(422, "validation_failed", `A venue can have ${s.MAX_VENUE_PHOTOS} photos.`);
+    const image = decodeImage(dataUrl);
+    const url = await storage.save(image.bytes, image.ext);
+    // Append in SQL so two uploads at once both land.
+    const [row] = await ctx.db.update(t.venues).set({ photos: sql`array_append(${t.venues.photos}, ${url})` }).where(eq(t.venues.id, venue.id)).returning();
+    return venueDetailOf(ctx.db, toVenue(row as typeof t.venues.$inferSelect), ctx.user, ctx.now);
+  });
+
+  route("PUT", "/owner/venues/:id/photos", OWNER, async (ctx) => {
+    const venue = await myVenue(ctx, ctx.params.id);
+    const { photos } = parse(s.SetPhotosDto, ctx.body);
+    if (photos.some((p) => !venue.photos.includes(p))) throw new ApiError(422, "validation_failed", "Only this venue's photos can be ordered.");
+    const [row] = await ctx.db.update(t.venues).set({ photos }).where(eq(t.venues.id, venue.id)).returning();
+    for (const gone of venue.photos.filter((p) => !photos.includes(p))) await storage.remove(gone);
+    return venueDetailOf(ctx.db, toVenue(row as typeof t.venues.$inferSelect), ctx.user, ctx.now);
+  });
+
   route("GET", "/owner/venues", OWNER, async (ctx) => venueDetails(ctx.db, await myVenues(ctx), ctx.user, ctx.now));
 
   route("POST", "/owner/venues", OWNER, async (ctx) => {

@@ -16,6 +16,10 @@ export interface Services {
   /** Injectable clock so tests can freeze time. */
   clock: () => Date;
   /** Called after a notification row is written (e.g. Telegram alerts). Never throws into the request. */
+  /** Account emails (printed to the log when no email service is set). */
+  mailer?: import("./mailer").Mailer;
+  /** Venue photo storage (local disk by default). */
+  storage?: import("./storage").PhotoStorage;
   /** Online payment provider (sandbox by default). */
   payments?: import("./payments").PaymentProvider;
   onNotify?: (n: { userId: string; type: NotificationType; params: Record<string, string>; href: string; meta?: Record<string, string> }) => void;

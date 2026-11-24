@@ -3,7 +3,7 @@ import { STORAGE_KEYS, type StorageAdapter } from "./storage";
 import { seedDb } from "./seed";
 
 /** Bump when the seed shape changes so stale browsers reseed. */
-export const MOCK_DB_VERSION = 7;
+export const MOCK_DB_VERSION = 8;
 /** The demo data is time-relative, so reseed once it is this old. */
 const MAX_AGE_MS = 6 * 86_400_000;
 
@@ -73,6 +73,8 @@ export interface MockDb {
   notifications: Notification[];
   reports: ReportRow[];
   payments: Omit<PaymentIntent, "bookingStatus">[];
+  /** token -> who and until when (mock password reset). */
+  resetTokens: Record<string, { userId: string; expiresAt: string }>;
 }
 
 export async function loadDb(storage: StorageAdapter, now: Date): Promise<MockDb> {

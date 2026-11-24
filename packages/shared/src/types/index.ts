@@ -47,6 +47,8 @@ export type VenueAvailability = z.infer<typeof s.VenueAvailability>;
 export type FieldLayout = z.infer<typeof s.FieldLayout>;
 export type TelegramStatus = z.infer<typeof s.TelegramStatus>;
 export type PaymentIntent = z.infer<typeof s.PaymentIntent>;
+export type ForgotPasswordResult = z.infer<typeof s.ForgotPasswordResult>;
+export type ResetPasswordDto = z.infer<typeof s.ResetPasswordDto>;
 export type SaveLayoutDto = z.infer<typeof s.SaveLayoutDto>;
 
 export type Extras = z.infer<typeof s.Extras>;

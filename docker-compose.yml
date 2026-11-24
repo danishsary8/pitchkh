@@ -1,0 +1,15 @@
+# Local PostgreSQL for apps/api:  docker compose up -d
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pitchkh
+      POSTGRES_PASSWORD: pitchkh
+      POSTGRES_DB: pitchkh
+    ports:
+      - "5432:5432"
+    volumes:
+      - pitchkh-db:/var/lib/postgresql/data
+      - ./apps/api/docker-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+volumes:
+  pitchkh-db:

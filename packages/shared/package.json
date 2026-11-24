@@ -9,14 +9,17 @@
   "exports": {
     ".": "./src/index.ts",
     "./i18n/en.json": "./src/i18n/en.json",
-    "./i18n/km.json": "./src/i18n/km.json"
+    "./i18n/km.json": "./src/i18n/km.json",
+    "./mock": "./src/mock/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint src",
     "test": "vitest run"
   },
-  "dependencies": { "zod": "^4.6.7" },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "eslint": "^10.14.0",

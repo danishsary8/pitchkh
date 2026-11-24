@@ -10,7 +10,7 @@ export default defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       // UI must go through api services, never the mock layer.
-      "no-restricted-imports": ["error", { patterns: [{ group: ["@pitchkh/shared/src/*", "**/mock/*"], message: "Import from @pitchkh/shared and use api services." }] }],
+      "no-restricted-imports": ["error", { patterns: [{ group: ["@pitchkh/shared/src/*", "@pitchkh/shared/mock", "**/mock/*"], message: "Import from @pitchkh/shared and use api services." }] }],
     },
   },
 ]);

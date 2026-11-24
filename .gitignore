@@ -10,3 +10,8 @@ dist
 playwright-report
 test-results
 screenshots
+
+# API secrets
+.env
+apps/api/.env
+apps/api/dist

@@ -65,6 +65,7 @@ response shapes are the zod schemas in `packages/shared/src/schemas` (names in
 | GET | `/venues` | public | `VenueListQuery`: `q, sport, province, district, minPrice, maxPrice, date, from, to, featured, favorites, sort, page, pageSize` | `Paginated<VenueSummary>` | validation_failed |
 | GET | `/venues/:idOrSlug` | public | – | `VenueDetail` (venue + `fields[]` + `owner`) | not_found |
 | GET | `/fields/:id/availability` | public | query `date` | `Availability` `{ fieldId, date, closed, open, close, slots: Slot[] }` | not_found |
+| GET | `/venues/:idOrSlug/availability` | public | query `date` | `VenueAvailability` `{ venueId, date, fields: Availability[] }` (one entry per field, for the pitch map) | not_found |
 | GET | `/weather` | public | query `province, date` | `WeatherHint` | validation_failed |
 | PUT | `/favorites/:venueId` | auth | – | `{ venueId, isFavorite: true }` | not_found |
 | DELETE | `/favorites/:venueId` | auth | – | `{ venueId, isFavorite: false }` | – |
@@ -81,6 +82,7 @@ Notes
 - `favorites=true` returns the signed-in user's saved venues.
 - `/venues/:idOrSlug` also returns non-approved venues to their owner and to admins.
 - `Slot.status`: `available` \| `booked` \| `blocked` \| `past`. `priceUsd` is the price of that 30-minute slot.
+- Every `Field` carries `layout: { x, y, w, h } | null`: its rectangle on the venue's top-down plan, in metres from the top-left corner (`h > w` = drawn vertically). `null` = not placed yet; clients auto-arrange it with `resolveLayout()` from `packages/shared`.
 - `/weather` is a mock climate hint; a real backend should proxy a forecast provider and keep the shape.
 
 ## Bookings
@@ -156,12 +158,15 @@ The web client polls the open thread every 8 s. A backend may add WebSockets lat
 | POST | `/owner/venues/:id/fields` | `UpsertFieldDto` `{ sport, name, position, surface, indoor, format, maxPlayers, pricePerHourUsd, peakPricePerHourUsd, lit, status }` | `Field` | validation_failed (max 3 sports) |
 | PATCH | `/owner/fields/:id` | `UpsertFieldDto` | `Field` | not_found |
 | DELETE | `/owner/fields/:id` | – | 204 | conflict (upcoming bookings) |
+| PUT | `/owner/venues/:id/layout` | `SaveLayoutDto` `{ items: [{ fieldId, layout: { x, y, w, h } }] }` (1–60 items; fields not listed keep their layout) | `VenueDetail` | validation_failed (two pitches overlap, or outside the 0–400 m plan; `details.layout` = the two field ids), not_found |
 | GET | `/owner/bookings` | `OwnerBookingListQuery`: `venueId, date, status, scope, page, pageSize` | `Paginated<BookingDetail>` | – |
 | POST | `/owner/bookings/:id/decision` | `{ decision: accept\|reject }` | `BookingDetail` | conflict (not pending) |
 | GET | `/owner/schedule` | query `venueId, date` | `{ date, open, close, closed, fields: Field[], bookings: BookingDetail[], blocks: AvailabilityBlock[] }` | not_found |
 | POST | `/owner/blocks` | `CreateBlockDto` `{ fieldId, date, startTime, endTime, reason }` | `AvailabilityBlock` | slot_unavailable (a booking is in that window) |
 | DELETE | `/owner/blocks/:id` | – | 204 | not_found |
 | GET | `/owner/earnings` | – | `OwnerEarnings` | – |
+
+Changing a field's `sport` or `format` through `PATCH /owner/fields/:id` resets its `layout` to `null`, because the old rectangle no longer fits the new size.
 
 Owners only ever see and change their own venues, fields, bookings and blocks (404 otherwise). `venue.sports` is derived from its fields.
 

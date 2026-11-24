@@ -107,8 +107,13 @@ Indexes: `UNIQUE (slug)`, `(status, province, district)`, `GIN (sports)`,
 | peak_price_per_hour_usd | numeric(10,2) | 17:00-22:00 rate |
 | lit | boolean | |
 | status | text | `active` \| `maintenance` |
+| layout | jsonb NULL | `{ x, y, w, h }` in metres on the venue plan (0–400). NULL = not placed; the client auto-arranges it. Or four `numeric(6,2)` columns `layout_x/y/w/h`. |
 
 Indexes: `(venue_id, sport)`.
+
+Saving a layout must reject overlapping rectangles across all of the venue's
+fields (shared edges are allowed). `findLayoutOverlap()` in
+`packages/shared/src/domain/layout.ts` is the reference implementation.
 
 ### bookings
 | Column | Type | Notes |

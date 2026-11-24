@@ -96,8 +96,8 @@ src/
   components/common    link (view transitions), page blocks, states, motion, price
   components/layout    app shell (navbar / bottom tabs), providers, footer
   components/brand     wordmark, pitch line art, krama strip, sport icons
-  features/<feature>   UI + hooks per feature (venues, booking, matches, chat,
-                       account, owner, admin, auth, field3d, home, content)
+  features/<feature>   UI + hooks per feature (venues, booking, pitch-map, matches,
+                       chat, account, owner, admin, auth, field3d, home, content)
   lib                  api client, query keys, formatting, hooks, view transitions
   i18n                 next-intl routing (/en, /km), navigation, request config
   stores               zustand (UI transition state, booking draft)
@@ -122,6 +122,12 @@ src/
   pre-rendered poster and a low-poly mode for weaker devices.
   `scripts/render-assets.mjs` renders all photos, posters, icons and GLB models
   from the same scene code.
+- **Pitch map**: `features/pitch-map` draws a venue's top-down plan as SVG from
+  `Field.layout` (metres). Layout maths (`pitchSize`, `autoLayout`,
+  `resolveLayout`, `findLayoutOverlap`) lives in `packages/shared/src/domain/layout.ts`
+  so the mobile app and the backend can reuse it. The same `PitchShape` is used by
+  the booking screen, the venue page and the owner's editor
+  (`features/owner/layout-editor.tsx`).
 - **PWA**: `app/manifest.ts`, `public/sw.js` (network-first pages with an
   offline fallback, cache-first static assets), `/[locale]/offline`.
 

@@ -281,3 +281,21 @@ Port them 1:1 (or call the same numbers from `APP` in `config.ts`).
 | Slot is taken when | a booking in `pending`/`confirmed`/`completed` or an availability block overlaps `[start, end)` |
 | Matching | football and volleyball only; accepting one join request declines the others, sets the match to `matched` and opens a conversation |
 | Completed | a booking whose `end_at` has passed is `completed` (run a scheduled job; the mock seeds it) |
+
+### refresh_tokens (apps/api)
+| Column | Type | Notes |
+| --- | --- | --- |
+| token_hash | text PK | sha-256 of the refresh token; the token itself is never stored |
+| user_id | uuid FK users ON DELETE CASCADE | |
+| expires_at | timestamptz | 30 days; each token works once (rotation on refresh) |
+
+### telegram_links (apps/api)
+| Column | Type | Notes |
+| --- | --- | --- |
+| user_id | uuid PK FK users | the venue owner |
+| chat_id | bigint NULL | set when the owner presses Start in the bot |
+| link_code | text UNIQUE | one-time code in `t.me/<bot>?start=<code>`; replaced after use |
+
+The full, runnable schema (constraints included) is
+`apps/api/src/db/migrations/0001_init.sql`.
+

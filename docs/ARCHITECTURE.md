@@ -7,7 +7,7 @@ backend and the mobile app plug in later without rewriting the frontend.
 pitchkh/
   apps/
     web/        Next.js 16 (App Router) + TypeScript + Tailwind v4   <- built
-    api/        placeholder README (Laravel or Flask + PostgreSQL)   <- later
+    api/        Hono + PostgreSQL + Drizzle (Node, TypeScript)       <- built (v1)
     mobile/     placeholder README (React Native / Expo)             <- later
   packages/
     shared/     platform-agnostic TypeScript: no DOM, no React, no Next.js
@@ -86,6 +86,35 @@ mock mode too. A JWT backend needs no frontend change.
 Route guards: `<RequireAuth roles={[...]}>` wraps the `account`, `owner`,
 `admin` and booking-detail routes. The server must still enforce roles; the
 "Roles" column in the API contract says which.
+
+## apps/api
+
+```
+src/
+  main.ts          starts the server (reads .env)
+  app.ts           Hono app: CORS, error shape, /health, mounts /api/v1
+  http.ts          route(method, path, access, handler) + auth + notifications
+  views.ts         read models: load rows, run the shared summary logic
+  telegram.ts      bot client, alert messages (EN/KM), owner lookup
+  auth/tokens.ts   JWT access tokens, rotating refresh tokens
+  routes/          auth, venues, bookings, notifications, owner, admin, telegram
+  db/              schema.ts (Drizzle), migrations/*.sql, migrate.ts, seed.ts, mappers.ts
+test/              contract tests through the web app's own API client (real mode)
+```
+
+- **Same rules as the mock.** Validation uses the shared zod schemas
+  (`parse(schemas.X, body)`), prices and slots use `packages/shared/src/domain`,
+  and response joins reuse `@pitchkh/shared/mock` (`venueSummary`,
+  `bookingDetail`...). A read loads only the rows it needs, then runs that
+  shared code; a write is SQL inside a transaction.
+- **No double booking, even under load.** `bookings` has an exclusion
+  constraint (`btree_gist`): two pending/confirmed bookings of one pitch can
+  never overlap. A race loser gets `409 slot_unavailable`.
+- **Sessions.** 60-minute JWT access tokens (`token_expired` triggers the
+  client's refresh) and 30-day refresh tokens stored as hashes, rotated on use.
+- **Telegram.** Owner notifications for bookings are also sent to a linked
+  Telegram chat after the response is committed; a Telegram outage never fails
+  a booking.
 
 ## apps/web
 

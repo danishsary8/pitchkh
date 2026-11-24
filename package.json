@@ -2,7 +2,9 @@
   "name": "pitchkh",
   "private": true,
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "pnpm --filter @pitchkh/web dev",
     "build": "pnpm --filter @pitchkh/web build",
@@ -10,6 +12,11 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm --filter @pitchkh/shared test",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "api:dev": "pnpm --filter @pitchkh/api dev",
+    "api:test": "pnpm --filter @pitchkh/api test",
+    "api:build": "pnpm --filter @pitchkh/api build",
+    "db:migrate": "pnpm --filter @pitchkh/api db:migrate",
+    "db:seed": "pnpm --filter @pitchkh/api db:seed"
   }
 }

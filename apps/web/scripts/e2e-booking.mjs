@@ -32,7 +32,9 @@ await step("3-time", async () => {
 });
 await step("4-confirm", async () => {
   await page.getByRole("button", { name: "Continue" }).last().click();
-  await page.getByRole("radio", { name: /Find me an opponent/ }).click();
+  // Matches are switched off on the v1 API, so this option may be hidden.
+  const find = page.getByRole("radio", { name: /Find me an opponent/ });
+  if (await find.count()) await find.click();
   await page.getByRole("button", { name: /Players and extras/ }).click();
   await page.getByRole("button", { name: "Water bottles +" }).click();
 });

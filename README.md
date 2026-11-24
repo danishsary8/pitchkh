@@ -6,9 +6,11 @@ Players open a venue, *see its real layout on a pitch map*, tap a pitch and a ti
 and pay in two screens. Venue owners draw their venue's map, manage bookings and
 prices. Admins approve venues and handle reports.
 
-This repo is the **complete web frontend**, running on a built-in mock API. The
-API, the data model and the mobile app are designed so a real backend can be
-plugged in later **without changing any UI code**.
+This repo holds the **web app** and its **v1 backend**:
+
+- `apps/web` runs on its own with a built-in mock API (great for demos), or
+- on the real API in `apps/api` (Node + PostgreSQL) by changing one setting.
+  No UI code changes between the two.
 
 <table>
   <tr>
@@ -44,7 +46,7 @@ plugged in later **without changing any UI code**.
 5. [How the code is organised](#how-the-code-is-organised)
 6. [Tech stack](#tech-stack)
 7. [Scripts and checks](#scripts-and-checks)
-8. [Building the real backend](#building-the-real-backend)
+8. [Running on the real backend](#running-on-the-real-backend)
 9. [Roadmap](#roadmap)
 10. [Notes](#notes)
 
@@ -88,7 +90,7 @@ All demo data lives in your browser's `localStorage`. Reset it from
 | **Booking** | **2 screens**: pick pitch + time → confirm + pay (mock KHQR / ABA / Wing / cash). A ticket-style receipt with a stamp and confetti, **share to Telegram** (or any app through the phone's share sheet), add to calendar, cancel or reschedule up to 2 h before, **Book again** |
 | **Matches** | Football and volleyball match board, post a game, ask to join, accept/decline, team profiles with sportsmanship ratings, chat |
 | **Player area** | Bookings, favourites, matches, reviews, notifications, messages, team, profile |
-| **Owner dashboard** | Earnings, booking requests, day schedule with blocked time, venues and pitches, per-pitch pricing, **pitch map editor** |
+| **Owner dashboard** | Earnings, booking requests, day schedule with blocked time, venues and pitches, per-pitch pricing, **pitch map editor**, **booking alerts in Telegram** (accept or decline cash requests from the chat) |
 | **Admin panel** | Analytics, venue approval, featured venues, users, reports |
 | **Everywhere** | English and Khmer, light and dark theme, works from 360 px phones to desktops, installable PWA with an offline page |
 
@@ -172,7 +174,7 @@ pitchkh/
 │  │  │  ├─ venues/ owner/ admin/ matches/ chat/ account/ auth/ home/ field3d/ ...
 │  │  ├─ src/components/      UI kit (buttons, sheets...), layout, brand
 │  │  └─ scripts/             e2e test, screenshots, asset renderer, lighthouse
-│  ├─ api/                    placeholder for the real backend
+│  ├─ api/                    v1 backend: Hono + PostgreSQL (routes, SQL migrations, tests)
 │  └─ mobile/                 placeholder for the React Native app
 ├─ packages/shared/           used by web, mobile and (as a reference) the backend
 │  ├─ schemas/                zod schemas = the exact JSON shapes of the API
@@ -198,7 +200,8 @@ Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Data | TanStack Query (server state), zustand (booking draft), zod (validation) |
 | i18n | next-intl, English + Khmer (key parity checked by `scripts/i18n-merge.mjs`) |
 | Maps and 3D | SVG pitch map, Leaflet + OpenStreetMap, three.js (lazy-loaded) |
-| Tests | vitest (shared logic + mock API), Playwright e2e script |
+| Backend | Hono on Node, PostgreSQL 16, Drizzle ORM, JWT (jose), bcrypt, Telegram Bot API |
+| Tests | vitest (shared logic + mock API, and API contract tests on PostgreSQL), Playwright e2e script |
 | Monorepo | pnpm workspaces |
 
 ---
@@ -249,31 +252,53 @@ The second command runs Lighthouse (mobile) against the production server.
 
 ---
 
-## Building the real backend
+## Running on the real backend
 
-The frontend already speaks a complete REST API; today the mock server answers it.
-To build the real one (Laravel, Flask, Express... any stack):
+`apps/api` is the v1 backend: **Hono + PostgreSQL + Drizzle**, TypeScript. It
+reuses the shared schemas and booking rules, so it behaves exactly like the mock.
+Full guide: [`apps/api/README.md`](apps/api/README.md).
 
-1. Read [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) (every endpoint, role,
-   request, response and error code) and [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md)
-   (PostgreSQL tables and indexes).
-2. Use the mock handlers in `packages/shared/src/mock/handlers/` as a working
-   reference: they are the contract in code.
-3. Point the web app at your API in `apps/web/.env.local`:
+```bash
+docker compose up -d
+```
 
-   ```bash
-   NEXT_PUBLIC_API_MODE=real
-   NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-   ```
+```bash
+cp apps/api/.env.example apps/api/.env
+```
 
-4. Restart `pnpm dev`. No component changes: the same `api.venues.get()`,
-   `api.bookings.create()`... now go over HTTP with a Bearer token and
-   automatic token refresh.
+```bash
+pnpm db:migrate
+```
 
-**Pitch-map endpoints to implement:**
+```bash
+pnpm db:seed
+```
 
-| Method | Path | Purpose |
-| --- | --- | --- |
+```bash
+pnpm api:dev
+```
+
+Then point the web app at it in `apps/web/.env.local` and restart `pnpm dev`:
+
+```bash
+NEXT_PUBLIC_API_MODE=real
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
+
+| v1 on the real API | v1.1 (still mock-only, hidden in real mode) |
+| --- | --- |
+| Accounts (JWT + refresh), venues, pitch map, availability, bookings with **database-level double-booking protection**, cash requests, owner dashboard and map editor, admin, notifications, **Telegram alerts with Accept/Decline for owners** | Matches, chat, reviews, online payment |
+
+Run the API tests (they need PostgreSQL):
+
+```bash
+pnpm api:test
+```
+
+The contract lives in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) and the tables in
+[`docs/DATA_MODEL.md`](docs/DATA_MODEL.md).
+
+--- | --- | --- |
 | GET | `/venues/:idOrSlug/availability?date=` | Slots for every pitch of a venue in one call (colours the map) |
 | PUT | `/owner/venues/:id/layout` | Owner saves pitch positions; reject overlaps with `422 validation_failed` |
 | – | `fields.layout` (jsonb, nullable) | `{ x, y, w, h }` in metres; reset to `null` when a pitch's sport or format changes |
@@ -284,7 +309,9 @@ To build the real one (Laravel, Flask, Express... any stack):
 
 - [x] Web frontend on a mock API (all roles)
 - [x] Pitch map, 2-screen booking, owner map editor
-- [ ] Real backend (`apps/api`) following `docs/API_CONTRACT.md`
+- [x] Real backend v1 (`apps/api`): accounts, venues, bookings, owner, admin, Telegram alerts
+- [ ] v1.1 on the API: matches, chat, reviews
+- [ ] Deploy (Vercel + Railway/Render/Neon) and a real Telegram bot
 - [ ] Real payments (KHQR / ABA PayWay / Wing)
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`
 - [ ] Real venue photos instead of rendered ones

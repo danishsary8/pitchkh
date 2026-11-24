@@ -1,5 +1,10 @@
 # API contract
 
+> **Status:** `apps/api` implements the v1 part of this contract (everything
+> except Matches, Chat and Reviews, which are v1.1). Those three sections are
+> still served by the mock and hidden in the web app when it runs on the real
+> API (see `NEXT_PUBLIC_FEATURES`).
+
 Every endpoint the frontend calls. The mock server in
 `packages/shared/src/mock/handlers/*` implements exactly this, and the api
 services in `packages/shared/src/api/services.ts` call exactly this. Request and
@@ -51,7 +56,7 @@ response shapes are the zod schemas in `packages/shared/src/schemas` (names in
 | POST | `/auth/login` | public | `LoginDto` `{ email, password }` | `AuthSession` `{ accessToken, refreshToken, expiresAt, user }` | invalid_credentials, account_suspended |
 | POST | `/auth/register` | public | `RegisterDto` `{ name, email, phone, password, role: player\|owner }` | `AuthSession` | email_taken, validation_failed |
 | POST | `/auth/refresh` | public | `{ refreshToken }` | `AuthSession` (new tokens) | unauthorized |
-| POST | `/auth/logout` | public | – | 204 | – |
+| POST | `/auth/logout` | public | optional `{ refreshToken }` (revoked when sent) | 204 | – |
 | GET | `/auth/me` | auth | – | `User` | unauthorized |
 | PATCH | `/auth/me` | auth | `UpdateProfileDto` `{ name?, phone?, locale?, homeProvince?, avatarUrl? }` | `User` | validation_failed |
 | GET | `/me/team` | auth | – | `Team` or `null` | – |
@@ -166,6 +171,17 @@ The web client polls the open thread every 8 s. A backend may add WebSockets lat
 | POST | `/owner/blocks` | `CreateBlockDto` `{ fieldId, date, startTime, endTime, reason }` | `AvailabilityBlock` | slot_unavailable (a booking is in that window) |
 | DELETE | `/owner/blocks/:id` | – | 204 | not_found |
 | GET | `/owner/earnings` | – | `OwnerEarnings` | – |
+
+| GET | `/owner/telegram` | – | `TelegramStatus` `{ enabled, linked, linkUrl }` (`linkUrl` = `t.me/<bot>?start=<one-time code>`) | – |
+| DELETE | `/owner/telegram` | – | `TelegramStatus` (unlinked, with a fresh link) | – |
+
+Deleting a pitch that has any booking history returns `409 conflict` (receipts
+point at it): set it to `maintenance` instead.
+
+**Telegram webhook** (not called by the web app): `POST /telegram/webhook`,
+checked with the `X-Telegram-Bot-Api-Secret-Token` header. `/start <code>`
+links the owner's chat; `accept:<bookingId>` / `reject:<bookingId>` button
+presses answer a pending request exactly like `/owner/bookings/:id/decision`.
 
 Changing a field's `sport` or `format` through `PATCH /owner/fields/:id` resets its `layout` to `null`, because the old rectangle no longer fits the new size.
 

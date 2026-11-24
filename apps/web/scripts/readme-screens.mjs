@@ -27,8 +27,21 @@ const phone = async () => (await browser.newContext({ viewport: { width: 390, he
 const desktop = async () => (await browser.newContext({ viewport: { width: 1280, height: 860 }, deviceScaleFactor: 2 })).newPage();
 const scrollTo = (page, text) => page.getByText(text, { exact: true }).first().evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 70));
 
-// 1. Pick screen: time first, then a pitch on the map.
+// 0. Venue list with one-tap times, and the signed-in home with the next game.
 let page = await phone();
+await page.goto(`${base}/en/venues`, { waitUntil: "networkidle" });
+await settle(page);
+await save(page, "venue-list");
+await page.goto(`${base}/en/login`, { waitUntil: "networkidle" });
+await page.getByRole("button", { name: /Player/ }).click();
+await settle(page);
+await page.goto(`${base}/en`, { waitUntil: "networkidle" });
+await page.waitForTimeout(3000);
+await save(page, "home-next-game");
+await page.context().close();
+
+// 1. Pick screen: time first, then a pitch on the map.
+page = await phone();
 await page.goto(`${base}/en/book/chbar-ampov-football-city`, { waitUntil: "networkidle" });
 await settle(page);
 await page.getByRole("radiogroup", { name: "Day" }).getByRole("radio").nth(1).click();

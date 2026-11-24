@@ -21,6 +21,16 @@ plugged in later **without changing any UI code**.
     <td align="center"><sub>② Confirm and pay</sub></td>
     <td align="center"><sub>Venue page map</sub></td>
   </tr>
+  <tr>
+    <td><img src="docs/images/venue-list.webp" alt="Venue list with compact cards and one-tap free times"></td>
+    <td><img src="docs/images/home-next-game.webp" alt="Home with the player's next game, countdown and share"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Tap a time on a venue card</sub></td>
+    <td align="center"><sub>Your next game on Home</sub></td>
+    <td></td>
+  </tr>
 </table>
 
 ---

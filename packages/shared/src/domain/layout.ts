@@ -6,14 +6,12 @@ export type { FieldLayout };
 export const LAYOUT_GAP = 4;
 const MIN_ROW_WIDTH = 110;
 
-/** Football pitch sizes by players per side: [length, width] in metres. */
-const FOOTBALL_SIZES: Record<number, [number, number]> = {
-  5: [30, 18], 6: [36, 22], 7: [52, 32], 8: [60, 40], 9: [66, 44], 10: [75, 48], 11: [100, 64],
-};
-
 /** Typical playing-area size for a sport and format ("6v6", "11v11", "Singles/Doubles"). */
 export function pitchSize(sport: Sport, format: string): { length: number; width: number } {
   if (sport === "football") {
+    // Pitch size by players per side: [length, width] in metres. Kept inside the
+    // function so bundles that reorder module code (render script) still see it.
+    const FOOTBALL_SIZES: Record<number, [number, number]> = { 5: [30, 18], 6: [36, 22], 7: [52, 32], 8: [60, 40], 9: [66, 44], 10: [75, 48], 11: [100, 64] };
     const players = Number(/^(\d+)/.exec(format)?.[1] ?? 5);
     const [length, width] = FOOTBALL_SIZES[Math.min(11, Math.max(5, players))] ?? [30, 18];
     return { length, width };

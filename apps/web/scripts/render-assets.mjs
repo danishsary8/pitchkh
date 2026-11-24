@@ -2,7 +2,7 @@
 /**
  * Renders every image asset from the procedural three.js scenes:
  *   venue photos, field posters, home hero, sport tiles, OG image, PWA icons, GLB models.
- * Run from apps/web:  node scripts/render-assets.mjs [--only venues|fields|brand|models]
+ * Run from apps/web:  node scripts/render-assets.mjs [--only venues|fields|brand|models] [--venue <slug>]
  * Requires Playwright with Chromium (preinstalled in the dev container).
  */
 import { build } from "esbuild";
@@ -17,6 +17,8 @@ const out = (...p) => join(root, "public", "assets", ...p);
 const require = createRequire(import.meta.url);
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : null;
 const want = (group) => !only || only === group;
+// --venue <slug>: only re-render that venue's photos (e.g. after adding one to the seed).
+const onlyVenue = process.argv.includes("--venue") ? process.argv[process.argv.indexOf("--venue") + 1] : null;
 for (const dir of ["venues", "fields", "brand", "models"]) mkdirSync(out(dir), { recursive: true });
 
 // 1. Bundle the browser entry and the venue seed list.
@@ -45,6 +47,7 @@ let count = 0;
 if (want("venues")) {
   const times = ["dusk", "day", "night"];
   for (const [i, venue] of VENUE_SEEDS.entries()) {
+    if (onlyVenue && venue.slug !== onlyVenue) continue;
     const sports = [...new Set(venue.fields.map((f) => f.sport))];
     // Photo 1: the headline field. Photo 2: another sport (or another field). Photo 3: a low, close angle.
     const picks = [venue.fields[0], venue.fields.find((f) => f.sport === sports[1]) ?? venue.fields[1] ?? venue.fields[0], venue.fields[venue.fields.length - 1]];

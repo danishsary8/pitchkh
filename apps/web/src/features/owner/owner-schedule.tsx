@@ -4,7 +4,7 @@ import { APP, minutesOf, timeInPP, timeOf, type AvailabilityBlock, type BookingD
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ban, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/page";
 import { EmptyState, ErrorState, useErrorMessage } from "@/components/common/states";
@@ -40,6 +40,21 @@ export function OwnerSchedule() {
   const refresh = async (): Promise<void> => { await queryClient.invalidateQueries({ queryKey: ["owner", "schedule"] }); await queryClient.invalidateQueries({ queryKey: ["availability"] }); };
   const addBlock = useMutation({ mutationFn: () => api.owner.createBlock({ ...draft, fieldId: draft.fieldId || (schedule.data?.fields[0]?.id ?? ""), date }), onSuccess: async () => { await refresh(); setBlockOpen(false); toast.success(t("owner.blocked")); }, onError: (e) => toast.error(errorMessage(e)) });
   const removeBlock = useMutation({ mutationFn: (id: string) => api.owner.deleteBlock(id), onSuccess: async () => { await refresh(); toast(t("owner.unblocked")); }, onError: (e) => toast.error(errorMessage(e)) });
+  const isToday = date === dates.today;
+  const nowMinute = minutesOf(timeInPP(new Date()));
+
+  // Open the timeline where the action is: an hour before now (today), else the first booking or block.
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const day = schedule.data;
+    const el = scroller.current;
+    if (!day || day.closed || !el) return;
+    const starts = [...day.bookings.map((b) => minutesOf(timeInPP(b.startAt))), ...day.blocks.map((k) => minutesOf(k.startTime))];
+    const target = isToday ? nowMinute - 60 : starts.length ? Math.min(...starts) - 30 : 0;
+    el.scrollLeft = Math.max(0, ((target - minutesOf(day.open)) / 60) * HOUR_PX);
+    // Only when the day or venue changes, not on every minute tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedule.data, isToday]);
 
   if (venues.isPending) return <><PageHeader title={t("owner.nav.schedule")} /><Skeleton className="h-96" /></>;
   if (venues.isError) return <ErrorState error={venues.error} onRetry={() => void venues.refetch()} />;
@@ -54,6 +69,7 @@ export function OwnerSchedule() {
   const bookingStyle = (b: BookingDetail) => ({ left: left(timeInPP(b.startAt)), width: width(timeInPP(b.startAt), timeInPP(b.endAt)) });
   const blockStyle = (k: AvailabilityBlock) => ({ left: left(k.startTime), width: width(k.startTime, k.endTime) });
   const times = Array.from({ length: (close - open) / APP.slotMinutes + 1 }, (_, i) => timeOf(open + i * APP.slotMinutes));
+  const nowLeft = isToday && nowMinute >= open && nowMinute <= close ? ((nowMinute - open) / 60) * HOUR_PX : null;
 
   return (
     <>
@@ -70,15 +86,16 @@ export function OwnerSchedule() {
         ) : (
           <div className="overflow-hidden rounded-2xl bg-card">
             <p className="px-4 pt-3 text-sm text-muted-foreground">{t("owner.scheduleSummary", { bookings: data?.bookings.length ?? 0, blocks: data?.blocks.length ?? 0 })}</p>
-            <div className="overflow-x-auto overscroll-x-contain p-4" tabIndex={0} role="region" aria-label={t("owner.nav.schedule")}>
-              <div style={{ width: hours.length * HOUR_PX + 112 }}>
-                <div className="flex pl-28" aria-hidden>
+            <div ref={scroller} className="overflow-x-auto overscroll-x-contain py-4 pr-4" tabIndex={0} role="region" aria-label={t("owner.nav.schedule")}>
+              <div style={{ width: hours.length * HOUR_PX + 128 }}>
+                <div className="flex" aria-hidden>
+                  <span className="sticky left-0 z-10 w-32 shrink-0 self-stretch bg-card" />
                   {hours.map((h) => <span key={h} className="font-num shrink-0 text-xs text-muted-foreground" style={{ width: HOUR_PX }}>{timeOf(h)}</span>)}
                 </div>
                 <ul className="flex flex-col gap-2 pt-2">
                   {data?.fields.map((field) => (
                     <li key={field.id} className="flex items-center">
-                      <p className="w-28 shrink-0 pr-2 text-sm leading-tight font-bold">{field.name}<span className="block text-xs font-normal text-muted-foreground">{t(`sport.${field.sport}`)}</span></p>
+                      <p className="sticky left-0 z-10 flex w-32 shrink-0 flex-col justify-center self-stretch bg-card pr-2 pl-4 text-sm leading-tight font-bold">{field.name}<span className="block text-xs font-normal text-muted-foreground">{t(`sport.${field.sport}`)}</span></p>
                       <div className="relative h-14 flex-1 rounded-xl bg-[repeating-linear-gradient(90deg,var(--secondary)_0_1px,transparent_1px_72px)] bg-secondary/40">
                         {data.bookings.filter((b) => b.fieldId === field.id).map((b) => (
                           <div key={b.id} className={cn("absolute inset-y-1 flex flex-col justify-center overflow-hidden rounded-lg px-2 text-xs leading-tight", b.status === "pending" ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground")} style={bookingStyle(b)} title={`${b.customer.name} · ${dates.range(b.startAt, b.endAt)}`}>
@@ -92,6 +109,7 @@ export function OwnerSchedule() {
                             <span className="truncate">{k.reason || t("owner.blockedLabel")}</span>
                           </button>
                         ))}
+                        {nowLeft !== null ? <span aria-hidden className="pointer-events-none absolute -inset-y-1 w-0.5 rounded-full bg-destructive" style={{ left: nowLeft }} /> : null}
                       </div>
                     </li>
                   ))}
@@ -102,6 +120,7 @@ export function OwnerSchedule() {
               <li className="flex items-center gap-1.5"><span className="size-3 rounded bg-primary" />{t("status.booking.confirmed")}</li>
               <li className="flex items-center gap-1.5"><span className="size-3 rounded bg-accent" />{t("status.booking.pending")}</li>
               <li className="flex items-center gap-1.5"><span className="size-3 rounded bg-foreground/80" />{t("owner.blockedLabel")}</li>
+              {nowLeft !== null ? <li className="flex items-center gap-1.5"><span className="h-3 w-0.5 rounded-full bg-destructive" />{t("owner.now")}</li> : null}
             </ul>
           </div>
         )}

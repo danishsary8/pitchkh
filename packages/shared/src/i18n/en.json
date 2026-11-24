@@ -977,7 +977,8 @@
       "alt": "Venue photo {n}",
       "makeCover": "Make photo {n} the cover",
       "remove": "Remove photo {n}"
-    }
+    },
+    "now": "Now"
   },
   "admin": {
     "title": "Admin panel",

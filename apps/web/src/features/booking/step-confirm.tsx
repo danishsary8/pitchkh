@@ -12,6 +12,7 @@ import { Alert, Switch } from "@/components/ui/misc";
 import { cn } from "@/lib/utils";
 import type { BookingDraft } from "./draft-store";
 import { PaymentMethodPicker } from "./payment";
+import { features } from "@/lib/features";
 
 type Update = (patch: Partial<BookingDraft>) => void;
 
@@ -45,7 +46,8 @@ function Row({ title, hint, children, htmlFor }: { title: string; hint?: string;
 export function StepConfirm({ field, draft, update, summary }: { venue: VenueDetail; field: Field; draft: BookingDraft; update: Update; summary: React.ReactNode }) {
   const t = useTranslations();
   const teamSize = draft.teamSize ?? defaultTeamSize(field.format, field.sport);
-  const matching = supportsMatching(field.sport);
+  // "Find me an opponent" posts to the match board, which arrives with matches in v1.1.
+  const matching = features.matches && supportsMatching(field.sport);
   const extras = [t("booking.playersShort", { count: teamSize })];
   if (draft.referee && field.sport !== "tennis") extras.push(t("booking.referee"));
   if (draft.extras.waterBottles) extras.push(`${draft.extras.waterBottles} × ${t("booking.water")}`);

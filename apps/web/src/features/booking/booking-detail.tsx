@@ -27,6 +27,7 @@ import { PriceLines } from "./price-lines";
 import { ReviewSheet } from "./review-sheet";
 import { useShareBooking } from "./use-share-booking";
 import { DateStrip, SlotGrid, type TimeRange } from "./slot-picker";
+import { features } from "@/lib/features";
 
 export const BOOKING_STATUS_VARIANT: Record<BookingStatus, BadgeVariant> = { pending: "warning", confirmed: "success", rejected: "destructive", cancelled: "muted", completed: "secondary" };
 
@@ -251,7 +252,7 @@ export function BookingDetail({ id }: { id: string }) {
         ) : null}
         {active && !booking.canCancel ? <p className="text-center text-sm text-muted-foreground">{t("errors.cancellation_window_passed")}</p> : null}
 
-        {booking.status === "completed" && !booking.reviewed ? (
+        {features.reviews && booking.status === "completed" && !booking.reviewed ? (
           <Button size="lg" onClick={() => setReviewOpen(true)}>
             <Star />
             {t("booking.rateVenue")}

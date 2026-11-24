@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { KramaStrip } from "@/components/brand/pitch-art";
 import { Link } from "@/components/common/link";
+import { features } from "@/lib/features";
 
 /** A designed close: krama band, links, then the name at full width. */
 export function SiteFooter() {
@@ -16,7 +17,7 @@ export function SiteFooter() {
             <nav aria-label={t("footer.explore")} className="flex flex-col gap-1">
               <h2 className="mb-1 font-bold">{t("footer.explore")}</h2>
               <Link className="py-1.5 opacity-80 hover:opacity-100" href="/venues">{t("nav.venues")}</Link>
-              <Link className="py-1.5 opacity-80 hover:opacity-100" href="/matches">{t("nav.matches")}</Link>
+              {features.matches ? <Link className="py-1.5 opacity-80 hover:opacity-100" href="/matches">{t("nav.matches")}</Link> : null}
               <Link className="py-1.5 opacity-80 hover:opacity-100" href="/login?next=/owner">{t("nav.listVenue")}</Link>
             </nav>
             <nav aria-label={t("footer.company")} className="flex flex-col gap-1">

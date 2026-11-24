@@ -33,6 +33,7 @@ import { pitchStates } from "@/features/pitch-map/availability";
 import { PitchCard } from "@/features/pitch-map/pitch-card";
 import { PitchLegend, PitchMap } from "@/features/pitch-map/pitch-map";
 import { useVenueDay } from "@/features/pitch-map/use-venue-day";
+import { features } from "@/lib/features";
 
 const VenuesMap = dynamic(() => import("./venues-map"), { ssr: false, loading: () => <Skeleton className="size-full rounded-none" /> });
 
@@ -225,17 +226,17 @@ export function VenueDetail({ slug }: { slug: string }) {
             </div>
             <p className="max-w-3xl text-[1.05rem] text-pretty text-foreground/85">{text.description(venue)}</p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button variant="secondary" size="sm" className="h-10" disabled={chat.isPending} onClick={() => (user ? chat.mutate(venue.id) : navigate(`/login?next=/venues/${slug}`))}>
+              {features.chat ? <Button variant="secondary" size="sm" className="h-10" disabled={chat.isPending} onClick={() => (user ? chat.mutate(venue.id) : navigate(`/login?next=/venues/${slug}`))}>
                 {chat.isPending ? <Spinner /> : <MessageCircle />}
                 {t("venue.messageOwner")}
-              </Button>
+              </Button> : null}
               <Button variant="secondary" size="sm" className="h-10" asChild>
                 <a href={`tel:${venue.phone.replace(/\s/g, "")}`}>
                   <Phone />
                   {t("venue.call")}
                 </a>
               </Button>
-              {venue.sports.some(supportsMatching) ? (
+              {features.matches && venue.sports.some(supportsMatching) ? (
                 <Button variant="secondary" size="sm" className="h-10" asChild>
                   <Link href="/matches">
                     <Swords />
@@ -346,7 +347,7 @@ export function VenueDetail({ slug }: { slug: string }) {
           </Reveal>
 
           <Reveal>
-            <Reviews venueId={venue.id} rating={venue.rating} count={venue.reviewCount} />
+            {features.reviews ? <Reviews venueId={venue.id} rating={venue.rating} count={venue.reviewCount} /> : null}
           </Reveal>
 
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">

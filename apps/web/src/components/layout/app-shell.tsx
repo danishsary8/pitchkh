@@ -11,6 +11,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { LocaleToggle, NotificationBell, ThemeToggle } from "./controls";
+import { features } from "@/lib/features";
 
 const isActive = (pathname: string, href: string): boolean => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
 
@@ -37,7 +38,7 @@ function Header() {
   const { user } = useAuth();
   const links = [
     { href: "/venues", label: t("venues") },
-    { href: "/matches", label: t("matches") },
+    ...(features.matches ? [{ href: "/matches", label: t("matches") }] : []),
     { href: "/account/bookings", label: t("myBookings") },
     { href: "/help", label: t("help") },
   ];
@@ -81,7 +82,7 @@ function BottomTabs() {
   const tabs = [
     { href: "/", label: t("home"), icon: Home },
     { href: "/venues", label: t("venues"), icon: MapPin },
-    { href: "/matches", label: t("matches"), icon: Swords },
+    ...(features.matches ? [{ href: "/matches", label: t("matches"), icon: Swords }] : []),
     { href: "/account/bookings", label: t("bookings"), icon: CalendarCheck },
     { href: "/account", label: t("profile"), icon: UserIcon },
   ];

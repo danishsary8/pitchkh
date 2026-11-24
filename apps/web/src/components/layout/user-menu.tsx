@@ -7,6 +7,7 @@ import { useNavigate } from "@/components/common/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/misc";
 import { useAuth } from "@/features/auth/auth-provider";
+import { features } from "@/lib/features";
 
 /**
  * Account dropdown for signed-in users (desktop header). Loaded on demand from
@@ -20,10 +21,10 @@ export default function UserMenu() {
   if (!user) return null;
   const items = [
     { href: "/account/bookings", label: t("myBookings"), icon: CalendarCheck },
-    { href: "/account/matches", label: t("myMatches"), icon: Swords },
+    ...(features.matches ? [{ href: "/account/matches", label: t("myMatches"), icon: Swords }] : []),
     { href: "/account/favorites", label: t("favorites"), icon: Heart },
-    { href: "/account/messages", label: t("messages"), icon: MessageCircle },
-    { href: "/account/reviews", label: t("reviews"), icon: Star },
+    ...(features.chat ? [{ href: "/account/messages", label: t("messages"), icon: MessageCircle }] : []),
+    ...(features.reviews ? [{ href: "/account/reviews", label: t("reviews"), icon: Star }] : []),
     { href: "/account", label: t("profile"), icon: UserRound },
   ];
   return (

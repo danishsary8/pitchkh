@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { FeaturedVenues, FreeTonight, OpenMatches, SearchCard } from "./home-islands";
 import { NextGame, PlayAgain } from "./my-games";
 import { RotatingWord } from "./rotating-word";
+import { features } from "@/lib/features";
 
 /*
  * Home is a server component: the hero, sport tiles, steps, trust list and
@@ -117,7 +118,7 @@ export function HomePage() {
           </ol>
         </section>
 
-        <section aria-labelledby="matches-title" className="-mx-4 bg-foreground px-4 py-10 text-background lg:mx-0 lg:rounded-[2rem] lg:px-10 lg:py-14">
+        {features.matches ? <section aria-labelledby="matches-title" className="-mx-4 bg-foreground px-4 py-10 text-background lg:mx-0 lg:rounded-[2rem] lg:px-10 lg:py-14">
           <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-14">
             <div className="flex flex-col items-start gap-4">
               <h2 id="matches-title" className="font-display text-3xl text-balance sm:text-4xl">{t("home.matchTitle")}</h2>
@@ -128,7 +129,7 @@ export function HomePage() {
             </div>
             <OpenMatches />
           </div>
-        </section>
+        </section> : null}
 
         <section aria-labelledby="trust-title" className="flex flex-col gap-6">
           <h2 id="trust-title" className="font-display max-w-2xl text-3xl text-balance sm:text-4xl">{t("home.trustTitle")}</h2>

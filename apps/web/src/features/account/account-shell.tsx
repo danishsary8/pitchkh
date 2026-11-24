@@ -7,17 +7,18 @@ import { Link } from "@/components/common/link";
 import { Container } from "@/components/common/page";
 import { useUnreadNotifications } from "@/components/layout/controls";
 import { usePathname } from "@/i18n/navigation";
+import { features } from "@/lib/features";
 
 export function useAccountLinks() {
   const t = useTranslations("nav");
   return [
     { href: "/account/bookings", label: t("myBookings"), icon: CalendarCheck },
-    { href: "/account/matches", label: t("myMatches"), icon: Swords },
+    ...(features.matches ? [{ href: "/account/matches", label: t("myMatches"), icon: Swords }] : []),
     { href: "/account/favorites", label: t("favorites"), icon: Heart },
-    { href: "/account/messages", label: t("messages"), icon: MessageCircle },
+    ...(features.chat ? [{ href: "/account/messages", label: t("messages"), icon: MessageCircle }] : []),
     { href: "/account/notifications", label: t("notifications"), icon: Bell },
-    { href: "/account/reviews", label: t("reviews"), icon: Star },
-    { href: "/account/team", label: t("myTeam"), icon: Shield },
+    ...(features.reviews ? [{ href: "/account/reviews", label: t("reviews"), icon: Star }] : []),
+    ...(features.matches ? [{ href: "/account/team", label: t("myTeam"), icon: Shield }] : []),
     { href: "/account", label: t("profile"), icon: UserRound },
   ];
 }

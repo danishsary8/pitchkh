@@ -42,7 +42,7 @@ function FieldSheet({ venueId, field, open, onOpenChange }: { venueId: string; f
       <FieldGroup>
         <div className="grid grid-cols-2 gap-3">
           <Field><FieldLabel htmlFor="f-sport">{t("venues.filterSport")}</FieldLabel><Select id="f-sport" value={form.sport} onChange={(e) => { const sport = e.target.value as Sport; set({ sport, surface: DEFAULT_SURFACE[sport], format: DEFAULT_FORMAT[sport] }); }}>{SPORTS.map((s) => <option key={s} value={s}>{t(`sport.${s}`)}</option>)}</Select></Field>
-          <Field><FieldLabel htmlFor="f-name">{t("owner.fieldName")}</FieldLabel><Input id="f-name" value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Field A" /></Field>
+          <Field><FieldLabel htmlFor="f-name">{t("owner.fieldName")}</FieldLabel><Input id="f-name" value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Pitch A" /></Field>
         </div>
         <Field><FieldLabel htmlFor="f-pos">{t("owner.fieldPosition")}</FieldLabel><Input id="f-pos" value={form.position ?? ""} onChange={(e) => set({ position: e.target.value })} placeholder={t("owner.fieldPositionPlaceholder")} /></Field>
         <div className="grid grid-cols-2 gap-3">

@@ -36,7 +36,7 @@
     "hours": "{count, plural, one {# hour} other {# hours}}",
     "minutes": "{count} min",
     "players": "{count, plural, one {# player} other {# players}}",
-    "fields": "{count, plural, one {# field} other {# fields}}",
+    "fields": "{count, plural, one {# pitch} other {# pitches}}",
     "reviews": "{count, plural, =0 {No reviews yet} one {# review} other {# reviews}}",
     "verified": "Verified",
     "featured": "Featured",
@@ -211,7 +211,7 @@
     "invalidPhone": "Enter a valid phone number"
   },
   "footer": {
-    "blurb": "Sports fields across Cambodia, booked in a minute.",
+    "blurb": "Sports pitches across Cambodia, booked in a minute.",
     "explore": "Explore",
     "company": "PitchKH",
     "terms": "Terms",
@@ -226,12 +226,12 @@
     "retry": "Reload"
   },
   "meta": {
-    "title": "PitchKH: book sports fields in Cambodia",
-    "description": "Book football, volleyball and tennis fields in Phnom Penh, Siem Reap, Battambang and beyond. Pay with KHQR, ABA or Wing, and find an opponent for your team."
+    "title": "PitchKH: book sports pitches in Cambodia",
+    "description": "Book football, volleyball and tennis pitches in Phnom Penh, Siem Reap, Battambang and beyond. Pay with KHQR, ABA or Wing, and find an opponent for your team."
   },
   "auth": {
     "signInTitle": "Welcome back",
-    "signInBody": "Sign in to book fields and manage your matches.",
+    "signInBody": "Sign in to book pitches and manage your matches.",
     "registerTitle": "Create your account",
     "registerBody": "It takes a minute. No card needed.",
     "email": "Email",
@@ -245,9 +245,9 @@
     "demoTitle": "Try a demo account",
     "demoBody": "One tap signs you in. Each role sees a different side of PitchKH.",
     "demoPlayer": "Player",
-    "demoPlayerHint": "Book fields, find opponents",
+    "demoPlayerHint": "Book pitches, find opponents",
     "demoOwner": "Venue owner",
-    "demoOwnerHint": "Manage fields and requests",
+    "demoOwnerHint": "Manage pitches and requests",
     "demoAdmin": "Admin",
     "demoAdminHint": "Approve venues, handle reports",
     "iAm": "I am a",
@@ -263,12 +263,12 @@
   },
   "home": {
     "heroTitle": "Book a pitch. Bring a rival.",
-    "heroBody": "Football, volleyball and tennis fields across Cambodia. See what's free tonight, pay with KHQR, and find a team to play if you don't have one.",
+    "heroBody": "Football, volleyball and tennis pitches across Cambodia. See what's free tonight, pay with KHQR, and find a team to play if you don't have one.",
     "heroImageAlt": "A floodlit seven-a-side football pitch at dusk",
-    "searchTitle": "Find a field",
-    "searchCta": "Find fields",
-    "freeLoading": "Checking tonight's free fields",
-    "freeTitle": "{count, plural, =0 {No fields free} one {# venue has a field free} other {# venues have a field free}} at {time}, {day}",
+    "searchTitle": "Find a pitch",
+    "searchCta": "Find pitches",
+    "freeLoading": "Checking tonight's free pitches",
+    "freeTitle": "{count, plural, =0 {No pitches free} one {# venue has a pitch free} other {# venues have a pitch free}} at {time}, {day}",
     "sportsTitle": "Three sports, one booking",
     "sportFootball": "5, 7 and 11-a-side, turf and grass",
     "sportVolleyball": "Indoor halls and sand courts",
@@ -276,8 +276,8 @@
     "featuredTitle": "Venues players rebook",
     "howTitle": "From couch to kick-off in a minute",
     "howBody": "No phone calls, no deposits by bank transfer, no arriving to a full pitch.",
-    "step1Title": "Pick a field",
-    "step1Body": "Filter by sport, district and price. Every venue shows its real fields, surfaces and photos.",
+    "step1Title": "Pick a pitch",
+    "step1Body": "Filter by sport, district and price. Every venue shows its real pitches, surfaces and photos.",
     "step2Title": "Choose your time",
     "step2Body": "Tap a start and an end on the live slot grid. Booked slots are greyed out, so there are no double bookings.",
     "step3Title": "Pay and play",
@@ -295,7 +295,7 @@
     "trustLanguageTitle": "English and ខ្មែរ",
     "trustLanguageBody": "Switch language any time from the top of the screen.",
     "ownerTitle": "Own a pitch? Fill your empty hours.",
-    "ownerBody": "List your fields, set per-sport prices, and accept bookings from your phone. Free to list.",
+    "ownerBody": "List your pitches, set per-sport prices, and accept bookings from your phone. Free to list.",
     "ownerCta": "List your venue",
     "playAgain": "Play again",
     "next": {
@@ -307,8 +307,8 @@
     }
   },
   "venues": {
-    "title": "Find a field",
-    "subtitle": "Every venue is checked by our team. Prices are per hour, per field.",
+    "title": "Find a pitch",
+    "subtitle": "Every venue is checked by our team. Prices are per hour, per pitch.",
     "searchPlaceholder": "Search by venue or area",
     "filters": "Filters",
     "clearFilters": "Clear filters",
@@ -339,7 +339,7 @@
     },
     "emptyTitle": "No venues match those filters",
     "emptyBody": "Try another day, a wider area or a higher price.",
-    "fieldsFree": "{count, plural, one {# field free} other {# fields free}}",
+    "fieldsFree": "{count, plural, one {# pitch free} other {# pitches free}}",
     "sportsOffered": "Sports offered",
     "hr": "hr",
     "addFavorite": "Save to favorites",
@@ -361,7 +361,7 @@
     "peak": "5–10pm",
     "seeIn3d": "See in 3D",
     "bookField": "Book",
-    "lookAround": "Look around the field",
+    "lookAround": "Look around the pitch",
     "amenities": "What's here",
     "hours": "Opening hours",
     "closed": "Closed",
@@ -380,7 +380,7 @@
   },
   "viewer": {
     "view3d": "View in 3D",
-    "loading": "Building the field",
+    "loading": "Building the pitch",
     "hint": "Drag to look around, pinch to zoom",
     "unsupported": "3D isn't available on this device",
     "posterAlt": "Illustration of {name}",
@@ -402,8 +402,8 @@
     "advice": {
       "great": "Good conditions to play.",
       "hot": "Hot afternoon. Bring extra water or book after 5pm.",
-      "rain_likely": "Rain is likely. An indoor field is the safer pick.",
-      "storm": "Storms expected. Choose an indoor field."
+      "rain_likely": "Rain is likely. An indoor pitch is the safer pick.",
+      "storm": "Storms expected. Choose an indoor pitch."
     },
     "rainChance": "Rain {percent}%."
   },
@@ -434,8 +434,8 @@
       "host_pays": "Host pays",
       "loser_pays": "Loser pays"
     },
-    "fieldBooked": "Field booked",
-    "fieldNotBooked": "Field not booked yet",
+    "fieldBooked": "Pitch booked",
+    "fieldNotBooked": "Pitch not booked yet",
     "hostedBy": "Hosted by {name}",
     "title": "Match board",
     "subtitle": "Teams looking for an opponent. Ask to join, and the host picks who they play.",
@@ -448,10 +448,10 @@
     "venue": "Venue",
     "venueHint": "Where you plan to play.",
     "perSide": "Players per side",
-    "whoPays": "Who pays for the field?",
+    "whoPays": "Who pays for the pitch?",
     "note": "Note for other teams",
     "notePlaceholder": "Kit colour, referee, how competitive you want it",
-    "bookLater": "Posting a match doesn't book the field. Book it once you have an opponent, or book first and choose “Find me an opponent”.",
+    "bookLater": "Posting a match doesn't book the pitch. Book it once you have an opponent, or book first and choose “Find me an opponent”.",
     "detailTitle": "{team} needs an opponent",
     "openChat": "Open match chat",
     "rateOpponent": "Rate {team}",
@@ -487,8 +487,8 @@
     "booking": {
       "title": "Booking",
       "q1": {
-        "q": "How do I book a field?",
-        "a": "Open a venue, tap Book now, then pick the field, the day and your start and end time. Add a referee or extras if you want them, pay, and you get a receipt with a booking code."
+        "q": "How do I book a pitch?",
+        "a": "Open a venue, tap Book now, then pick the pitch, the day and your start and end time. Add a referee or extras if you want them, pay, and you get a receipt with a booking code."
       },
       "q2": {
         "q": "How long can I book for?",
@@ -537,11 +537,11 @@
       "title": "Venue owners",
       "q1": {
         "q": "How do I list my venue?",
-        "a": "Create a venue owner account, add your venue and fields, then submit. Our team reviews new listings before they appear in search."
+        "a": "Create a venue owner account, add your venue and pitches, then submit. Our team reviews new listings before they appear in search."
       },
       "q2": {
         "q": "How do I block time for maintenance?",
-        "a": "Open Schedule in your dashboard, pick the field and day, and add a blocked time. Players won't be able to book it."
+        "a": "Open Schedule in your dashboard, pick the pitch and day, and add a blocked time. Players won't be able to book it."
       }
     }
   },
@@ -552,7 +552,7 @@
       "title": "Terms of use",
       "s1": {
         "title": "Using PitchKH",
-        "body": "PitchKH lets players book sports fields listed by independent venue owners and arrange matches with other teams. You need an account to book, and you are responsible for activity on it."
+        "body": "PitchKH lets players book sports pitches listed by independent venue owners and arrange matches with other teams. You need an account to book, and you are responsible for activity on it."
       },
       "s2": {
         "title": "Bookings and payment",
@@ -568,7 +568,7 @@
       },
       "s5": {
         "title": "Venue listings",
-        "body": "Owners must describe their fields accurately and honour confirmed bookings. PitchKH may remove listings that mislead players or are unsafe."
+        "body": "Owners must describe their pitches accurately and honour confirmed bookings. PitchKH may remove listings that mislead players or are unsafe."
       }
     },
     "privacy": {
@@ -625,7 +625,7 @@
     "opponent": {
       "have": {
         "title": "I have an opponent",
-        "body": "Just book the field for both teams."
+        "body": "Just book the pitch for both teams."
       },
       "find": {
         "title": "Find me an opponent",
@@ -635,20 +635,20 @@
     "teamLevel": "Your team's level",
     "teamLevelHint": "Shown on the match board so similar teams ask to join.",
     "teamSize": "Players on your side",
-    "teamSizeHint": "Up to {max} on this field",
+    "teamSizeHint": "Up to {max} on this pitch",
     "referee": "Referee",
     "refereeHint": "{price} per hour",
     "water": "Water bottles",
-    "waterHint": "{price} each, cold at the field",
+    "waterHint": "{price} each, cold at the pitch",
     "ball": "Match ball",
     "ballHint": "Rent for {price}",
     "bibs": "Bibs",
     "bibsHint": "One set for {price}",
     "notes": "Note for the venue",
     "notesPlaceholder": "Anything the venue should know?",
-    "field": "Field",
+    "field": "Pitch",
     "summary": "Booking summary",
-    "pickToSeePrice": "Pick a field and time to see the price.",
+    "pickToSeePrice": "Pick a pitch and time to see the price.",
     "hintField": "Pick a pitch to continue",
     "hintTime": "Tap a start and end time",
     "paymentMethod": "Payment",
@@ -668,8 +668,8 @@
     "simulatePaid": "I've paid",
     "confirming": "Confirming payment",
     "line": {
-      "field": "Field",
-      "field_peak": "Field, evening rate",
+      "field": "Pitch",
+      "field_peak": "Pitch, evening rate",
       "weekend": "Weekend surcharge",
       "referee": "Referee",
       "water": "Water",
@@ -680,7 +680,7 @@
     "hoursShort": "{count}h",
     "total": "Total",
     "confirmedTitle": "You're booked",
-    "confirmedBody": "Your field is reserved. Show the booking code at the venue.",
+    "confirmedBody": "Your pitch is reserved. Show the booking code at the venue.",
     "requestSent": "Request sent",
     "requestSentBody": "We've held your slot and asked the venue to confirm. You'll get a notification.",
     "detailTitle": "Booking",
@@ -702,7 +702,7 @@
     "keep": "Keep booking",
     "cancelled": "Booking cancelled",
     "rescheduleTitle": "Move your booking",
-    "rescheduleBody": "Same field, new day or time. The price updates to the new slot.",
+    "rescheduleBody": "Same pitch, new day or time. The price updates to the new slot.",
     "moveTo": "Move to {time}",
     "rescheduled": "Booking moved",
     "startAround": "Start time",
@@ -721,7 +721,7 @@
   "review": {
     "venueTitle": "Rate {name}",
     "teamTitle": "Rate {name}",
-    "venueBody": "How were the field, the lights and the staff?",
+    "venueBody": "How were the pitch, the lights and the staff?",
     "teamBody": "How was their sportsmanship? Fair play, punctuality, attitude.",
     "rating": "Rating",
     "stars": "{count, plural, one {# star} other {# stars}}",
@@ -764,7 +764,7 @@
     "upcoming": "Upcoming",
     "past": "Past",
     "noUpcomingTitle": "No games coming up",
-    "noUpcomingBody": "Find a field and your next booking will show here.",
+    "noUpcomingBody": "Find a pitch and your next booking will show here.",
     "noPastTitle": "No past bookings yet",
     "noPastBody": "Games you've played will be listed here.",
     "noFavoritesTitle": "No favorites yet",
@@ -816,7 +816,7 @@
       "overview": "Overview",
       "bookings": "Bookings",
       "schedule": "Schedule",
-      "venues": "Venues & fields"
+      "venues": "Venues & pitches"
     },
     "greeting": "Hello, {name}",
     "overviewBody": "How your venues are doing this month.",
@@ -835,7 +835,7 @@
     "payout": "Next payout {amount}",
     "bySport": "By sport",
     "byPayment": "By payment method",
-    "byField": "Best earning fields",
+    "byField": "Best earning pitches",
     "revenue": "Earnings",
     "bookingsBody": "Cash bookings need your answer. Online payments are confirmed automatically.",
     "tabs": {
@@ -861,7 +861,7 @@
     "reject": "Decline",
     "accepted": "Booking accepted",
     "rejected": "Booking declined",
-    "scheduleBody": "Every field for the day. Block time for maintenance or private events.",
+    "scheduleBody": "Every pitch for the day. Block time for maintenance or private events.",
     "scheduleSummary": "{bookings, plural, one {# booking} other {# bookings}}, {blocks, plural, =0 {no blocked time} one {# blocked time} other {# blocked times}}",
     "blockTime": "Block time",
     "blockBody": "Players won't be able to book this window on {day}.",
@@ -873,25 +873,25 @@
     "removeBlock": "Remove block: {reason}",
     "noLiveVenueTitle": "No live venue yet",
     "noLiveVenueBody": "The schedule appears once a venue is approved.",
-    "venuesBody": "Edit your listing, fields and hourly prices per sport.",
+    "venuesBody": "Edit your listing, pitches and hourly prices per sport.",
     "addVenue": "Add venue",
     "addVenueBody": "New venues are reviewed by PitchKH before players can see them.",
     "editVenue": "Edit venue",
     "submitForReview": "Submit for review",
     "venueSubmitted": "Venue submitted for review",
     "noVenuesTitle": "List your first venue",
-    "noVenuesBody": "Add your venue and fields to start taking bookings.",
+    "noVenuesBody": "Add your venue and pitches to start taking bookings.",
     "viewListing": "View public listing",
     "rejectedTitle": "Changes needed",
     "pendingTitle": "In review",
-    "pendingBody": "Our team is checking this listing. You can still add fields and prices.",
-    "fieldsAndPricing": "Fields and pricing",
-    "addField": "Add field",
-    "editField": "Edit field",
-    "fieldBody": "Each field has its own hourly rate and evening rate.",
-    "noFields": "No fields yet. Add one so players can book.",
-    "fieldDeleted": "Field deleted",
-    "fieldName": "Field name",
+    "pendingBody": "Our team is checking this listing. You can still add pitches and prices.",
+    "fieldsAndPricing": "Pitches and pricing",
+    "addField": "Add pitch",
+    "editField": "Edit pitch",
+    "fieldBody": "Each pitch has its own hourly rate and evening rate.",
+    "noFields": "No pitches yet. Add one so players can book.",
+    "fieldDeleted": "Pitch deleted",
+    "fieldName": "Pitch name",
     "fieldPosition": "Position in the venue",
     "fieldPositionPlaceholder": "Indoor hall, north side",
     "surface": "Surface",

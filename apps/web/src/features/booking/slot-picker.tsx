@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, APP, selectRange, type Slot } from "@pitchkh/shared";
+import { addDays, APP, minutesOf, selectRange, type Slot } from "@pitchkh/shared";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarX } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
@@ -46,8 +46,8 @@ export function DateStrip({ value, onChange, days = 14, labelId }: { value: stri
 const minSlots = APP.minBookingMinutes / APP.slotMinutes;
 
 /**
- * The live slot grid for one field and day. Tap a start time, then tap an end
- * time; the range fills in between. Booked, blocked and past slots are disabled,
+ * The live slot grid for one field and day. Tap the first half-hour, then the
+ * last one; the range fills in between and a live line shows the end time. Booked, blocked and past slots are disabled,
  * and a range can never jump over one (conflict detection from packages/shared).
  */
 export function SlotGrid({ fieldId, date, value, onChange }: { fieldId: string; date: string; value: TimeRange | null; onChange: (range: TimeRange | null) => void }) {
@@ -112,12 +112,21 @@ export function SlotGrid({ fieldId, date, value, onChange }: { fieldId: string; 
                 )}
               >
                 {slot.start}
-                {slot.peak && !disabled ? <span aria-hidden className={cn("absolute top-1 right-1 size-1.5 rounded-full", selected ? "bg-accent" : "bg-accent")} /> : null}
+                {slot.peak && !disabled ? <span aria-hidden className="absolute top-1 right-1 size-1.5 rounded-full bg-accent" /> : null}
               </button>
             </motion.li>
           );
         })}
       </motion.ol>
+      {/* Says exactly when the game ends, since the last tapped half-hour is included. */}
+      <div aria-live="polite">
+        {value ? (
+          <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-xl bg-primary/10 px-3 py-2.5 text-sm">
+            <span className="font-num font-bold text-primary">{t("rangePicked", { start: value.startTime, end: value.endTime, hours: (minutesOf(value.endTime) - minutesOf(value.startTime)) / 60 })}</span>
+            {anchor !== null ? <span className="text-muted-foreground">{t("rangeExtend")}</span> : null}
+          </p>
+        ) : null}
+      </div>
       <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground" aria-label={t("legend")}>
         <li className="flex items-center gap-1.5"><span className="size-3.5 rounded bg-card ring-1 ring-border" />{t("slot.available")}</li>
         <li className="flex items-center gap-1.5"><span className="size-3.5 rounded bg-primary" />{t("slot.selected")}</li>

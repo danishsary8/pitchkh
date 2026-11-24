@@ -48,7 +48,7 @@ await page.getByRole("radiogroup", { name: "Day" }).getByRole("radio").nth(1).cl
 await page.getByRole("radio", { name: /^19:00/ }).click();
 await page.getByRole("radio", { name: /^Big Pitch, / }).click();
 await settle(page);
-await scrollTo(page, "Start time");
+await scrollTo(page, "Free pitches at");
 await save(page, "booking-pick");
 
 // 2. Confirm screen.

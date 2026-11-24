@@ -627,7 +627,7 @@
     },
     "pickDay": "Day",
     "pickTime": "Start and end time",
-    "pickTimeHint": "Tap a start, then an end. {min} to {max} hours.",
+    "pickTimeHint": "Tap the first and last half-hour you want. {min} to {max} hours.",
     "loadingSlots": "Loading available times",
     "slotGrid": "Available times",
     "legend": "Legend",
@@ -725,7 +725,7 @@
     "rescheduleBody": "Same pitch, new day or time. The price updates to the new slot.",
     "moveTo": "Move to {time}",
     "rescheduled": "Booking moved",
-    "startAround": "Start time",
+    "startAround": "Free pitches at",
     "anyTime": "Any time",
     "freeAtTime": "{count, plural, =0 {No pitch free at {time}} one {# pitch free at {time}} other {# pitches free at {time}}}",
     "startChip": "{time}, {count, plural, =0 {none free} one {# pitch free} other {# pitches free}}",
@@ -742,7 +742,9 @@
     "paymentExpired": "Time is up and the slot was released. Book again to pay.",
     "waitingForPayment": "Waiting for your payment",
     "awaitingTitle": "Finish paying to keep this slot",
-    "awaitingBody": "We're holding your slot until {time}. After that it is released."
+    "awaitingBody": "We're holding your slot until {time}. After that it is released.",
+    "rangePicked": "{start} – {end} · {hours} h",
+    "rangeExtend": "Tap a later time to play longer."
   },
   "review": {
     "venueTitle": "Rate {name}",

@@ -20,6 +20,7 @@ export const qk = {
   venues: (params?: VenueListQuery) => ["venues", "list", params ?? {}] as const,
   venue: (idOrSlug: string) => ["venues", "detail", idOrSlug] as const,
   availability: (fieldId: string, date: string) => ["availability", fieldId, date] as const,
+  venueAvailability: (venueId: string, date: string) => ["availability", "venue", venueId, date] as const,
   weather: (province: string, date: string) => ["weather", province, date] as const,
   reviews: (params?: ReviewListQuery) => ["reviews", params ?? {}] as const,
   bookings: (params?: BookingListQuery) => ["bookings", "list", params ?? {}] as const,

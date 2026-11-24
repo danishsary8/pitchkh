@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** End-to-end smoke test on a phone viewport: sign in, book, see the receipt, cancel. */
+/** End-to-end smoke test on a phone viewport: sign in, pick a pitch on the map, book, see the receipt, cancel. */
 import { mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
@@ -17,20 +17,28 @@ const shot = (name) => page.screenshot({ path: join(out, `${name}.png`) });
 const step = async (name, fn) => { await fn(); await page.waitForTimeout(700); await shot(name); console.log("✓", name); };
 
 await step("1-login", async () => { await page.goto(`${base}/en/login?next=/book/russey-keo-futsal`, { waitUntil: "networkidle" }); });
-await step("2-field", async () => { await page.getByRole("button", { name: /Player/ }).click(); await page.waitForURL(/\/book\//); await page.getByRole("radio", { name: /Court 1/ }).click(); });
+await step("2-pick-pitch", async () => {
+  await page.getByRole("button", { name: /Player/ }).click();
+  await page.waitForURL(/\/book\//);
+  await page.getByRole("radiogroup", { name: "Day" }).getByRole("radio").nth(5).click();
+  // Tap the pitch on the map (each pitch is a radio named "Court 1, 5v5, Free").
+  await page.getByRole("radio", { name: /^Court 1, / }).click();
+});
 await step("3-time", async () => {
-  await page.getByRole("button", { name: "Continue" }).last().click();
-  await page.getByRole("radio").nth(5).click();
   await page.locator('ol[aria-label="Available times"] button:not([disabled])').first().waitFor();
   const free = page.locator('ol[aria-label="Available times"] button:not([disabled])');
   await free.nth(2).click();
   await free.nth(4).click();
 });
-await step("4-details", async () => { await page.getByRole("button", { name: "Continue" }).last().click(); await page.getByRole("radio", { name: /Find me an opponent/ }).click(); await page.getByRole("button", { name: "Water bottles +" }).click(); });
-await step("5-pay", async () => { await page.getByRole("button", { name: "Continue" }).last().click(); });
-await step("6-khqr", async () => { await page.getByRole("button", { name: /^Pay \$/ }).last().click(); await page.getByRole("button", { name: "I've paid" }).waitFor(); });
-await step("7-receipt", async () => { await page.getByRole("button", { name: "I've paid" }).click(); await page.waitForURL(/\/booking\//, { timeout: 15000 }); await page.getByRole("heading", { name: "You're booked" }).waitFor(); });
-await step("8-cancel", async () => { await page.getByRole("button", { name: "Cancel booking" }).click(); await page.getByRole("button", { name: "Cancel booking" }).last().click(); await page.getByText("Cancelled").first().waitFor(); });
+await step("4-confirm", async () => {
+  await page.getByRole("button", { name: "Continue" }).last().click();
+  await page.getByRole("radio", { name: /Find me an opponent/ }).click();
+  await page.getByRole("button", { name: /Players and extras/ }).click();
+  await page.getByRole("button", { name: "Water bottles +" }).click();
+});
+await step("5-khqr", async () => { await page.getByRole("button", { name: /^Pay \$/ }).last().click(); await page.getByRole("button", { name: "I've paid" }).waitFor(); });
+await step("6-receipt", async () => { await page.getByRole("button", { name: "I've paid" }).click(); await page.waitForURL(/\/booking\//, { timeout: 15000 }); await page.getByRole("heading", { name: "You're booked" }).waitFor(); });
+await step("7-cancel", async () => { await page.getByRole("button", { name: "Cancel booking" }).click(); await page.getByRole("button", { name: "Cancel booking" }).last().click(); await page.getByText("Cancelled").first().waitFor(); });
 await browser.close();
 console.log(errors.length ? "Console errors:\n" + [...new Set(errors)].join("\n") : "No console errors");
 process.exit(errors.length ? 1 : 0);

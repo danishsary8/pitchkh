@@ -586,16 +586,12 @@
   "booking": {
     "progress": "ជំហានទី {step} នៃ {total}",
     "steps": {
-      "field": "ទីលាន",
-      "time": "ម៉ោង",
-      "details": "ព័ត៌មាន",
-      "pay": "បង់ប្រាក់"
+      "pick": "ទីលាន និងម៉ោង",
+      "confirm": "បញ្ជាក់ និងបង់ប្រាក់"
     },
     "title": {
-      "field": "ជ្រើសទីលាន",
-      "time": "ជ្រើសម៉ោង",
-      "details": "រៀបចំការលេង",
-      "pay": "ពិនិត្យ និងបង់ប្រាក់"
+      "pick": "កក់ទីលាន",
+      "confirm": "បញ្ជាក់ និងបង់ប្រាក់"
     },
     "pickDay": "ថ្ងៃ",
     "pickTime": "ម៉ោងចាប់ផ្តើម និងបញ្ចប់",
@@ -696,7 +692,16 @@
     "rescheduleTitle": "ប្តូរម៉ោងការកក់",
     "rescheduleBody": "ទីលានដដែល ថ្ងៃ ឬម៉ោងថ្មី។ តម្លៃនឹងប្រែតាមម៉ោងថ្មី។",
     "moveTo": "ប្តូរទៅ {time}",
-    "rescheduled": "បានប្តូរម៉ោងការកក់"
+    "rescheduled": "បានប្តូរម៉ោងការកក់",
+    "startAround": "ម៉ោងចាប់ផ្តើម",
+    "anyTime": "ម៉ោងណាក៏បាន",
+    "freeAtTime": "{count, plural, =0 {គ្មានទីលានទំនេរនៅម៉ោង {time}} other {ទីលានទំនេរ # នៅម៉ោង {time}}}",
+    "startChip": "{time}, {count, plural, =0 {មិនទំនេរ} other {ទីលានទំនេរ #}}",
+    "pickPitch": "ជ្រើសទីលាន",
+    "pickPitchHint": "ចុចលើទីលាននៅលើផែនទី ដើម្បីមើលម៉ោងទំនេរ។",
+    "noneFree": "ទីលានទាំងអស់ត្រូវបានកក់នៅម៉ោងនេះ។ សូមសាកល្បងម៉ោង ឬថ្ងៃផ្សេង។",
+    "extrasTitle": "អ្នកលេង និងសេវាបន្ថែម",
+    "playersShort": "អ្នកលេង {count} នាក់"
   },
   "review": {
     "venueTitle": "ដាក់ពិន្ទុ {name}",
@@ -962,5 +967,19 @@
     "dismissTitle": "ច្រានចោលរបាយការណ៍នេះ",
     "resolutionPlaceholder": "តើបានធ្វើអ្វីខ្លះ?",
     "reportClosed": "បានបិទរបាយការណ៍"
+  },
+  "pitchMap": {
+    "label": "ផែនទីទីលាននៅ {name}",
+    "whereLabel": "ទីតាំង {name} នៅក្នុងកន្លែងនេះ",
+    "pitchLabel": "{name}, {format}, {state}",
+    "state": {
+      "free": "ទំនេរ",
+      "full": "ពេញ",
+      "closed": "បិទ"
+    },
+    "selected": "ការជ្រើសរបស់អ្នក",
+    "legend": "សញ្ញាផែនទី",
+    "indoor": "មានដំបូល",
+    "lit": "មានភ្លើងបំភ្លឺ"
   }
 }

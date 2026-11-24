@@ -1,9 +1,11 @@
-import type { Extras, OpponentMode, PaymentMethod, SkillLevel } from "@pitchkh/shared";
+import type { Extras, OpponentMode, PaymentMethod, SkillLevel, Sport } from "@pitchkh/shared";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface BookingDraft {
   slug: string;
+  /** Sport shown on the pitch map (other sports are faded). */
+  sport: Sport | null;
   fieldId: string | null;
   date: string | null;
   startTime: string | null;
@@ -15,11 +17,14 @@ export interface BookingDraft {
   opponentMode: OpponentMode;
   matchLevel: SkillLevel;
   paymentMethod: PaymentMethod;
+  /** Start time picked from the "time first" chips; colours the map. */
+  wantedStart: string | null;
+  /** 0 = pick (pitch, day, time), 1 = confirm and pay. */
   step: number;
 }
 
 const emptyDraft = (slug: string): BookingDraft => ({
-  slug, fieldId: null, date: null, startTime: null, endTime: null, teamSize: null, referee: false,
+  slug, sport: null, fieldId: null, wantedStart: null, date: null, startTime: null, endTime: null, teamSize: null, referee: false,
   extras: { waterBottles: 0, ball: false, bibs: false }, notes: "", opponentMode: "have", matchLevel: "intermediate", paymentMethod: "khqr", step: 0,
 });
 
@@ -45,8 +50,10 @@ export const useBookingDraft = create<DraftState>()(
         if (current?.slug === slug) {
           // A different field or day in the link restarts the time selection.
           const changed = (clean.fieldId && clean.fieldId !== current.fieldId) || (clean.date && clean.date !== current.date);
-          set({ draft: { ...current, ...clean, ...(changed ? { startTime: null, endTime: null, step: clean.fieldId ? 1 : 0 } : {}) } });
-        } else set({ draft: { ...emptyDraft(slug), ...clean, step: clean.fieldId ? 1 : 0 } });
+          // Drafts saved by the older 4-step flow can carry step 2 or 3.
+          const step = Math.min(current.step, 1);
+          set({ draft: { ...emptyDraft(slug), ...current, ...clean, step, ...(changed ? { startTime: null, endTime: null, wantedStart: null, step: 0 } : {}) } });
+        } else set({ draft: { ...emptyDraft(slug), ...clean, step: 0 } });
       },
       update: (patch) => set((s) => (s.draft ? { draft: { ...s.draft, ...patch } } : s)),
       clear: () => set({ draft: null }),

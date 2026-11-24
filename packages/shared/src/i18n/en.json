@@ -586,16 +586,12 @@
   "booking": {
     "progress": "Step {step} of {total}",
     "steps": {
-      "field": "Field",
-      "time": "Time",
-      "details": "Details",
-      "pay": "Pay"
+      "pick": "Pitch and time",
+      "confirm": "Confirm and pay"
     },
     "title": {
-      "field": "Choose a field",
-      "time": "Pick your time",
-      "details": "Set up your game",
-      "pay": "Review and pay"
+      "pick": "Book a pitch",
+      "confirm": "Confirm and pay"
     },
     "pickDay": "Day",
     "pickTime": "Start and end time",
@@ -641,7 +637,7 @@
     "field": "Field",
     "summary": "Booking summary",
     "pickToSeePrice": "Pick a field and time to see the price.",
-    "hintField": "Choose a field to continue",
+    "hintField": "Pick a pitch to continue",
     "hintTime": "Tap a start and end time",
     "paymentMethod": "Payment",
     "signInToPay": "Sign in to book",
@@ -696,7 +692,16 @@
     "rescheduleTitle": "Move your booking",
     "rescheduleBody": "Same field, new day or time. The price updates to the new slot.",
     "moveTo": "Move to {time}",
-    "rescheduled": "Booking moved"
+    "rescheduled": "Booking moved",
+    "startAround": "Start time",
+    "anyTime": "Any time",
+    "freeAtTime": "{count, plural, =0 {No pitch free at {time}} one {# pitch free at {time}} other {# pitches free at {time}}}",
+    "startChip": "{time}, {count, plural, =0 {none free} one {# pitch free} other {# pitches free}}",
+    "pickPitch": "Pick a pitch",
+    "pickPitchHint": "Tap a pitch on the map to see its free times.",
+    "noneFree": "Every pitch is taken at this time. Try another start time or day.",
+    "extrasTitle": "Players and extras",
+    "playersShort": "{count} players"
   },
   "review": {
     "venueTitle": "Rate {name}",
@@ -962,5 +967,19 @@
     "dismissTitle": "Dismiss this report",
     "resolutionPlaceholder": "What was done about it?",
     "reportClosed": "Report closed"
+  },
+  "pitchMap": {
+    "label": "Map of the pitches at {name}",
+    "whereLabel": "Where {name} is at the venue",
+    "pitchLabel": "{name}, {format}, {state}",
+    "state": {
+      "free": "Free",
+      "full": "Full",
+      "closed": "Closed"
+    },
+    "selected": "Your pick",
+    "legend": "Map key",
+    "indoor": "Covered",
+    "lit": "Floodlit"
   }
 }

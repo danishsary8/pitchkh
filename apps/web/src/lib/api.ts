@@ -19,6 +19,9 @@ function createWebStorage(): StorageAdapter {
 
 const apiMode: ApiMode = process.env.NEXT_PUBLIC_API_MODE === "real" ? "real" : "mock";
 
+/** True when the app runs on the built-in mock API (the public demo). */
+export const isDemo = apiMode === "mock";
+
 /**
  * The single API client for the web app. This is the only place that reads
  * Next.js env vars: shared code receives plain config.

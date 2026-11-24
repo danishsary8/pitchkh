@@ -1074,5 +1074,9 @@
     "withTeam": "Share with team",
     "bookingTitle": "Our game on PitchKH",
     "bookingText": "⚽ {pitch} at {venue}\n{day}, {time}\n{address}\nSee you there!"
+  },
+  "demo": {
+    "notice": "Demo with sample venues and bookings. Payments are simulated.",
+    "reset": "Reset demo"
   }
 }

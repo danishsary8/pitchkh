@@ -12,6 +12,7 @@ import { type DashboardLink, isDashboardCurrent, useAdminLinks, useOwnerLinks } 
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { LocaleToggle, NotificationBell, ThemeToggle } from "./controls";
+import { DemoNotice } from "./demo-notice";
 import { features } from "@/lib/features";
 
 const isActive = (pathname: string, href: string): boolean => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
@@ -161,6 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a href="#main" className="sr-only z-50 rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
         {t("skipToContent")}
       </a>
+      <DemoNotice />
       <Header />
       <main id="main" className={cn("flex min-h-[calc(100dvh-var(--header-h))] flex-col", focused ? "pb-0" : "pb-tabbar")}>
         {children}

@@ -159,7 +159,16 @@ and the API tests on a real PostgreSQL for every push.
 Load demo data on a fresh deploy only if you want it (it empties every table):
 `node dist/seed.js` in the API container.
 
-## Plugging in a real payment provider
+## Bakong KHQR (real payments)
+
+Set `PAYMENT_PROVIDER=bakong` with `BAKONG_TOKEN` and `BAKONG_ACCOUNT_ID`
+(`src/bakong.ts`). The API makes a dynamic KHQR for the exact USD amount, with
+the booking code as bill number, that expires with the hold. Bakong has no
+webhook, so the API asks `check_transaction_by_md5` while the player waits
+(each poll, at most every 3 s) and every 10 s in the background. A payment
+only counts if the amount and the receiving account match.
+
+## Plugging in another payment provider
 
 `src/payments.ts` defines `PaymentProvider` with two methods: `createIntent`
 (returns the KHQR string or app link plus a `reference`) and `verifyWebhook`

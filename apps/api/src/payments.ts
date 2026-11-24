@@ -15,6 +15,8 @@ export interface PaymentProvider {
   verifyWebhook(rawBody: string, headers: (name: string) => string | undefined): { reference: string } | null;
   /** The sandbox can confirm a payment on request (the "I've paid" button). Real providers can't. */
   canSimulate: boolean;
+  /** Providers without webhooks (Bakong): ask whether this payment has arrived. */
+  checkPaid?(reference: string, expected: { amountUsd: number }): Promise<boolean>;
 }
 
 export const sign = (secret: string, body: string): string => createHmac("sha256", secret).update(body).digest("hex");

@@ -1,13 +1,14 @@
 import { ApiError } from "@pitchkh/shared";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createRouter, toApiErrorFromDb, type Services } from "./http";
+import { createRouter, insertNotification, toApiErrorFromDb, type Ctx, type Services } from "./http";
+import { bakongProvider } from "./bakong";
 import { registerAdminRoutes } from "./routes/admin";
 import { registerAuthRoutes } from "./routes/auth";
 import { registerBookingRoutes } from "./routes/bookings";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerOwnerRoutes } from "./routes/owner";
-import { registerPaymentRoutes } from "./routes/payments";
+import { checkPendingPayments, registerPaymentRoutes } from "./routes/payments";
 import { registerSocialRoutes } from "./routes/social";
 import { registerTelegramRoutes } from "./routes/telegram";
 import { env } from "./env";
@@ -63,7 +64,25 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   registerAdminRoutes(route);
   registerSocialRoutes(route);
   registerTelegramRoutes(route, telegram);
-  registerPaymentRoutes(route, services.payments ?? sandboxProvider(env.payments.webhookSecret));
+  const provider = services.payments ?? paymentProviderFromEnv();
+  registerPaymentRoutes(route, provider);
+  if (services.runJobs && provider.checkPaid) {
+    const notify: Ctx["notify"] = async (tx, userId, type, params, href, meta) => {
+      await insertNotification(tx, services.clock(), userId, type, params, href);
+      services.onNotify?.({ userId, type, params, href, meta });
+    };
+    setInterval(() => {
+      checkPendingPayments({ db: services.db, now: services.clock(), notify }, provider).catch((e: unknown) => console.error("payment job failed", e));
+    }, 10_000).unref();
+  }
   app.route("/api/v1", api);
   return app;
+}
+
+/** PAYMENT_PROVIDER=bakong needs its keys; anything else uses the sandbox. */
+function paymentProviderFromEnv() {
+  if (env.payments.provider !== "bakong") return sandboxProvider(env.payments.webhookSecret);
+  const b = env.payments.bakong;
+  if (!b.token || !b.accountId) throw new Error("PAYMENT_PROVIDER=bakong needs BAKONG_TOKEN and BAKONG_ACCOUNT_ID. See apps/api/.env.example.");
+  return bakongProvider(b);
 }

@@ -4,7 +4,7 @@ import { PAYMENT_METHODS, type PaymentIntent, type PaymentMethod } from "@pitchk
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Banknote, CheckCircle2, QrCode, Smartphone, Wallet } from "lucide-react";
 import { useNow, useTranslations } from "next-intl";
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useErrorMessage } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
@@ -42,33 +42,23 @@ export function PaymentMethodPicker({ value, onChange }: { value: PaymentMethod;
   );
 }
 
-/** A QR-looking pattern (not a real KHQR payload: payments are mocked). */
-function MockQr({ seed }: { seed: string }) {
-  const cells = useMemo(() => {
-    let h = 2166136261;
-    const bits: boolean[] = [];
-    for (let i = 0; i < 21 * 21; i++) {
-      h ^= seed.charCodeAt(i % seed.length) + i;
-      h = Math.imul(h, 16777619);
-      bits.push(((h >>> 13) & 1) === 1);
-    }
-    return bits;
-  }, [seed]);
-  const finder = (x: number, y: number): boolean => (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13);
-  const finderOn = (x: number, y: number): boolean => {
-    const fx = x > 13 ? x - 14 : x;
-    const fy = y > 13 ? y - 14 : y;
-    return fx === 0 || fx === 6 || fy === 0 || fy === 6 || (fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4);
-  };
-  return (
-    <svg viewBox="0 0 23 23" className="size-52 rounded-2xl bg-white p-2" role="img" aria-label="KHQR">
-      {cells.map((on, i) => {
-        const x = i % 21;
-        const y = Math.floor(i / 21);
-        const fill = finder(x, y) ? finderOn(x, y) : on;
-        return fill ? <rect key={i} x={x + 1} y={y + 1} width="1" height="1" fill="#0c1f1a" /> : null;
-      })}
-    </svg>
+/** A real, scannable QR code (KHQR) drawn as SVG. The QR library loads only when needed. */
+function KhqrCode({ payload, label }: { payload: string; label: string }) {
+  const [svg, setSvg] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    void import("qrcode").then((qr) => qr.toString(payload, { type: "svg", margin: 1, errorCorrectionLevel: "M" })).then((markup) => {
+      if (live) setSvg(markup);
+    });
+    return () => {
+      live = false;
+    };
+  }, [payload]);
+  return svg ? (
+    // The SVG comes from the QR library, not from user input.
+    <div role="img" aria-label={label} className="size-52 rounded-2xl bg-white p-1.5 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} />
+  ) : (
+    <div className="grid size-52 place-items-center rounded-2xl bg-white" aria-busy><Spinner className="text-primary" /></div>
   );
 }
 
@@ -113,7 +103,7 @@ export function PaymentSheet({ intent, open, onOpenChange, onPaid }: { intent: P
         {current.qrPayload ? (
           <div className="rounded-3xl bg-krama p-3">
             <p className="pb-2 text-sm font-bold tracking-wide text-white">KHQR</p>
-            <MockQr seed={current.qrPayload} />
+            <KhqrCode payload={current.qrPayload} label={`KHQR ${money.usd(current.amountUsd)}`} />
           </div>
         ) : (
           <div className="grid size-28 place-items-center rounded-3xl bg-secondary">{current.method === "aba" ? <Smartphone className="size-12 text-primary" /> : <Wallet className="size-12 text-primary" />}</div>
@@ -127,7 +117,7 @@ export function PaymentSheet({ intent, open, onOpenChange, onPaid }: { intent: P
             <a href={current.deeplink}>{t("openApp", { method: tp(current.method) })}</a>
           </Button>
         ) : null}
-        <p className="max-w-xs text-sm text-pretty text-muted-foreground">{t(current.method === "khqr" ? "scanHint" : "appHint", { method: tp(current.method) })}</p>
+        <p className="max-w-xs text-sm text-pretty text-muted-foreground">{t(current.qrPayload ? "scanHint" : "appHint", { method: tp(current.method) })}</p>
         {expired ? (
           <p className="rounded-xl bg-warning-surface px-3 py-2 text-sm font-semibold text-warning" role="alert">{t("paymentExpired")}</p>
         ) : (

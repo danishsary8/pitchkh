@@ -1,6 +1,6 @@
 import { ApiError, holdsSlot, type PaymentIntent } from "@pitchkh/shared";
 import { notFound } from "@pitchkh/shared/mock";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import type { Tx } from "../db/client";
 import { iso, toBooking } from "../db/mappers";
 import * as t from "../db/schema";
@@ -43,6 +43,33 @@ export async function confirmPayment(ctx: Pick<Ctx, "notify" | "now">, tx: Tx, r
   return paid ?? null;
 }
 
+/** When the last Bakong check ran per payment, so frequent polling doesn't hammer their API. */
+const lastChecked = new Map<string, number>();
+
+/** Asks a no-webhook provider (Bakong) about one pending payment and confirms it if paid. */
+export async function checkWithProvider(ctx: Pick<Ctx, "notify" | "now" | "db">, provider: PaymentProvider, payment: PaymentRow): Promise<boolean> {
+  if (!provider.checkPaid || payment.status !== "pending" || payment.expiresAt <= ctx.now) return false;
+  const last = lastChecked.get(payment.id) ?? 0;
+  if (Date.now() - last < 3000) return false;
+  lastChecked.set(payment.id, Date.now());
+  try {
+    if (!(await provider.checkPaid(payment.reference, { amountUsd: payment.amountUsd }))) return false;
+  } catch (e) {
+    console.error("payment check failed", e);
+    return false;
+  }
+  await ctx.db.transaction((tx) => confirmPayment(ctx, tx, payment.reference));
+  lastChecked.delete(payment.id);
+  return true;
+}
+
+/** Background job: check every pending payment that hasn't expired (covers players who closed the app). */
+export async function checkPendingPayments(ctx: Pick<Ctx, "notify" | "now" | "db">, provider: PaymentProvider): Promise<void> {
+  if (!provider.checkPaid) return;
+  const pending = await ctx.db.select().from(t.payments).where(and(eq(t.payments.status, "pending"), gt(t.payments.expiresAt, ctx.now)));
+  for (const payment of pending) await checkWithProvider(ctx, provider, payment);
+}
+
 export function registerPaymentRoutes(route: Route, provider: PaymentProvider): void {
   /** The player's own payment, with its booking's current status. */
   const ownPayment = async (ctx: Ctx, tx: Tx = ctx.db) => {
@@ -76,6 +103,11 @@ export function registerPaymentRoutes(route: Route, provider: PaymentProvider): 
 
   route("GET", "/payments/:id", "auth", async (ctx) => {
     const { payment, booking } = await ownPayment(ctx);
+    // Bakong can't call us: each poll from the waiting player asks it directly.
+    if (await checkWithProvider(ctx, provider, payment)) {
+      const fresh = await ownPayment(ctx);
+      return intentOut(fresh.payment, fresh.booking.status, ctx.now);
+    }
     return intentOut(payment, booking.status, ctx.now);
   });
 

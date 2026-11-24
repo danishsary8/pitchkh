@@ -9,7 +9,8 @@ const { createTelegram } = await import("./telegram");
 
 const { db } = createDb();
 const telegram = createTelegram(env.telegram);
-const app = createApp({ db, clock: () => new Date() }, env.corsOrigins, telegram);
+const app = createApp({ db, clock: () => new Date(), runJobs: true }, env.corsOrigins, telegram);
+console.log(`Payments: ${env.payments.provider}`);
 // Unpaid online bookings give their slot back when the hold runs out.
 const { releaseExpiredHolds } = await import("./routes/bookings");
 setInterval(() => {

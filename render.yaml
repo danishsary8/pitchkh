@@ -29,7 +29,13 @@ services:
       - key: RESEND_API_KEY
         sync: false # optional: emails are logged without it
       - key: PAYMENT_PROVIDER
-        value: sandbox
+        value: bakong # "sandbox" for a fake bank while testing
+      - key: BAKONG_TOKEN
+        sync: false
+      - key: BAKONG_ACCOUNT_ID
+        sync: false # e.g. yourname@aclb (where the money goes)
+      - key: BAKONG_MERCHANT_NAME
+        value: PitchKH
       - key: PAYMENT_WEBHOOK_SECRET
         generateValue: true
       - key: TELEGRAM_BOT_TOKEN

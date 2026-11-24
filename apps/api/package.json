@@ -16,6 +16,7 @@
   "dependencies": {
     "@hono/node-server": "^2.1.11",
     "@pitchkh/shared": "workspace:*",
+    "bakong-khqr": "^1.0.20",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.4",
     "hono": "^4.13.21",

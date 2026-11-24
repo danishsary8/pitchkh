@@ -252,6 +252,11 @@ The second command runs Lighthouse (mobile) against the production server.
 
 ---
 
+## Going live
+
+Everything that needs **your** accounts (Render, Vercel, Bakong KHQR, Telegram
+bot, email) is in one list: [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
+
 ## Running on the real backend
 
 `apps/api` is the v1 backend: **Hono + PostgreSQL + Drizzle**, TypeScript. It
@@ -318,7 +323,8 @@ The contract lives in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) and the tab
 - [x] Real backend v1 (`apps/api`): accounts, venues, bookings, owner, admin, Telegram alerts
 - [x] Online payment flow (sandbox provider), photo upload, password reset
 - [x] Matches, chat and reviews on the API
-- [ ] Real payment provider keys (Bakong KHQR or ABA PayWay) and an email service (Resend)
+- [x] Bakong KHQR payments (real, scannable QR; paid status checked with Bakong)
+- [ ] Go live: follow [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md)
 - [ ] Deploy (Vercel + Railway/Render/Neon) and a real Telegram bot
 - [ ] Real payments (KHQR / ABA PayWay / Wing)
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`

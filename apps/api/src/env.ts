@@ -24,6 +24,13 @@ export const env = {
     // Only "sandbox" exists today. A real provider (Bakong KHQR, ABA PayWay) plugs in behind src/payments.ts.
     provider: process.env.PAYMENT_PROVIDER ?? "sandbox",
     webhookSecret: required("PAYMENT_WEBHOOK_SECRET", production ? undefined : "dev-payment-webhook-secret"),
+    bakong: {
+      token: process.env.BAKONG_TOKEN ?? "",
+      accountId: process.env.BAKONG_ACCOUNT_ID ?? "",
+      merchantName: process.env.BAKONG_MERCHANT_NAME ?? "PitchKH",
+      merchantCity: process.env.BAKONG_MERCHANT_CITY ?? "Phnom Penh",
+      apiUrl: process.env.BAKONG_API_URL ?? "https://api-bakong.nbc.gov.kh",
+    },
   },
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN ?? "",

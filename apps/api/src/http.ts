@@ -20,6 +20,8 @@ export interface Services {
   mailer?: import("./mailer").Mailer;
   /** Venue photo storage (local disk by default). */
   storage?: import("./storage").PhotoStorage;
+  /** Run background jobs (payment checks). Off in tests. */
+  runJobs?: boolean;
   /** Online payment provider (sandbox by default). */
   payments?: import("./payments").PaymentProvider;
   onNotify?: (n: { userId: string; type: NotificationType; params: Record<string, string>; href: string; meta?: Record<string, string> }) => void;

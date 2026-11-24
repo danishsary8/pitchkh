@@ -96,6 +96,8 @@ src/
   http.ts          route(method, path, access, handler) + auth + notifications
   views.ts         read models: load rows, run the shared summary logic
   telegram.ts      bot client, alert messages (EN/KM), owner lookup
+  payments.ts      payment providers (sandbox, bakong) behind one interface
+  storage.ts       venue photos: local disk or Cloudflare R2 behind one interface
   auth/tokens.ts   JWT access tokens, rotating refresh tokens
   routes/          auth, venues, bookings, notifications, owner, admin, telegram
   db/              schema.ts (Drizzle), migrations/*.sql, migrate.ts, seed.ts, mappers.ts
@@ -115,6 +117,11 @@ test/              contract tests through the web app's own API client (real mod
 - **Telegram.** Owner notifications for bookings are also sent to a linked
   Telegram chat after the response is committed; a Telegram outage never fails
   a booking.
+- **Photos.** `PhotoStorage` has two methods (`save`, `remove`). `STORAGE=local`
+  writes to `UPLOAD_DIR` and serves `/uploads/...`; `STORAGE=r2` PUTs to a
+  Cloudflare R2 bucket (S3 API, requests signed by `aws4fetch`) and returns the
+  bucket's public URL, so photos survive redeploys on free hosts. Either way,
+  only files the API named itself (24 hex chars) are ever deleted.
 
 ## apps/web
 

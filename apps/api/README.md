@@ -108,7 +108,9 @@ constraint is what holds when two requests arrive at the same moment.
 | `CORS_ORIGINS` | no | Web app origins, comma-separated. Default `http://localhost:3000` |
 | `WEB_URL` | yes (prod) | The web app's URL, for password reset links |
 | `PUBLIC_URL` | yes (prod) | This API's public URL, for photo links |
-| `UPLOAD_DIR` | no | Where photos are saved (default `uploads`). Needs a persistent disk in production |
+| `STORAGE` | no | Venue photos: `local` (default) or `r2` (Cloudflare R2; use this on hosts that wipe the disk) |
+| `UPLOAD_DIR` | no | With `local`: where photos are saved (default `uploads`). Needs a persistent disk in production |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL` | with `r2` | The bucket, an Object Read & Write token, and the bucket's public URL. See docs/SETUP_CHECKLIST.md step 3 |
 | `RESEND_API_KEY`, `MAIL_FROM` | for email | Without a key, emails are printed to the log |
 | `PAYMENT_PROVIDER` | no | `sandbox` (only option until real keys) |
 | `PAYMENT_WEBHOOK_SECRET` | yes (prod) | Random string; checks the provider's webhook signature |
@@ -180,5 +182,4 @@ notifications, the web app's QR sheet) already works.
 
 ## Next
 
-Real payment keys, an email service, photo storage on S3/R2 for hosts without
-a persistent disk, and the mobile app.
+Going live (docs/SETUP_CHECKLIST.md) and the mobile app.

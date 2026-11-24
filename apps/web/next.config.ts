@@ -3,6 +3,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const apiOrigin = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLIC_API_URL) : null;
+// With STORAGE=r2 on the API, photos come from the bucket's public URL (same value as the API's R2_PUBLIC_URL).
+const photosOrigin = process.env.NEXT_PUBLIC_PHOTOS_URL ? new URL(process.env.NEXT_PUBLIC_PHOTOS_URL) : null;
+const pattern = (origin: URL, pathname: string) => ({ protocol: origin.protocol.replace(":", "") as "http" | "https", hostname: origin.hostname, port: origin.port, pathname });
 
 const nextConfig: NextConfig = {
   // packages/shared ships TypeScript source; Next compiles it with the app.
@@ -10,8 +13,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
-    // Venue photos uploaded to the real API are served from its /uploads.
-    remotePatterns: apiOrigin ? [{ protocol: apiOrigin.protocol.replace(":", "") as "http" | "https", hostname: apiOrigin.hostname, port: apiOrigin.port, pathname: "/uploads/**" }] : [],
+    // Uploaded venue photos: the API's /uploads (local storage) or the R2 bucket's /venues.
+    remotePatterns: [...(apiOrigin ? [pattern(apiOrigin, "/uploads/**")] : []), ...(photosOrigin ? [pattern(photosOrigin, "/venues/**")] : [])],
     deviceSizes: [360, 430, 640, 768, 1024, 1280, 1536],
   },
   experimental: {

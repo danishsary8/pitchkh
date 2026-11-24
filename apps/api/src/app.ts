@@ -16,7 +16,7 @@ import { sandboxProvider } from "./payments";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createMailer, type Mailer } from "./mailer";
-import { localStorage, type PhotoStorage } from "./storage";
+import { localStorage, r2Storage, type PhotoStorage } from "./storage";
 import { alertOwner, type TelegramClient } from "./telegram";
 import { registerVenueRoutes } from "./routes/venues";
 
@@ -25,7 +25,7 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   services = {
     ...services,
     mailer: services.mailer ?? createMailer(env.mail.resendKey, env.mail.from),
-    storage: services.storage ?? localStorage(uploadDir, env.publicUrl),
+    storage: services.storage ?? (env.storage.driver === "r2" ? r2Storage(env.storage.r2) : localStorage(uploadDir, env.publicUrl)),
   };
   // Booking alerts go to the owner's Telegram after the response; a Telegram outage never fails a booking.
   if (telegram && !services.onNotify) {

@@ -7,6 +7,17 @@ function required(name: string, fallback?: string): string {
 
 const production = process.env.NODE_ENV === "production";
 
+function storageConfig() {
+  const driver = process.env.STORAGE || "local";
+  if (driver !== "local" && driver !== "r2") throw new Error(`STORAGE must be "local" or "r2", not "${driver}".`);
+  const r2 = driver === "r2";
+  const read = (name: string): string => (r2 ? required(name) : "");
+  return {
+    driver: driver as "local" | "r2",
+    r2: { accountId: read("R2_ACCOUNT_ID"), accessKeyId: read("R2_ACCESS_KEY_ID"), secretAccessKey: read("R2_SECRET_ACCESS_KEY"), bucket: read("R2_BUCKET"), publicUrl: read("R2_PUBLIC_URL") },
+  };
+}
+
 export const env = {
   production,
   databaseUrl: required("DATABASE_URL", production ? undefined : "postgres://pitchkh:pitchkh@localhost:5432/pitchkh"),
@@ -19,6 +30,8 @@ export const env = {
   /** This API's own public URL (photo links). */
   publicUrl: (process.env.PUBLIC_URL ?? `http://localhost:${process.env.PORT ?? 8000}`).replace(/\/+$/, ""),
   uploadDir: process.env.UPLOAD_DIR ?? "uploads",
+  /** Venue photos: "local" disk (default) or Cloudflare "r2". With r2, every R2_* value must be set. */
+  storage: storageConfig(),
   mail: { resendKey: process.env.RESEND_API_KEY ?? "", from: process.env.MAIL_FROM ?? "PitchKH <no-reply@pitchkh.app>" },
   payments: {
     // Only "sandbox" exists today. A real provider (Bakong KHQR, ABA PayWay) plugs in behind src/payments.ts.

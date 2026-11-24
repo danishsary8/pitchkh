@@ -17,7 +17,7 @@ FROM node:22-slim
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /out /app
-# Venue photos (mount a persistent disk here in production).
+# Venue photos with STORAGE=local (mount a persistent disk here). With STORAGE=r2 this stays empty.
 RUN mkdir -p /app/uploads && chown node:node /app/uploads
 ENV UPLOAD_DIR=/app/uploads
 USER node

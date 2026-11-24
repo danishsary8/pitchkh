@@ -2,53 +2,117 @@
 
 **Book a football, volleyball or tennis pitch anywhere in Cambodia, and find a team to play against.**
 
+[![CI](https://github.com/danishsary8/pitchkh/actions/workflows/ci.yml/badge.svg)](https://github.com/danishsary8/pitchkh/actions/workflows/ci.yml)
+&nbsp;Next.js 16 · React 19 · TypeScript · Hono · PostgreSQL 16 · Drizzle · Bakong KHQR · Telegram Bot API · Cloudflare R2
+
+**Try it:** live demo (link added after deploy, see [Deploy the demo](#deploy-the-demo)). On the sign-in page,
+one tap logs you in as a **player**, a **venue owner** or an **admin**; the demo runs on sample data and
+payments are simulated.
+
 Players open a venue, *see its real layout on a pitch map*, tap a pitch and a time,
-and pay in two screens. Venue owners draw their venue's map, manage bookings and
-prices. Admins approve venues and handle reports.
+and pay in two screens. Venue owners draw their venue's map, answer booking requests
+(also from Telegram) and manage prices. Admins approve venues and handle reports.
+English and Khmer, light and dark, phone first.
 
 This repo holds the **web app** and its **v1 backend**:
 
-- `apps/web` runs on its own with a built-in mock API (great for demos), or
+- `apps/web` runs on its own with a built-in mock API (the public demo), or
 - on the real API in `apps/api` (Node + PostgreSQL) by changing one setting.
   No UI code changes between the two.
 
+### Players
+
 <table>
   <tr>
+    <td width="33%"><img src="docs/images/venue-list.webp" alt="Venue list with compact cards and one-tap free times"></td>
     <td width="33%"><img src="docs/images/booking-pick.webp" alt="Booking screen 1: pick a start time, then tap a pitch on the map"></td>
     <td width="33%"><img src="docs/images/booking-confirm.webp" alt="Booking screen 2: summary with a mini map, extras and payment"></td>
-    <td width="33%"><img src="docs/images/venue-map.webp" alt="Venue page with the pitch map"></td>
   </tr>
   <tr>
-    <td align="center"><sub>① Pick a pitch and time</sub></td>
-    <td align="center"><sub>② Confirm and pay</sub></td>
-    <td align="center"><sub>Venue page map</sub></td>
+    <td align="center"><sub>Find a pitch, tap a free time</sub></td>
+    <td align="center"><sub>① Pick a pitch on the map and a time</sub></td>
+    <td align="center"><sub>② Confirm</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/images/venue-list.webp" alt="Venue list with compact cards and one-tap free times"></td>
+    <td><img src="docs/images/booking-khqr.webp" alt="KHQR payment sheet with a scannable QR, amount in dollars and riel, and a 10-minute hold"></td>
+    <td><img src="docs/images/booking-ticket.webp" alt="Booking confirmed: ticket with booking code, pitch, time and price"></td>
     <td><img src="docs/images/home-next-game.webp" alt="Home with the player's next game, countdown and share"></td>
-    <td></td>
   </tr>
   <tr>
-    <td align="center"><sub>Tap a time on a venue card</sub></td>
+    <td align="center"><sub>Pay with KHQR (slot held 10 min)</sub></td>
+    <td align="center"><sub>Booked: the ticket</sub></td>
     <td align="center"><sub>Your next game on Home</sub></td>
-    <td></td>
   </tr>
 </table>
+
+### Venue owners and admins
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/owner-requests.webp" alt="Owner booking requests with Call, Decline and Accept"></td>
+    <td width="33%"><img src="docs/images/owner-schedule.webp" alt="Owner day schedule: bookings on a timeline per pitch"></td>
+    <td width="33%"><img src="docs/images/venue-km-dark.webp" alt="Venue page in Khmer, dark mode"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Answer booking requests</sub></td>
+    <td align="center"><sub>The day's schedule</sub></td>
+    <td align="center"><sub>Khmer, dark mode</sub></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/owner-editor.webp" alt="Owner pitch map editor"></td>
+    <td width="50%"><img src="docs/images/admin-analytics.webp" alt="Admin analytics: booking value, bookings, users, venues to review"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Owners draw their venue's pitch map</sub></td>
+    <td align="center"><sub>Admin analytics</sub></td>
+  </tr>
+</table>
+
+## Engineering highlights
+
+- **No double booking, guaranteed by the database.** A PostgreSQL exclusion constraint
+  (`btree_gist`) means two active bookings of one pitch can never overlap. A test sends
+  10 players at the same slot at the same moment: exactly one wins, the rest get
+  `409 slot_unavailable`.
+- **One API contract, two backends.** The UI only calls `api.*` (TanStack Query → typed client).
+  A built-in mock server and the real Hono + PostgreSQL API serve the same 72 endpoints and
+  validate with the same zod schemas from `packages/shared`. Switching is one environment variable.
+- **Real Cambodian payments.** Bakong KHQR: a dynamic QR per booking, the slot is held for
+  10 minutes, and the paid status is confirmed with Bakong's API (on each poll and in the
+  background every 10 s). Providers sit behind one interface, with a sandbox for tests.
+- **Owner alerts in Telegram** with Accept / Decline buttons. Alerts are sent after the booking
+  is saved, so a Telegram outage never fails a booking.
+- **Security basics done properly:** bcrypt passwords, short-lived JWT access tokens and rotating
+  refresh tokens stored as hashes, role checks on every route, signed payment and Telegram
+  webhooks, uploads checked by their real file signature (not the label).
+- **Photos on Cloudflare R2** (S3 API, SigV4-signed requests), so they survive redeploys on a free
+  host; the API only ever deletes files it named itself.
+- **Bilingual and phone-first:** 874 UI strings in English and Khmer with type-checked keys, light
+  and dark themes, 44 px touch targets, reduced motion respected, installable PWA.
+- **Tested:** 25 unit tests for the shared rules, 32 API tests against a real PostgreSQL (booking
+  race, payments, and fake Bakong, R2 and Telegram servers), a Playwright booking run on a phone
+  screen, and CI on every push.
+
+The full story (problem, how it was built, numbers) is in [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md).
 
 ---
 
 ## Contents
 
 1. [Quick start](#quick-start)
-2. [What you can do](#what-you-can-do)
-3. [The booking flow](#the-booking-flow)
-4. [The pitch map](#the-pitch-map)
-5. [How the code is organised](#how-the-code-is-organised)
-6. [Tech stack](#tech-stack)
-7. [Scripts and checks](#scripts-and-checks)
-8. [Running on the real backend](#running-on-the-real-backend)
-9. [Roadmap](#roadmap)
-10. [Notes](#notes)
+2. [Deploy the demo](#deploy-the-demo)
+3. [What you can do](#what-you-can-do)
+4. [The booking flow](#the-booking-flow)
+5. [The pitch map](#the-pitch-map)
+6. [How the code is organised](#how-the-code-is-organised)
+7. [Tech stack](#tech-stack)
+8. [Scripts and checks](#scripts-and-checks)
+9. [Running on the real backend](#running-on-the-real-backend)
+10. [Roadmap](#roadmap)
+11. [Notes](#notes)
 
 ---
 
@@ -77,6 +141,21 @@ All demo data lives in your browser's `localStorage`. Reset it from
 
 > **Tip:** *Chbar Ampov Football City* is the showcase venue: three 6-a-side
 > pitches, one big 10-a-side pitch and a covered hall with three 5-a-side courts.
+
+---
+
+## Deploy the demo
+
+The public demo is the web app alone, on its built-in mock API: no server, database or keys.
+
+1. [Vercel](https://vercel.com) → **Add New → Project** → import this repo.
+2. **Root Directory:** `apps/web` (Vercel detects Next.js and the pnpm workspace).
+3. Environment variables: leave `NEXT_PUBLIC_API_MODE` unset (mock is the default) and set
+   `NEXT_PUBLIC_SITE_URL` to the Vercel URL once you know it (link previews use it).
+4. Deploy. Visitors see a "Demo" bar with **Reset demo**, and one-tap demo logins on the
+   sign-in page. Sample data is kept in the browser and refreshes itself after a while.
+
+For the real backend instead, follow [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
 
 ---
 
@@ -129,7 +208,7 @@ A venue with only one pitch skips the map. The draft is kept in
 
 ## The pitch map
 
-<img src="docs/images/owner-editor.webp" alt="Owner pitch map editor" width="720">
+<img src="docs/images/venue-map.webp" alt="Venue page with the pitch map: tap a pitch to see its free times" width="720">
 
 **Data.** Each pitch (`Field`) has a `layout`: a rectangle on the venue's plan,
 in metres.
@@ -215,7 +294,7 @@ Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | `pnpm lint` | ESLint |
 | `pnpm test` | Unit tests for the shared logic and the mock API |
 | `pnpm build` | Production build |
-| `pnpm check` | All four above |
+| `pnpm check` | English and Khmer have the same keys, then all four above (CI runs this) |
 
 With a server running (`pnpm build && pnpm start`):
 
@@ -324,9 +403,10 @@ The contract lives in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) and the tab
 - [x] Online payment flow (sandbox provider), photo upload, password reset
 - [x] Matches, chat and reviews on the API
 - [x] Bakong KHQR payments (real, scannable QR; paid status checked with Bakong)
-- [ ] Go live: follow [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md)
-- [ ] Deploy (Vercel + Railway/Render/Neon) and a real Telegram bot
-- [ ] Real payments (KHQR / ABA PayWay / Wing)
+- [x] Venue photos on Cloudflare R2, public demo mode
+- [ ] Public demo on Vercel (mock mode, see [Deploy the demo](#deploy-the-demo))
+- [ ] Go live: Render + Vercel + Bakong + Telegram + Resend + R2, following [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md)
+- [ ] More payment providers (ABA PayWay, Wing)
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`
 - [ ] Real venue photos instead of rendered ones
 

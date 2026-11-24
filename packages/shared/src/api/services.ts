@@ -65,6 +65,8 @@ export function createVenuesApi(t: Transport) {
     /** Accepts a venue id or slug. */
     get: (idOrSlug: string) => t<T.VenueDetail>({ method: "GET", path: `/venues/${id(idOrSlug)}` }),
     availability: (fieldId: string, date: string) => t<T.Availability>({ method: "GET", path: `/fields/${id(fieldId)}/availability`, query: { date } }),
+    /** Free/booked slots for every field of a venue on one day (for the pitch map). */
+    dayAvailability: (venueId: string, date: string) => t<T.VenueAvailability>({ method: "GET", path: `/venues/${id(venueId)}/availability`, query: { date } }),
     weather: (province: T.Province, date: string) => t<T.WeatherHint>({ method: "GET", path: "/weather", query: { province, date } }),
     setFavorite: (venueId: string, favorite: boolean) => t<{ venueId: string; isFavorite: boolean }>({ method: favorite ? "PUT" : "DELETE", path: `/favorites/${id(venueId)}` }),
     report: (dto: T.CreateReportDto) => t<{ id: string }>({ method: "POST", path: "/reports", body: dto }),
@@ -138,6 +140,8 @@ export function createOwnerApi(t: Transport) {
     updateVenue: (venueId: string, dto: T.UpsertVenueDto) => t<T.VenueDetail>({ method: "PATCH", path: `/owner/venues/${id(venueId)}`, body: dto }),
     createField: (venueId: string, dto: T.UpsertFieldDto) => t<T.Field>({ method: "POST", path: `/owner/venues/${id(venueId)}/fields`, body: dto }),
     updateField: (fieldId: string, dto: T.UpsertFieldDto) => t<T.Field>({ method: "PATCH", path: `/owner/fields/${id(fieldId)}`, body: dto }),
+    /** Saves where pitches sit on the venue plan. Fails with validation_failed on overlaps. */
+    saveLayout: (venueId: string, dto: T.SaveLayoutDto) => t<T.VenueDetail>({ method: "PUT", path: `/owner/venues/${id(venueId)}/layout`, body: dto }),
     deleteField: (fieldId: string) => t<void>({ method: "DELETE", path: `/owner/fields/${id(fieldId)}` }),
     bookings: (params?: T.OwnerBookingListQuery) => t<T.Paginated<T.BookingDetail>>({ method: "GET", path: "/owner/bookings", query: q(params) }),
     decideBooking: (bookingId: string, decision: "accept" | "reject") => t<T.BookingDetail>({ method: "POST", path: `/owner/bookings/${id(bookingId)}/decision`, body: { decision } }),

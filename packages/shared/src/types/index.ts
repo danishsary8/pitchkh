@@ -43,6 +43,9 @@ export type ModerateVenueDto = z.infer<typeof s.ModerateVenueDto>;
 export type Surface = z.infer<typeof s.Surface>;
 export type Field = z.infer<typeof s.Field>;
 export type UpsertFieldDto = z.input<typeof s.UpsertFieldDto>;
+export type VenueAvailability = z.infer<typeof s.VenueAvailability>;
+export type FieldLayout = z.infer<typeof s.FieldLayout>;
+export type SaveLayoutDto = z.infer<typeof s.SaveLayoutDto>;
 
 export type Extras = z.infer<typeof s.Extras>;
 export type PriceLine = z.infer<typeof s.PriceLine>;

@@ -1,5 +1,6 @@
 import { DEMO_PASSWORD } from "../constants";
 import { bookingCode, createRng, uuid } from "../domain/ids";
+import { resolveLayout } from "../domain/layout";
 import { calculatePrice } from "../domain/pricing";
 import { findConflict, hoursFor } from "../domain/slots";
 import { addDays, dateInPP, isoInPP, minutesOf, timeOf, toIso } from "../domain/time";
@@ -69,9 +70,12 @@ export function seedDb(now: Date): MockDb {
     for (const fs of seed.fields) {
       db.fields.push({
         id: id(), venueId: venue.id, sport: fs.sport, name: fs.name, position: fs.position, surface: fs.surface, indoor: fs.indoor, format: fs.format,
-        maxPlayers: fs.maxPlayers, pricePerHourUsd: fs.price, peakPricePerHourUsd: fs.peak, lit: true, status: "active",
+        maxPlayers: fs.maxPlayers, pricePerHourUsd: fs.price, peakPricePerHourUsd: fs.peak, lit: true, status: "active", layout: fs.layout ?? null,
       });
     }
+    // Venues without a hand-drawn plan start from the auto arrangement, like a new owner would.
+    const own = db.fields.filter((x) => x.venueId === venue.id);
+    for (const [fieldId, layout] of resolveLayout(own)) (own.find((x) => x.id === fieldId) as Field).layout = layout;
   });
   const venueBySlug = (slug: string): Venue => db.venues.find((v) => v.slug === slug) as Venue;
   const fieldOf = (slug: string, name: string): Field => db.fields.find((x) => x.venueId === venueBySlug(slug).id && x.name === name) as Field;

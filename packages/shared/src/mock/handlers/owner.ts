@@ -1,10 +1,11 @@
 import { ApiError } from "../../api/errors";
 import { round2 } from "../../domain/pricing";
 import { slugify } from "../../domain/ids";
+import { findLayoutOverlap } from "../../domain/layout";
 import { holdsSlot, hoursFor, rangesOverlap } from "../../domain/slots";
 import { addDays, dateInPP, durationMinutes, minutesOf, toIso } from "../../domain/time";
 import * as s from "../../schemas";
-import type { Booking, Field, OwnerEarnings, Venue } from "../../types";
+import type { Booking, Field, FieldLayout, OwnerEarnings, Venue } from "../../types";
 import type { MockDb } from "../db";
 import { notFound, paginate, parse, type MockContext, type MockServer } from "../server";
 import { bookingDetail, venueDetail } from "./expand";
@@ -68,7 +69,7 @@ export function registerOwnerRoutes(server: MockServer): void {
     const dto = parse(s.UpsertFieldDto, ctx.body);
     const sports = new Set([...ctx.db.fields.filter((f) => f.venueId === venue.id).map((f) => f.sport), dto.sport]);
     if (sports.size > 3) throw new ApiError(422, "validation_failed", "A venue offers at most 3 sports.");
-    const field: Field = { id: ctx.newId(), venueId: venue.id, ...dto };
+    const field: Field = { id: ctx.newId(), venueId: venue.id, ...dto, layout: null };
     ctx.db.fields.push(field);
     syncSports(ctx.db, venue);
     return field;
@@ -76,9 +77,27 @@ export function registerOwnerRoutes(server: MockServer): void {
 
   server.route("PATCH", "/owner/fields/:id", OWNER, (ctx) => {
     const field = myField(ctx, ctx.params.id);
-    Object.assign(field, parse(s.UpsertFieldDto, ctx.body));
+    const dto = parse(s.UpsertFieldDto, ctx.body);
+    // A new size no longer fits the drawn spot: let the map re-place it.
+    const resized = dto.sport !== field.sport || dto.format !== field.format;
+    Object.assign(field, dto, resized ? { layout: null } : {});
     syncSports(ctx.db, myVenue(ctx, field.venueId));
     return field;
+  });
+
+  server.route("PUT", "/owner/venues/:id/layout", OWNER, (ctx) => {
+    const venue = myVenue(ctx, ctx.params.id);
+    const { items } = parse(s.SaveLayoutDto, ctx.body);
+    const fields = ctx.db.fields.filter((f) => f.venueId === venue.id);
+    const next = new Map(fields.filter((f) => f.layout).map((f) => [f.id, f.layout as FieldLayout]));
+    for (const item of items) {
+      if (!fields.some((f) => f.id === item.fieldId)) throw notFound("Field");
+      next.set(item.fieldId, item.layout);
+    }
+    const overlap = findLayoutOverlap([...next].map(([id, layout]) => ({ id, layout })));
+    if (overlap) throw new ApiError(422, "validation_failed", "Two pitches overlap on the map.", { layout: overlap });
+    for (const f of fields) f.layout = next.get(f.id) ?? f.layout;
+    return venueDetail(ctx.db, venue, ctx.user, ctx.now);
   });
 
   server.route("DELETE", "/owner/fields/:id", OWNER, (ctx) => {

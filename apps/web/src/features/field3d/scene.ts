@@ -3,7 +3,7 @@
  * builder feeds the interactive viewer and the offline poster renderer.
  * Units are metres. Nothing here downloads a texture or a model.
  */
-import { createRng, type Sport, type Surface } from "@pitchkh/shared";
+import { createRng, pitchSize, type Sport, type Surface } from "@pitchkh/shared";
 import * as THREE from "three";
 
 export type TimeOfDay = "day" | "dusk" | "night";
@@ -46,15 +46,8 @@ const SKIES: Record<TimeOfDay, { top: number; horizon: number; ground: number; s
   night: { top: 0x050b18, horizon: 0x16263f, ground: 0x2a2f33, sun: 0x8fb0ff, sunIntensity: 0.35, ambient: 0.4, sunPos: [0.4, 1, -0.6] },
 };
 
-export function fieldDimensions(sport: Sport, format: string): { length: number; width: number } {
-  if (sport === "football") {
-    if (format.startsWith("11")) return { length: 100, width: 64 };
-    if (format.startsWith("7")) return { length: 52, width: 32 };
-    return { length: 30, width: 18 };
-  }
-  if (sport === "volleyball") return format.startsWith("4") ? { length: 16, width: 8 } : { length: 18, width: 9 };
-  return { length: 23.77, width: 10.97 };
-}
+/** Real playing-area size, shared with the 2D pitch map. */
+export const fieldDimensions = pitchSize;
 
 export function buildFieldScene(options: FieldSceneOptions): FieldScene {
   const { sport, surface, indoor, format } = options;

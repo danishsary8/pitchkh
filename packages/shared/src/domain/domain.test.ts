@@ -8,7 +8,7 @@ import { canCancel } from "./rules";
 import { findConflict, generateSlots, rangesOverlap, selectRange, validateRange } from "./slots";
 import { addDays, dateInPP, timeInPP, toIso, weekdayOf } from "./time";
 
-const field: Field = { id: "f1", venueId: "v1", sport: "football", name: "A", position: "", surface: "artificial_turf", indoor: false, format: "7v7", maxPlayers: 16, pricePerHourUsd: 20, peakPricePerHourUsd: 30, lit: true, status: "active" };
+const field: Field = { id: "f1", venueId: "v1", sport: "football", name: "A", position: "", surface: "artificial_turf", indoor: false, format: "7v7", maxPlayers: 16, pricePerHourUsd: 20, peakPricePerHourUsd: 30, lit: true, status: "active", layout: null };
 const hours: OpeningHours[] = Array.from({ length: 7 }, (_, weekday) => ({ weekday, open: "06:00", close: "23:00", closed: false }));
 const booking = (start: string, end: string, status: Booking["status"] = "confirmed"): Booking =>
   ({ id: `b-${start}`, fieldId: "f1", startAt: toIso("2026-11-16", start), endAt: toIso("2026-11-16", end), status }) as Booking;
@@ -90,7 +90,7 @@ describe("api client on the mock server", () => {
   it("lists venues with filters, pagination and sorting", async () => {
     const api = make();
     const all = await api.venues.list({ pageSize: 50 });
-    expect(all.meta.total).toBe(13);
+    expect(all.meta.total).toBe(14);
     const tennis = await api.venues.list({ sport: "tennis", sort: "price_asc" });
     expect(tennis.data.every((v) => v.sports.includes("tennis"))).toBe(true);
     expect(tennis.data[0]?.priceFromUsd).toBeLessThanOrEqual(tennis.data[1]?.priceFromUsd ?? 0);

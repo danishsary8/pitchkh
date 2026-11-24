@@ -141,6 +141,13 @@ export const Availability = z.object({
   slots: z.array(Slot),
 });
 
+/** Every field of a venue on one day: colours the whole pitch map in one request. */
+export const VenueAvailability = z.object({
+  venueId: Id,
+  date: DateStr,
+  fields: z.array(Availability),
+});
+
 export const AvailabilityBlock = z.object({
   id: Id,
   fieldId: Id,

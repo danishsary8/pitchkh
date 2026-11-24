@@ -60,6 +60,13 @@ export function registerVenueRoutes(server: MockServer): void {
     return generateSlots({ field, openingHours: venue.openingHours, date, bookings: db.bookings, blocks: db.blocks, now });
   });
 
+  server.route("GET", "/venues/:id/availability", "public", ({ db, params, query, now }) => {
+    const { date } = parse(s.AvailabilityQuery, query);
+    const venue = getVenue(db, params.id ?? "");
+    const fields = db.fields.filter((f) => f.venueId === venue.id);
+    return { venueId: venue.id, date, fields: fields.map((field) => generateSlots({ field, openingHours: venue.openingHours, date, bookings: db.bookings, blocks: db.blocks, now })) };
+  });
+
   server.route("GET", "/weather", "public", ({ query }) => {
     const q = parse(s.WeatherQuery, query);
     return weatherHintFor(q.province, q.date);

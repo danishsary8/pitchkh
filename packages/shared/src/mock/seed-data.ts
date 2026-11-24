@@ -1,4 +1,4 @@
-import type { Amenity, Province, Sport, Surface } from "../types";
+import type { Amenity, FieldLayout, Province, Sport, Surface } from "../types";
 
 export interface FieldSeed {
   sport: Sport;
@@ -10,6 +10,8 @@ export interface FieldSeed {
   maxPlayers: number;
   price: number;
   peak: number;
+  /** Hand-drawn spot on the venue plan; otherwise the seed auto-arranges it. */
+  layout?: FieldLayout;
 }
 export interface VenueSeed {
   slug: string;
@@ -35,6 +37,8 @@ export interface VenueSeed {
 const f = (sport: Sport, name: string, position: string, surface: Surface, indoor: boolean, format: string, maxPlayers: number, price: number, peak: number): FieldSeed => ({
   sport, name, position, surface, indoor, format, maxPlayers, price, peak,
 });
+
+const at = (seed: FieldSeed, x: number, y: number, w: number, h: number): FieldSeed => ({ ...seed, layout: { x, y, w, h } });
 
 export const VENUE_SEEDS: VenueSeed[] = [
   {
@@ -289,6 +293,26 @@ export const VENUE_SEEDS: VenueSeed[] = [
     verified: false, featured: false, status: "rejected",
     moderationNote: "The safety netting around the court is not visible in the photos. Please add photos of all four sides and resubmit.",
     fields: [f("football", "Rooftop Court", "Level 6", "futsal_court", false, "5v5", 12, 14, 20)],
+  },
+  {
+    slug: "chbar-ampov-football-city",
+    name: "Chbar Ampov Football City",
+    nameKm: "ទីក្រុងបាល់ទាត់ ច្បារអំពៅ",
+    description: "Seven football pitches on one site across the Monivong bridge: three 6-a-side turf pitches, a big 10-a-side pitch under floodlights, and a covered hall with three 5-a-side courts. Open the pitch map to pick exactly where you play.",
+    descriptionKm: "ទីលានបាល់ទាត់ប្រាំពីរនៅកន្លែងតែមួយ ឆ្លងស្ពានមុនីវង្ស៖ ទីលាន ៦ នាក់បី ទីលានធំ ១០ នាក់មានភ្លើងបំភ្លឺ និងសាលមានដំបូលដែលមានទីលាន ៥ នាក់បី។ បើកផែនទីទីលានដើម្បីជ្រើសកន្លែងលេងរបស់អ្នក។",
+    province: "phnom_penh", district: "Chbar Ampov", address: "National Road 1, Sangkat Nirouth", lat: 11.538, lng: 104.958,
+    owner: "sophea", hours: ["06:00", "23:00"],
+    amenities: ["parking", "showers", "changing_rooms", "floodlights", "cafe", "spectator_seating", "first_aid", "drinking_water", "equipment_rental", "lockers"],
+    verified: true, featured: true, status: "approved",
+    fields: [
+      at(f("football", "6A", "West row, by the gate", "artificial_turf", false, "6v6", 14, 18, 26), 4, 4, 36, 22),
+      at(f("football", "6B", "West row, middle", "artificial_turf", false, "6v6", 14, 18, 26), 4, 30, 36, 22),
+      at(f("football", "6C", "West row, by the cafe", "artificial_turf", false, "6v6", 14, 18, 26), 4, 56, 36, 22),
+      at(f("football", "Big Pitch", "Centre, floodlit", "artificial_turf", false, "10v10", 24, 45, 60), 46, 4, 48, 75),
+      at(f("football", "Hall 1", "Covered hall, north", "futsal_court", true, "5v5", 12, 15, 22), 100, 4, 30, 18),
+      at(f("football", "Hall 2", "Covered hall, middle", "futsal_court", true, "5v5", 12, 15, 22), 100, 26, 30, 18),
+      at(f("football", "Hall 3", "Covered hall, south", "futsal_court", true, "5v5", 12, 15, 22), 100, 48, 30, 18),
+    ],
   },
 ];
 

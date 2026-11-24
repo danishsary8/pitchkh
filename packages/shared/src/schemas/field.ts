@@ -7,6 +7,17 @@ export { SURFACES };
 export const Surface = z.enum(SURFACES);
 export const FieldStatus = z.enum(["active", "maintenance"]);
 
+/**
+ * Where a pitch sits on the venue's top-down plan, in metres from the plan's
+ * top-left corner. The longer side is the pitch length; h > w means it is
+ * drawn vertically. null means "not placed yet" (the app auto-arranges it).
+ */
+export const PLAN_MAX_METRES = 400;
+const metres = z.number().min(0).max(PLAN_MAX_METRES);
+export const FieldLayout = z
+  .object({ x: metres, y: metres, w: z.number().min(4).max(PLAN_MAX_METRES), h: z.number().min(4).max(PLAN_MAX_METRES) })
+  .refine((l) => l.x + l.w <= PLAN_MAX_METRES && l.y + l.h <= PLAN_MAX_METRES, { message: "outside_plan" });
+
 export const Field = z.object({
   id: Id,
   venueId: Id,
@@ -25,6 +36,11 @@ export const Field = z.object({
   peakPricePerHourUsd: z.number().min(0),
   lit: z.boolean(),
   status: FieldStatus,
+  layout: FieldLayout.nullable(),
+});
+
+export const SaveLayoutDto = z.object({
+  items: z.array(z.object({ fieldId: Id, layout: FieldLayout })).min(1).max(60),
 });
 
 export const UpsertFieldDto = z.object({

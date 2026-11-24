@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { cn } from "@/lib/utils";
 import { FeaturedVenues, FreeTonight, OpenMatches, SearchCard } from "./home-islands";
 import { NextGame, PlayAgain } from "./my-games";
+import { RotatingWord } from "./rotating-word";
 
 /*
  * Home is a server component: the hero, sport tiles, steps, trust list and
@@ -42,7 +43,7 @@ export function HomePage() {
         <Container className="grid grid-cols-1 items-center gap-8 pt-8 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14 lg:pt-16 lg:pb-20">
           <div className="flex flex-col gap-4 lg:gap-6">
             <NextGame />
-            <h1 className="font-display text-[2.65rem] text-balance min-[400px]:text-5xl md:text-6xl xl:text-7xl">{t("home.heroTitle")}</h1>
+            <h1 className="font-display text-[2.65rem] text-balance min-[400px]:text-5xl md:text-6xl xl:text-7xl">{t("home.heroLead")} <RotatingWord words={t("home.heroWords").split("|")} suffix={t("home.heroEnd")} /></h1>
             <p className="max-w-xl text-lg text-pretty text-white/90 lg:text-xl">{t("home.heroBody")}</p>
             <div className="relative mt-2 hidden aspect-[16/9] overflow-hidden rounded-3xl lg:block">
               <Image src="/assets/brand/hero.webp" alt={t("home.heroImageAlt")} fill loading="lazy" sizes="(min-width: 1024px) 50vw, 1px" className="object-cover" />

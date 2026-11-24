@@ -304,7 +304,10 @@
       "inMinutes": "{minutes} នាទីទៀត",
       "inHours": "{hours} ម៉ោង {minutes} នាទីទៀត",
       "inDays": "{days, plural, one {ថ្ងៃស្អែក} other {# ថ្ងៃទៀត}}"
-    }
+    },
+    "heroLead": "កក់ទីលាន។ នាំ",
+    "heroWords": "គូប្រកួត|ក្រុម|មិត្តភក្តិ",
+    "heroEnd": "មក។"
   },
   "venues": {
     "title": "ស្វែងរកទីលាន",

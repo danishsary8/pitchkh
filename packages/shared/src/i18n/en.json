@@ -304,7 +304,10 @@
       "inMinutes": "in {minutes} min",
       "inHours": "in {hours}h {minutes}m",
       "inDays": "{days, plural, one {tomorrow} other {in # days}}"
-    }
+    },
+    "heroLead": "Book a pitch. Bring a",
+    "heroWords": "rival|team|crew|friend",
+    "heroEnd": "."
   },
   "venues": {
     "title": "Find a pitch",

@@ -2,6 +2,7 @@
 
 import type { PriceBreakdown } from "@pitchkh/shared";
 import { useTranslations } from "next-intl";
+import { CountUp } from "@/components/common/count-up";
 import { useMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -25,8 +26,8 @@ export function PriceLines({ price, className }: { price: PriceBreakdown; classN
       <div className="mt-1 flex items-baseline justify-between gap-4 border-t border-dashed border-foreground/25 pt-3">
         <dt className="text-base font-bold">{t("total")}</dt>
         <dd className="text-right">
-          <span className="font-num block text-2xl leading-none font-bold">{money.usd(price.totalUsd)}</span>
-          <span className="font-num text-sm text-muted-foreground">{money.khr(price.totalUsd)}</span>
+          <span className="font-num block text-2xl leading-none font-bold"><CountUp value={price.totalUsd} format={money.usd} /></span>
+          <span className="font-num text-sm text-muted-foreground"><CountUp value={price.totalUsd} format={money.khr} /></span>
         </dd>
       </div>
     </dl>

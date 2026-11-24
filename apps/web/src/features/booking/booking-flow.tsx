@@ -219,7 +219,7 @@ export function BookingFlow({ slug }: { slug: string }) {
             <>
               <span className="font-num text-muted-foreground">{draft.startTime} – {draft.endTime}</span>
               <br />
-              <Price usd={price.totalUsd} className="text-lg" />
+              <Price usd={price.totalUsd} className="text-lg" animated />
             </>
           ) : (
             <span className="text-muted-foreground">{t(field ? "booking.hintTime" : "booking.hintField")}</span>

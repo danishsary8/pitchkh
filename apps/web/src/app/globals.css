@@ -124,6 +124,8 @@
   --animate-page-in: page-in 0.24s var(--ease-out) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-pop: pop 0.3s var(--ease-out) both;
+  --animate-word-in: word-in 0.42s var(--ease-out) both;
+  --animate-pitch-pop: pitch-pop 0.34s var(--ease-out);
 }
 
 @keyframes page-in {
@@ -133,6 +135,16 @@
 @keyframes shimmer {
   from { transform: translateX(-100%); }
   to { transform: translateX(100%); }
+}
+@keyframes word-in {
+  from { opacity: 0; transform: translateY(0.35em) rotate(-3deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
+}
+/* A picked pitch on the map bounces once. */
+@keyframes pitch-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.045); }
+  100% { transform: scale(1); }
 }
 @keyframes pop {
   from { opacity: 0; transform: scale(0.94); }

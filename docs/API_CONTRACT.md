@@ -80,6 +80,7 @@ Notes
 - With `date` + `from` + `to`, only venues with at least one free field in that
   window are returned and `availableFieldCount` is set (otherwise `null`).
 - `favorites=true` returns the signed-in user's saved venues.
+- Every `VenueSummary` also has `pitchFormats: [{ sport, format, count }]` (active pitches grouped, biggest group first) and `nextFree: { date, times: ["18:00", ...] } | null`: up to 3 start times today (tomorrow if today is done) at which at least one pitch is free for the shortest game. With `date`/`from`, it uses that day and times from `from`. Venue cards link each time to `/book/:slug?date=&time=`.
 - `/venues/:idOrSlug` also returns non-approved venues to their owner and to admins.
 - `Slot.status`: `available` \| `booked` \| `blocked` \| `past`. `priceUsd` is the price of that 30-minute slot.
 - Every `Field` carries `layout: { x, y, w, h } | null`: its rectangle on the venue's top-down plan, in metres from the top-left corner (`h > w` = drawn vertically). `null` = not placed yet; clients auto-arrange it with `resolveLayout()` from `packages/shared`.

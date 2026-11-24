@@ -72,9 +72,10 @@ All demo data lives in your browser's `localStorage`. Reset it from
 
 | Area | Features |
 | --- | --- |
-| **Find a venue** | Home, browse with filters (sport, area, price, free at a time), sort, list or map view, favourites |
+| **Find a venue** | Browse with filters (sport, area, price, free at a time), sort, list or map view, favourites. Compact cards show pitch sizes ("3 × 6v6") and the **next free times as one-tap chips** |
+| **Home** | Signed in: **your next game** with a live countdown, directions and *Share with team*; a **Play again** row of venues you booked before |
 | **Venue page** | Photos, **pitch map** with free/full per day, 3D look-around of each pitch, prices, amenities, hours, location, weather hint, reviews, report |
-| **Booking** | **2 screens**: pick pitch + time → confirm + pay (mock KHQR / ABA / Wing / cash). Receipt, add to calendar, cancel or reschedule up to 2 h before, **Book again** |
+| **Booking** | **2 screens**: pick pitch + time → confirm + pay (mock KHQR / ABA / Wing / cash). A ticket-style receipt with a stamp and confetti, **share to Telegram** (or any app through the phone's share sheet), add to calendar, cancel or reschedule up to 2 h before, **Book again** |
 | **Matches** | Football and volleyball match board, post a game, ask to join, accept/decline, team profiles with sportsmanship ratings, chat |
 | **Player area** | Bookings, favourites, matches, reviews, notifications, messages, team, profile |
 | **Owner dashboard** | Earnings, booking requests, day schedule with blocked time, venues and pitches, per-pitch pricing, **pitch map editor** |
@@ -99,6 +100,9 @@ Venue page ──► ① Pick                                   ② Confirm & pa
                │ Slot grid (start → end)      │        └──────────────────────────┘
                └──────────────────────────────┘
 ```
+
+The fastest path skips the venue page: tap a time chip such as **19:00** on a
+venue card and screen ① opens with that start time already picked.
 
 Two ways to choose on screen ①:
 

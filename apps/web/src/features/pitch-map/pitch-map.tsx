@@ -93,10 +93,13 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
               tabIndex={pickable ? 0 : interactive ? -1 : undefined}
               onClick={pickable ? () => onSelect?.(field.id) : undefined}
               onKeyDown={pickable ? (e) => onKey(e, field) : undefined}
-              className={cn("group outline-none", pickable && "cursor-pointer")}
+              className={cn("group outline-none", pickable && "cursor-pointer active:opacity-90")}
               data-pitch={field.name}
             >
+              {/* Re-keyed on select so the bounce replays each time this pitch is picked. */}
+              <g key={selected ? "on" : "off"} className={cn(selected && interactive && "motion-safe:animate-pitch-pop")} style={{ transformBox: "fill-box", transformOrigin: "center" }}>
               <PitchShape field={field} layout={layout} state={state} selected={selected} dimmed={dimmed} metresPerPx={metresPerPx} showLabel={!compact || selected} stateLabel={stateLabel} />
+              </g>
               {pickable ? (
                 <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} fill="transparent" stroke="transparent" strokeWidth={3} vectorEffect="non-scaling-stroke" className="transition-[stroke] group-hover:stroke-white/60 group-focus-visible:stroke-[var(--ring)]" />
               ) : null}

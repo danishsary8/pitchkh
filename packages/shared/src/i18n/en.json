@@ -294,24 +294,15 @@
     "featuredTitle": "Venues players rebook",
     "howTitle": "From couch to kick-off in a minute",
     "howBody": "No phone calls, no deposits by bank transfer, no arriving to a full pitch.",
-    "step1Title": "Pick a pitch",
-    "step1Body": "Filter by sport, district and price. Every venue shows its real pitches, surfaces and photos.",
-    "step2Title": "Choose your time",
-    "step2Body": "Tap a start and an end on the live slot grid. Booked slots are greyed out, so there are no double bookings.",
+    "step1Title": "Tap a pitch",
+    "step1Body": "Every venue shows its real layout. Free pitches are green; try the map here.",
+    "step2Title": "Pick your time",
+    "step2Body": "Tap your first and last half-hour. Booked times are crossed out, so nobody can take your slot.",
     "step3Title": "Pay and play",
-    "step3Body": "Pay with KHQR, ABA or Wing for instant confirmation, or pay cash when you arrive.",
+    "step3Body": "Scan the KHQR with any Cambodian banking app, or pay cash when you arrive.",
     "matchTitle": "No opponent? Post a match.",
     "matchBody": "Tell other teams when and where you're playing. They ask to join, you pick who you face, and a chat opens to sort out the bibs.",
     "matchCta": "See open matches",
-    "trustTitle": "Built for how Cambodia plays",
-    "trustVerifiedTitle": "Verified venues",
-    "trustVerifiedBody": "Our team checks every listing before it goes live.",
-    "trustPayTitle": "KHQR, ABA, Wing or cash",
-    "trustPayBody": "Pay the way you already do. Prices show in dollars and riel.",
-    "trustCancelTitle": "Free cancellation",
-    "trustCancelBody": "Plans change. Cancel or move a booking up to 2 hours before.",
-    "trustLanguageTitle": "English and ខ្មែរ",
-    "trustLanguageBody": "Switch language any time from the top of the screen.",
     "ownerTitle": "Own a pitch? Fill your empty hours.",
     "ownerBody": "List your pitches, set per-sport prices, and accept bookings from your phone. Free to list.",
     "ownerCta": "List your venue",
@@ -325,7 +316,8 @@
     },
     "heroLead": "Book a pitch. Bring a",
     "heroWords": "rival|team|crew|friend",
-    "heroEnd": "."
+    "heroEnd": ".",
+    "mapFree": "{day}: {free} of {total} pitches free"
   },
   "venues": {
     "title": "Find a pitch",
@@ -1078,5 +1070,18 @@
   "demo": {
     "notice": "Demo with sample venues and bookings. Payments are simulated.",
     "reset": "Reset demo"
+  },
+  "calendar": {
+    "weekdays": "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday",
+    "weekdaysShort": "Sun|Mon|Tue|Wed|Thu|Fri|Sat",
+    "months": "January|February|March|April|May|June|July|August|September|October|November|December",
+    "monthsShort": "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec",
+    "day": "{weekday} {day} {month}",
+    "dayLong": "{weekday}, {day} {month} {year}",
+    "dateTime": "{day} {month}, {time}",
+    "justNow": "just now",
+    "minutesAgo": "{count, plural, one {# minute ago} other {# minutes ago}}",
+    "hoursAgo": "{count, plural, one {# hour ago} other {# hours ago}}",
+    "daysAgo": "{count, plural, one {# day ago} other {# days ago}}"
   }
 }

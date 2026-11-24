@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MatchCard, MatchCardSkeleton } from "@/features/matches/match-card";
+import { pitchStates } from "@/features/pitch-map/availability";
+import { PitchLegend, PitchMap } from "@/features/pitch-map/pitch-map";
+import { useVenueDay } from "@/features/pitch-map/use-venue-day";
 import { useVenueText } from "@/features/venues/text";
 import { VenueCard, VenueCardSkeleton } from "@/features/venues/venue-card";
 import { api } from "@/lib/api";
@@ -149,5 +152,45 @@ export function OpenMatches() {
     <div className="flex flex-col gap-3 text-foreground">
       {matches.isPending ? [0, 1].map((i) => <MatchCardSkeleton key={i} />) : matches.data?.data.map((match) => <MatchCard key={match.id} match={match} compact />)}
     </div>
+  );
+}
+
+/** The venue the "how it works" map shows when it is among the featured ones. */
+const SHOWCASE_SLUG = "chbar-ampov-football-city";
+
+/**
+ * "How it works" on a real venue: its pitch map with today's free and full
+ * pitches (tomorrow's after 21:00). Tapping a pitch opens booking for it.
+ */
+export function HowItWorksMap() {
+  const t = useTranslations();
+  const dates = useDates();
+  const text = useVenueText();
+  const navigate = useNavigate();
+  const now = useNow();
+  const date = timeInPP(now) >= "21:00" ? addDays(dates.today, 1) : dates.today;
+  const featured = useQuery({ queryKey: qk.venues({ featured: true, pageSize: 6 }), queryFn: () => api.venues.list({ featured: true, pageSize: 6 }) });
+  const list = featured.data?.data ?? [];
+  const slug = (list.find((v) => v.slug === SHOWCASE_SLUG) ?? list[0])?.slug;
+  const venue = useQuery({ queryKey: qk.venue(slug ?? ""), queryFn: () => api.venues.get(slug as string), enabled: !!slug });
+  const { data: day } = useVenueDay(venue.data?.id, date);
+
+  if (featured.isError || venue.isError || (featured.isSuccess && !slug)) return null;
+  if (!venue.data) return <Skeleton className="aspect-[4/3] w-full rounded-3xl" />;
+  const name = text.name(venue.data);
+  const states = day ? pitchStates(day, null) : undefined;
+  const bookable = venue.data.fields.filter((f) => f.status === "active");
+  const free = states ? bookable.filter((f) => states[f.id] === "free").length : null;
+  return (
+    <figure className="flex flex-col gap-3 rounded-3xl bg-card p-4 sm:p-5">
+      <figcaption className="flex flex-col">
+        <Link href={`/venues/${venue.data.slug}`} className="self-start rounded font-bold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring">{name}</Link>
+        <span className="text-sm text-muted-foreground" aria-live="polite">
+          {free === null ? dates.day(date) : t("home.mapFree", { day: dates.day(date), free, total: bookable.length })}
+        </span>
+      </figcaption>
+      <PitchMap fields={venue.data.fields} states={states} sport={null} onSelect={(id) => navigate(`/book/${venue.data.slug}?field=${id}&date=${date}`)} label={t("pitchMap.label", { name })} />
+      <PitchLegend />
+    </figure>
   );
 }

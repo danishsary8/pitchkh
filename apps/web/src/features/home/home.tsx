@@ -1,5 +1,5 @@
 import { SPORTS, type Sport } from "@pitchkh/shared";
-import { ArrowRight, BadgeCheck, Clock, Languages, QrCode, Undo2 } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { KramaStrip, PitchLines } from "@/components/brand/pitch-art";
@@ -8,16 +8,15 @@ import { Reveal } from "@/components/common/motion";
 import { Container, SectionHeading } from "@/components/common/page";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { cn } from "@/lib/utils";
-import { FeaturedVenues, FreeTonight, OpenMatches, SearchCard } from "./home-islands";
+import { FeaturedVenues, FreeTonight, HowItWorksMap, OpenMatches, SearchCard } from "./home-islands";
 import { NextGame, PlayAgain } from "./my-games";
 import { RotatingWord } from "./rotating-word";
 import { features } from "@/lib/features";
 
 /*
- * Home is a server component: the hero, sport tiles, steps, trust list and
- * footer render to HTML on the server and need no client JavaScript. Only the
- * search card and the three live data blocks are client islands.
+ * Home is a server component: the hero, sport tiles, steps and footer render
+ * to HTML on the server and need no client JavaScript. Only the search card,
+ * the "how it works" pitch map and the live data blocks are client islands.
  */
 
 const SPORT_COPY: Record<Sport, "sportFootball" | "sportVolleyball" | "sportTennis"> = { football: "sportFootball", volleyball: "sportVolleyball", tennis: "sportTennis" };
@@ -28,12 +27,6 @@ export function HomePage() {
     { title: t("home.step1Title"), body: t("home.step1Body") },
     { title: t("home.step2Title"), body: t("home.step2Body") },
     { title: t("home.step3Title"), body: t("home.step3Body") },
-  ];
-  const trust = [
-    { icon: BadgeCheck, title: t("home.trustVerifiedTitle"), body: t("home.trustVerifiedBody") },
-    { icon: QrCode, title: t("home.trustPayTitle"), body: t("home.trustPayBody") },
-    { icon: Undo2, title: t("home.trustCancelTitle"), body: t("home.trustCancelBody") },
-    { icon: Languages, title: t("home.trustLanguageTitle"), body: t("home.trustLanguageBody") },
   ];
 
   return (
@@ -101,18 +94,23 @@ export function HomePage() {
           <FeaturedVenues />
         </section>
 
-        <section aria-labelledby="how-title" className="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+        {/* How it works, shown on a real venue: the pitch map is what makes PitchKH different. */}
+        <section aria-labelledby="how-title" className="grid gap-6 lg:grid-cols-[1fr_1.25fr] lg:gap-x-16">
           <div className="flex flex-col gap-3">
             <h2 id="how-title" className="font-display text-3xl text-balance sm:text-4xl">{t("home.howTitle")}</h2>
-            <p className="text-lg text-pretty text-muted-foreground">{t("home.howBody")}</p>
+            <p className="max-w-xl text-lg text-pretty text-muted-foreground">{t("home.howBody")}</p>
           </div>
-          <ol className="flex flex-col gap-3">
+          <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+            <HowItWorksMap />
+          </div>
+          <ol className="flex flex-col gap-5">
             {steps.map((step, i) => (
-              <li key={step.title}>
-                <Reveal delay={i * 0.07} className={cn("flex flex-col gap-1 rounded-3xl p-5 sm:p-6", i === 2 ? "bg-primary text-primary-foreground" : "bg-card")}>
-                  <h3 className="font-display text-xl sm:text-2xl">{step.title}</h3>
-                  <p className={cn("text-pretty", i === 2 ? "text-primary-foreground/90" : "text-muted-foreground")}>{step.body}</p>
-                </Reveal>
+              <li key={step.title} className="flex gap-4">
+                <span aria-hidden className="font-num grid size-9 shrink-0 place-items-center rounded-full bg-primary text-base font-bold text-primary-foreground">{i + 1}</span>
+                <div className="flex flex-col gap-0.5 pt-1">
+                  <h3 className="text-lg font-bold">{step.title}</h3>
+                  <p className="max-w-md text-pretty text-muted-foreground">{step.body}</p>
+                </div>
               </li>
             ))}
           </ol>
@@ -130,24 +128,6 @@ export function HomePage() {
             <OpenMatches />
           </div>
         </section> : null}
-
-        <section aria-labelledby="trust-title" className="flex flex-col gap-6">
-          <h2 id="trust-title" className="font-display max-w-2xl text-3xl text-balance sm:text-4xl">{t("home.trustTitle")}</h2>
-          <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            {trust.map((item, i) => (
-              <li key={item.title}>
-                <Reveal delay={i * 0.05} className="flex gap-3 lg:flex-col">
-                  <item.icon className="size-7 shrink-0 text-primary" aria-hidden />
-                  <div>
-                    <h3 className="font-bold">{item.title}</h3>
-                    <p className="text-[0.95rem] text-pretty text-muted-foreground">{item.body}</p>
-                  </div>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <section aria-labelledby="owner-title" className="pitch-stripes relative isolate overflow-hidden rounded-[2rem] p-6 text-pitch-foreground sm:p-10">
           <PitchLines sport="tennis" className="absolute inset-0 -z-10 size-full text-white/20" />
           <div className="flex max-w-xl flex-col items-start gap-4">

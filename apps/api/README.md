@@ -119,13 +119,35 @@ constraint is what holds when two requests arrive at the same moment.
 
 Without these variables the API runs normally and the dashboard card is hidden.
 
-## Deploy (suggested)
+## Deploy
 
-- **Database:** Neon, Railway or Render PostgreSQL 16. Run `node dist/migrate.js` on each deploy.
-- **API:** build with `pnpm api:build`, start with `node apps/api/dist/main.js`
-  (`NODE_ENV=production`). Works on Railway, Render or Fly.
-- **Web:** Vercel, with `NEXT_PUBLIC_API_MODE=real` and `NEXT_PUBLIC_API_URL=https://<your-api>/api/v1`.
-  Add the web origin to the API's `CORS_ORIGINS`.
+Everything is prepared; you only need accounts.
+
+**API + database on Render (one click):** `render.yaml` at the repo root
+describes the API (Docker, `apps/api/Dockerfile`) and a PostgreSQL 16 database.
+In Render: **New → Blueprint → this repo**. It generates `JWT_SECRET` and the
+webhook secrets; you fill in `CORS_ORIGINS` (your Vercel URL) and, for
+Telegram, the bot token and username. The container runs migrations on every
+start, then serves on port 8000 with a `/health` check.
+
+**Any other Docker host (Railway, Fly, a VPS):**
+
+```bash
+docker build -f apps/api/Dockerfile -t pitchkh-api .
+```
+
+```bash
+docker run -p 8000:8000 -e DATABASE_URL=... -e JWT_SECRET=... -e CORS_ORIGINS=https://your-web.app pitchkh-api
+```
+
+**Web on Vercel:** import the repo, set Root Directory to `apps/web`, and add
+`NEXT_PUBLIC_API_MODE=real` and `NEXT_PUBLIC_API_URL=https://<your-api>/api/v1`.
+
+**CI:** `.github/workflows/ci.yml` runs typecheck, lint, tests, the web build
+and the API tests on a real PostgreSQL for every push.
+
+Load demo data on a fresh deploy only if you want it (it empties every table):
+`node dist/seed.js` in the API container.
 
 ## v1.1 next
 

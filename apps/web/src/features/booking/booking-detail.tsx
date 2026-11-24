@@ -2,7 +2,7 @@
 
 import { bookingToGoogleCalendarUrl, bookingToIcs, type BookingDetail as Booking, type BookingStatus } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Star, Swords, X } from "lucide-react";
+import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Repeat, Star, Swords, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -234,6 +234,14 @@ export function BookingDetail({ id }: { id: string }) {
           <Button size="lg" onClick={() => setReviewOpen(true)}>
             <Star />
             {t("booking.rateVenue")}
+          </Button>
+        ) : null}
+        {!active ? (
+          <Button asChild size="lg" variant={booking.status === "completed" && !booking.reviewed ? "secondary" : "default"}>
+            <Link href={`/book/${booking.venue.slug}?field=${booking.fieldId}`}>
+              <Repeat />
+              {t("booking.bookAgain")}
+            </Link>
           </Button>
         ) : null}
         {fresh ? (

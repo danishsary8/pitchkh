@@ -347,7 +347,7 @@
     "messageOwner": "Message venue",
     "call": "Call",
     "findOpponent": "Find an opponent",
-    "fields": "Fields",
+    "fields": "Pitches",
     "peak": "5–10pm",
     "seeIn3d": "See in 3D",
     "bookField": "Book",
@@ -364,7 +364,9 @@
     "report": "Report this venue",
     "whenPlaying": "When are you playing?",
     "bookNow": "Book now",
-    "freeCancel": "Free cancellation up to 2 hours before"
+    "freeCancel": "Free cancellation up to 2 hours before",
+    "mapHint": "Tap a pitch to see it. Free or full is shown for {date}.",
+    "bookThisPitch": "Book this pitch"
   },
   "viewer": {
     "view3d": "View in 3D",
@@ -701,7 +703,8 @@
     "pickPitchHint": "Tap a pitch on the map to see its free times.",
     "noneFree": "Every pitch is taken at this time. Try another start time or day.",
     "extrasTitle": "Players and extras",
-    "playersShort": "{count} players"
+    "playersShort": "{count} players",
+    "bookAgain": "Book again"
   },
   "review": {
     "venueTitle": "Rate {name}",

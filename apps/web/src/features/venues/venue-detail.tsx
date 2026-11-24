@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, AMENITIES, supportsMatching, weekdayOf, type Amenity, type Field, type Sport, type VenueDetail as Venue } from "@pitchkh/shared";
+import { addDays, AMENITIES, supportsMatching, weekdayOf, type Amenity, type Sport, type VenueDetail as Venue } from "@pitchkh/shared";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { BadgeCheck, Bath, Car, Coffee, Droplets, Flag, HeartPulse, Lightbulb, Lock, MapPin, MessageCircle, Navigation, Phone, Shirt, Snowflake, Swords, Users, Wifi, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -29,6 +29,10 @@ import { FavoriteButton } from "./favorite-button";
 import { ReportSheet } from "./report-sheet";
 import { useVenueText } from "./text";
 import { WeatherHint } from "./weather-hint";
+import { pitchStates } from "@/features/pitch-map/availability";
+import { PitchCard } from "@/features/pitch-map/pitch-card";
+import { PitchLegend, PitchMap } from "@/features/pitch-map/pitch-map";
+import { useVenueDay } from "@/features/pitch-map/use-venue-day";
 
 const VenuesMap = dynamic(() => import("./venues-map"), { ssr: false, loading: () => <Skeleton className="size-full rounded-none" /> });
 
@@ -60,41 +64,6 @@ function Gallery({ photos, name, morph }: { photos: string[]; name: string; morp
         {index + 1} / {photos.length}
       </p>
     </div>
-  );
-}
-
-function FieldRow({ field, slug, selected, onView }: { field: Field; slug: string; selected: boolean; onView: () => void }) {
-  const t = useTranslations();
-  return (
-    <li className={cn("flex flex-col gap-3 rounded-2xl bg-card p-4 transition-shadow sm:flex-row sm:items-center", selected && "ring-2 ring-primary")}>
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-lg font-bold">{field.name}</h3>
-          <Badge variant="outline" className="font-num">{field.format}</Badge>
-          {field.status === "maintenance" ? <Badge variant="warning">{t("status.field.maintenance")}</Badge> : null}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {field.position} · {t(`surface.${field.surface}`)} · {field.indoor ? t("common.indoor") : t("common.outdoor")} · {t("common.players", { count: field.maxPlayers })}
-        </p>
-        <p className="text-sm">
-          <Price usd={field.pricePerHourUsd} /> <span className="text-muted-foreground">/{t("venues.hr")}</span>
-          {field.peakPricePerHourUsd !== field.pricePerHourUsd ? (
-            <span className="text-muted-foreground">
-              {" · "}
-              {t("venue.peak")} <span className="font-num font-semibold text-foreground">${field.peakPricePerHourUsd}</span>
-            </span>
-          ) : null}
-        </p>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="secondary" className="flex-1 sm:flex-none" onClick={onView} aria-pressed={selected}>
-          {t("venue.seeIn3d")}
-        </Button>
-        <Button asChild className="flex-1 sm:flex-none" aria-disabled={field.status !== "active"}>
-          <Link href={`/book/${slug}?field=${field.id}`}>{t("venue.bookField")}</Link>
-        </Button>
-      </div>
-    </li>
   );
 }
 
@@ -200,7 +169,7 @@ export function VenueDetail({ slug }: { slug: string }) {
   const [viewField, setViewField] = useState<string | null>(null);
   const [date, setDate] = useState(dates.today);
   const [reportOpen, setReportOpen] = useState(false);
-  const viewerRef = useRef<HTMLDivElement>(null);
+  const { data: day } = useVenueDay(venue?.id, date);
 
   const chat = useMutation({
     mutationFn: (venueId: string) => api.chat.startWithVenue(venueId),
@@ -213,7 +182,7 @@ export function VenueDetail({ slug }: { slug: string }) {
 
   const activeSport = sport ?? venue.sports[0] ?? "football";
   const fields = venue.fields.filter((f) => f.sport === activeSport);
-  const selectedField = venue.fields.find((f) => f.id === viewField) ?? fields[0] ?? venue.fields[0];
+  const selectedField = venue.fields.find((f) => f.id === viewField && f.sport === activeSport) ?? fields.find((f) => f.status === "active") ?? fields[0] ?? venue.fields[0];
   const name = text.name(venue);
   const todayHours = venue.openingHours.find((h) => h.weekday === weekdayOf(dates.today));
   const weekdayLabel = (weekday: number): string => dates.weekday(addDays("2026-11-15", weekday)); // 2026-11-15 is a Sunday
@@ -291,15 +260,28 @@ export function VenueDetail({ slug }: { slug: string }) {
                 </TabsList>
               </Tabs>
             ) : null}
-            <ul className="flex flex-col gap-3">
-              {fields.map((field) => (
-                <FieldRow key={field.id} field={field} slug={venue.slug} selected={selectedField?.id === field.id} onView={() => { setViewField(field.id); viewerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} />
-              ))}
-            </ul>
+            {venue.fields.length > 1 ? (
+              <>
+                <p className="-mt-1 text-sm text-muted-foreground">{t("venue.mapHint", { date: dates.day(date) })}</p>
+                <PitchMap fields={venue.fields} selectedId={selectedField?.id} states={day ? pitchStates(day, null) : undefined} sport={venue.sports.length > 1 ? activeSport : null} onSelect={(id) => setViewField(id)} label={t("pitchMap.label", { name })} />
+                <PitchLegend />
+              </>
+            ) : null}
+            {selectedField ? (
+              <PitchCard
+                field={selectedField}
+                show3d={false}
+                action={
+                  <Button asChild aria-disabled={selectedField.status !== "active"}>
+                    <Link href={`/book/${venue.slug}?field=${selectedField.id}&date=${date}`}>{t("venue.bookThisPitch")}</Link>
+                  </Button>
+                }
+              />
+            ) : null}
           </section>
 
           {selectedField ? (
-            <section aria-labelledby="viewer-title" className="flex flex-col gap-3" ref={viewerRef}>
+            <section aria-labelledby="viewer-title" className="flex flex-col gap-3">
               <div>
                 <h2 id="viewer-title" className="font-display text-2xl">{t("venue.lookAround")}</h2>
                 <p className="text-muted-foreground">

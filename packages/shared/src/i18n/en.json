@@ -296,7 +296,15 @@
     "trustLanguageBody": "Switch language any time from the top of the screen.",
     "ownerTitle": "Own a pitch? Fill your empty hours.",
     "ownerBody": "List your fields, set per-sport prices, and accept bookings from your phone. Free to list.",
-    "ownerCta": "List your venue"
+    "ownerCta": "List your venue",
+    "playAgain": "Play again",
+    "next": {
+      "title": "Your next game",
+      "playingNow": "Playing now",
+      "inMinutes": "in {minutes} min",
+      "inHours": "in {hours}h {minutes}m",
+      "inDays": "{days, plural, one {tomorrow} other {in # days}}"
+    }
   },
   "venues": {
     "title": "Find a field",
@@ -1009,5 +1017,10 @@
     "legend": "Map key",
     "indoor": "Covered",
     "lit": "Floodlit"
+  },
+  "share": {
+    "withTeam": "Share with team",
+    "bookingTitle": "Our game on PitchKH",
+    "bookingText": "⚽ {pitch} at {venue}\n{day}, {time}\n{address}\nSee you there!"
   }
 }

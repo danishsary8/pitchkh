@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { cn } from "@/lib/utils";
 import { FeaturedVenues, FreeTonight, OpenMatches, SearchCard } from "./home-islands";
+import { NextGame, PlayAgain } from "./my-games";
 
 /*
  * Home is a server component: the hero, sport tiles, steps, trust list and
@@ -38,8 +39,9 @@ export function HomePage() {
       {/* Hero: the pitch itself is the page. Mown stripes, chalk lines, and the search on the centre spot. */}
       <section className="pitch-stripes relative isolate overflow-hidden text-pitch-foreground">
         <PitchLines className="absolute inset-0 -z-10 size-full text-white/25" />
-        <Container className="grid items-center gap-8 pt-8 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14 lg:pt-16 lg:pb-20">
+        <Container className="grid grid-cols-1 items-center gap-8 pt-8 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14 lg:pt-16 lg:pb-20">
           <div className="flex flex-col gap-4 lg:gap-6">
+            <NextGame />
             <h1 className="font-display text-[2.65rem] text-balance min-[400px]:text-5xl md:text-6xl xl:text-7xl">{t("home.heroTitle")}</h1>
             <p className="max-w-xl text-lg text-pretty text-white/90 lg:text-xl">{t("home.heroBody")}</p>
             <div className="relative mt-2 hidden aspect-[16/9] overflow-hidden rounded-3xl lg:block">
@@ -52,6 +54,7 @@ export function HomePage() {
       </section>
 
       <Container className="flex flex-col gap-14 pt-6 lg:gap-24 lg:pt-10">
+        <PlayAgain />
         <FreeTonight />
 
         <section aria-labelledby="sports-title" className="flex flex-col gap-5">

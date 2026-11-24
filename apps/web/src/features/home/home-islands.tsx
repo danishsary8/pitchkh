@@ -105,7 +105,7 @@ export function FreeTonight() {
           ? [0, 1, 2, 3].map((i) => <li key={i}><Skeleton className="h-16 w-52" /></li>)
           : data.data.map((venue) => (
               <li key={venue.id} className="snap-start">
-                <Link href={`/book/${venue.slug}?date=${date}&from=${from}`} className="press flex h-16 w-56 items-center gap-3 rounded-2xl bg-card p-2 pr-3 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <Link href={`/book/${venue.slug}?date=${date}&time=${from}`} className="press flex h-16 w-56 items-center gap-3 rounded-2xl bg-card p-2 pr-3 outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <span className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-pitch">
                     {venue.photos[0] ? <Image src={venue.photos[0]} alt="" fill sizes="48px" className="object-cover" /> : null}
                   </span>

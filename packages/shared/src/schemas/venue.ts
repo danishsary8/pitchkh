@@ -52,6 +52,14 @@ export const VenueSummary = Venue.extend({
   isFavorite: z.boolean(),
   /** Present when the list was filtered by date/time: free fields in that window. */
   availableFieldCount: z.number().int().nullable(),
+  /** Active pitches grouped by sport and format, biggest group first: "3 × 6v6". */
+  pitchFormats: z.array(z.object({ sport: Sport, format: z.string(), count: z.number().int() })),
+  /**
+   * The next start times with at least one free pitch (shortest game), so a
+   * card can offer "19:00" as a one-tap booking. Today, or tomorrow when
+   * today is done. Uses the list's `date`/`from` filter when given.
+   */
+  nextFree: z.object({ date: DateStr, times: z.array(TimeStr) }).nullable(),
 });
 
 export const VenueDetail = VenueSummary.extend({

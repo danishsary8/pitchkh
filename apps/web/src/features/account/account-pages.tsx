@@ -109,7 +109,7 @@ export function MyFavorites() {
           <Button asChild><Link href="/venues">{t("home.searchCta")}</Link></Button>
         </EmptyState>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{data.data.map((v) => <VenueCard key={v.id} venue={v} />)}</div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">{data.data.map((v) => <VenueCard key={v.id} venue={v} layout="auto" />)}</div>
       )}
     </>
   );

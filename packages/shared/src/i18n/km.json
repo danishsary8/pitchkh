@@ -338,7 +338,9 @@
     "removeFavorite": "ដកចេញពីទីលានចូលចិត្ត",
     "savedToFavorites": "បានរក្សាទុកក្នុងទីលានចូលចិត្ត",
     "removedFromFavorites": "បានដកចេញពីទីលានចូលចិត្ត",
-    "results": "លទ្ធផល"
+    "results": "លទ្ធផល",
+    "nextFree": "ម៉ោងចាប់ផ្តើមទំនេរ {day}",
+    "bookAt": "កក់ម៉ោង {time} {day}"
   },
   "venue": {
     "gallery": "រូបភាព {name}",

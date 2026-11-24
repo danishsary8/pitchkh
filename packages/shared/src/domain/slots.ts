@@ -130,3 +130,24 @@ export function selectRange(slots: readonly Slot[], anchor: number | null, tappe
 export function isFieldFree(input: Omit<SlotInput, "excludeBookingId">, startTime: string, endTime: string): boolean {
   return validateRange(generateSlots(input), startTime, endTime) === null;
 }
+
+/** Start times where a game of the shortest bookable length fits (all its slots free). */
+export function freeStartTimes(availability: Availability): string[] {
+  const need = APP.minBookingMinutes / APP.slotMinutes;
+  const { slots } = availability;
+  const out: string[] = [];
+  for (let i = 0; i + need <= slots.length; i++) {
+    if (slots.slice(i, i + need).every((s) => s.status === "available")) out.push((slots[i] as Slot).start);
+  }
+  return out;
+}
+
+/**
+ * The next few start times at which at least one of the given availabilities
+ * (one per field, same day) has a free game, on the hour or half hour, from `from`.
+ */
+export function nextFreeStarts(days: readonly Availability[], limit = 3, from = "00:00"): string[] {
+  const times = new Set<string>();
+  for (const day of days) for (const t of freeStartTimes(day)) if (t >= from) times.add(t);
+  return [...times].sort().slice(0, limit);
+}

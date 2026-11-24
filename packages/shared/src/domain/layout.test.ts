@@ -90,3 +90,31 @@ describe("layout api (mock)", () => {
     expect((await api.venues.get(venue.slug)).fields.find((f) => f.id === a.id)?.layout).toEqual(moved);
   });
 });
+
+describe("venue cards: formats and next free times", () => {
+  const now = new Date("2026-11-12T03:00:00Z"); // 10:00 in Phnom Penh
+  const make = () => createApiClient({ apiMode: "mock", apiUrl: "", storage: createMemoryStorage(), latency: [0, 0], now: () => now });
+
+  it("groups pitches by format and offers the next free start times", async () => {
+    const api = make();
+    const list = await api.venues.list({ q: "Chbar Ampov" });
+    const venue = list.data[0];
+    expect(venue?.pitchFormats).toEqual([
+      { sport: "football", format: "6v6", count: 3 },
+      { sport: "football", format: "5v5", count: 3 },
+      { sport: "football", format: "10v10", count: 1 },
+    ]);
+    expect(venue?.nextFree?.date).toBe("2026-11-12");
+    expect(venue?.nextFree?.times).toHaveLength(3);
+    // Never in the past, and sorted.
+    for (const t of venue?.nextFree?.times ?? []) expect(t > "10:00").toBe(true);
+    expect([...(venue?.nextFree?.times ?? [])].sort()).toEqual(venue?.nextFree?.times);
+  });
+
+  it("uses the list's date and from filter", async () => {
+    const api = make();
+    const list = await api.venues.list({ q: "Chbar Ampov", date: "2026-11-14", from: "18:00", to: "19:00" });
+    expect(list.data[0]?.nextFree?.date).toBe("2026-11-14");
+    expect(list.data[0]?.nextFree?.times[0] && list.data[0].nextFree.times[0] >= "18:00").toBe(true);
+  });
+});

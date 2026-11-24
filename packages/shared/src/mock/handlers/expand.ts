@@ -1,8 +1,9 @@
 /** Joins that turn normalized rows into the denormalized shapes the API returns. */
 import { APP } from "../../config";
 import { canCancel, canReschedule } from "../../domain/rules";
-import { generateSlots, validateRange } from "../../domain/slots";
-import type { Booking, BookingDetail, Conversation, JoinRequestDetail, MatchRequest, MatchRequestDetail, Message, Report, Review, Team, User, Venue, VenueDetail, VenueSummary } from "../../types";
+import { generateSlots, nextFreeStarts, validateRange } from "../../domain/slots";
+import { addDays, dateInPP } from "../../domain/time";
+import type { Booking, BookingDetail, Field, Conversation, JoinRequestDetail, MatchRequest, MatchRequestDetail, Message, Report, Review, Team, User, Venue, VenueDetail, VenueSummary } from "../../types";
 import type { ConversationRow, MessageRow, MockDb, ReportRow, ReviewRow } from "../db";
 import { notFound } from "../server";
 
@@ -25,8 +26,24 @@ export function venueSummary(db: MockDb, venue: Venue, user: User | null, now: D
   const free = window
     ? fields.filter((field) => validateRange(generateSlots({ field, openingHours: venue.openingHours, date: window.date, bookings: db.bookings, blocks: db.blocks, now }), window.from, window.to) === null).length
     : null;
+  const slotsOn = (date: string) => fields.map((field) => generateSlots({ field, openingHours: venue.openingHours, date, bookings: db.bookings, blocks: db.blocks, now }));
+  const firstDay = window?.date ?? dateInPP(now.toISOString());
+  let nextFree = { date: firstDay, times: nextFreeStarts(slotsOn(firstDay), 3, window?.from) };
+  if (nextFree.times.length === 0 && !window) {
+    const tomorrow = addDays(firstDay, 1);
+    nextFree = { date: tomorrow, times: nextFreeStarts(slotsOn(tomorrow), 3) };
+  }
+  const groups = new Map<string, { sport: Field["sport"]; format: string; count: number }>();
+  for (const f of fields) {
+    const key = `${f.sport}:${f.format}`;
+    const g = groups.get(key) ?? { sport: f.sport, format: f.format, count: 0 };
+    g.count++;
+    groups.set(key, g);
+  }
   return {
     ...venue,
+    pitchFormats: [...groups.values()].sort((a, b) => b.count - a.count),
+    nextFree: fields.length && nextFree.times.length ? nextFree : null,
     priceFromUsd: fields.length ? Math.min(...fields.map((f) => f.pricePerHourUsd)) : 0,
     fieldCount: fields.length,
     isFavorite: user ? db.favorites.some((f) => f.userId === user.id && f.venueId === venue.id) : false,

@@ -52,7 +52,7 @@ export function VenuesBrowse() {
   const activeVenue = venues.find((v) => v.id === activePin);
 
   const results = isPending ? (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy aria-label={t("common.loading")}>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy aria-label={t("common.loading")}>
       {Array.from({ length: 6 }, (_, i) => <VenueCardSkeleton key={i} />)}
     </div>
   ) : isError ? (
@@ -63,10 +63,10 @@ export function VenuesBrowse() {
     </EmptyState>
   ) : (
     <>
-      <Stagger key={JSON.stringify(query)} className={cn("grid gap-4 sm:grid-cols-2 transition-opacity duration-200", filters.view === "map" ? "xl:grid-cols-2" : "xl:grid-cols-3", isPlaceholderData && "opacity-60")}>
+      <Stagger key={JSON.stringify(query)} className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 transition-opacity duration-200", filters.view === "map" ? "xl:grid-cols-2" : "xl:grid-cols-3", isPlaceholderData && "opacity-60")}>
         {venues.map((venue, i) => (
           <StaggerItem key={venue.id}>
-            <VenueCard venue={venue} priority={i < 2} className="h-full" />
+            <VenueCard venue={venue} priority={i < 2} className="h-full" layout="auto" />
           </StaggerItem>
         ))}
       </Stagger>

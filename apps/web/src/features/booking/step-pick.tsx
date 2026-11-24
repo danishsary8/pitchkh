@@ -56,7 +56,10 @@ export function StepPick({ venue, draft, update }: { venue: VenueDetail; draft: 
     else update({ wantedStart: start, fieldId: venue.fields.length > 1 ? null : (field?.id ?? null), startTime: null, endTime: null });
   };
 
-  const freeNow = draft.wantedStart ? options.find((o) => o.time === draft.wantedStart)?.freeCount ?? 0 : null;
+  const bookableIds = new Set(bookable.map((f) => f.id));
+  const freeNow = draft.wantedStart && day ? day.fields.filter((f) => bookableIds.has(f.fieldId) && freeAt(f, draft.wantedStart as string)).length : null;
+  // A half-hour start from a venue card's chip gets its own chip so it shows as picked.
+  const chips = draft.wantedStart && day && !options.some((o) => o.time === draft.wantedStart) ? [...options, { time: draft.wantedStart, freeCount: freeNow ?? 0 }].sort((a, b) => a.time.localeCompare(b.time)) : options;
 
   return (
     <div className="flex flex-col gap-5">
@@ -86,7 +89,7 @@ export function StepPick({ venue, draft, update }: { venue: VenueDetail; draft: 
             <button type="button" role="radio" aria-checked={!draft.wantedStart} onClick={() => pickStart(null)} className={chip}>{t("booking.anyTime")}</button>
             {isPending
               ? Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-11 w-16 shrink-0 rounded-full" />)
-              : options.map((o) => (
+              : chips.map((o) => (
                   <button key={o.time} type="button" role="radio" aria-checked={draft.wantedStart === o.time} disabled={o.freeCount === 0} onClick={() => pickStart(o.time)} className={cn(chip, "font-num")} aria-label={t("booking.startChip", { time: o.time, count: o.freeCount })}>
                     {o.time}
                   </button>

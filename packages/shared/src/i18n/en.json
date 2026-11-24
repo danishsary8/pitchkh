@@ -338,7 +338,9 @@
     "removeFavorite": "Remove from favorites",
     "savedToFavorites": "Saved to favorites",
     "removedFromFavorites": "Removed from favorites",
-    "results": "Results"
+    "results": "Results",
+    "nextFree": "Free start times, {day}",
+    "bookAt": "Book at {time}, {day}"
   },
   "venue": {
     "gallery": "Photos of {name}",

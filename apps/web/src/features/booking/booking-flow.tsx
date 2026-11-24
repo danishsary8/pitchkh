@@ -75,11 +75,14 @@ export function BookingFlow({ slug }: { slug: string }) {
     const onlyField = venue.fields.filter((f) => f.status === "active" && (!sport || f.sport === sport));
     const date = params.get("date");
     const from = params.get("from");
+    // ?time= comes from a venue card's "19:00" chip: colour the map for that start.
+    const time = params.get("time");
     open(slug, {
       sport: (linkField?.sport ?? sport ?? undefined) as Sport | undefined,
       fieldId: linkField?.id ?? (onlyField.length === 1 ? onlyField[0]?.id : undefined),
       date: date && date >= dates.today ? date : undefined,
       ...(from && /^\d{2}:\d{2}$/.test(from) && linkField ? { startTime: from, endTime: timeOf(minutesOf(from) + APP.minBookingMinutes) } : {}),
+      ...(time && /^\d{2}:\d{2}$/.test(time) ? { wantedStart: time, ...(onlyField.length === 1 ? { startTime: time, endTime: timeOf(minutesOf(time) + APP.minBookingMinutes) } : {}) } : {}),
     });
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time sync with the persisted draft store
     setHydrated(true);

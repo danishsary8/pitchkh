@@ -52,7 +52,7 @@ export const useBookingDraft = create<DraftState>()(
           const changed = (clean.fieldId && clean.fieldId !== current.fieldId) || (clean.date && clean.date !== current.date);
           // Drafts saved by the older 4-step flow can carry step 2 or 3.
           const step = Math.min(current.step, 1);
-          set({ draft: { ...emptyDraft(slug), ...current, ...clean, step, ...(changed ? { startTime: null, endTime: null, wantedStart: null, step: 0 } : {}) } });
+          set({ draft: { ...emptyDraft(slug), ...current, ...clean, step, ...(changed ? { startTime: null, endTime: null, wantedStart: initial.wantedStart ?? null, step: 0 } : {}) } });
         } else set({ draft: { ...emptyDraft(slug), ...clean, step: 0 } });
       },
       update: (patch) => set((s) => (s.draft ? { draft: { ...s.draft, ...patch } } : s)),

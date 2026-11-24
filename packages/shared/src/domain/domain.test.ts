@@ -3,7 +3,7 @@ import { createApiClient } from "../api/client";
 import { ApiError } from "../api/errors";
 import { createMemoryStorage } from "../mock/storage";
 import type { Booking, Field, OpeningHours } from "../types";
-import { calculatePrice, usdToKhr } from "./pricing";
+import { calculatePrice, formatKhr, formatUsd, usdToKhr } from "./pricing";
 import { canCancel } from "./rules";
 import { findConflict, generateSlots, rangesOverlap, selectRange, validateRange } from "./slots";
 import { addDays, dateInPP, timeInPP, toIso, weekdayOf } from "./time";
@@ -38,6 +38,23 @@ describe("pricing", () => {
     const price = calculatePrice({ field, date: "2026-11-15", startTime: "08:00", endTime: "09:00", referee: false, extras: { waterBottles: 0, ball: false, bibs: false } });
     expect(price.lines.find((l) => l.key === "weekend")?.amountUsd).toBe(2);
     expect(price.subtotalUsd).toBe(22);
+  });
+});
+
+describe("money formatting", () => {
+  it("groups thousands and drops .00 on whole dollars", () => {
+    expect(formatUsd(15)).toBe("$15");
+    expect(formatUsd(0.5)).toBe("$0.50");
+    expect(formatUsd(17.51)).toBe("$17.51");
+    expect(formatUsd(7614.8)).toBe("$7,614.80");
+    expect(formatUsd(15596)).toBe("$15,596");
+    expect(formatUsd(1234567.891)).toBe("$1,234,567.89");
+  });
+  it("puts the minus sign before the dollar sign", () => {
+    expect(formatUsd(-12.5)).toBe("-$12.50");
+  });
+  it("groups riel the same way", () => {
+    expect(formatKhr(31220700)).toBe("31,220,700 ៛");
   });
 });
 

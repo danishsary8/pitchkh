@@ -9,8 +9,11 @@ export function usdToKhr(usd: number): number {
   return Math.round((usd * APP.khrPerUsd) / 100) * 100;
 }
 
+/** "$15", "$0.50", "$7,614.80", "-$12.50": thousands grouped, cents only when there are any. */
 export function formatUsd(usd: number): string {
-  return `$${usd.toFixed(2).replace(/\.00$/, "")}`;
+  const [whole = "0", cents = "00"] = Math.abs(usd).toFixed(2).split(".");
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${usd < 0 ? "-" : ""}$${grouped}${cents === "00" ? "" : `.${cents}`}`;
 }
 
 export function formatKhr(khr: number): string {

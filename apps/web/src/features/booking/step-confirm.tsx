@@ -1,6 +1,6 @@
 "use client";
 
-import { APP, defaultTeamSize, SKILL_LEVELS, supportsMatching, type Field, type SkillLevel, type VenueDetail } from "@pitchkh/shared";
+import { APP, defaultTeamSize, formatUsd, SKILL_LEVELS, supportsMatching, type Field, type SkillLevel, type VenueDetail } from "@pitchkh/shared";
 import { Minus, Plus, Swords, Users } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -111,7 +111,7 @@ export function StepConfirm({ field, draft, update, summary }: { venue: VenueDet
                 <Switch id="referee" checked={draft.referee} onCheckedChange={(referee) => update({ referee })} />
               </Row>
             ) : null}
-            <Row title={t("booking.water")} hint={t("booking.waterHint", { price: `$${APP.waterBottleUsd.toFixed(2)}` })}>
+            <Row title={t("booking.water")} hint={t("booking.waterHint", { price: formatUsd(APP.waterBottleUsd) })}>
               <Counter value={draft.extras.waterBottles} min={0} max={48} onChange={(waterBottles) => update({ extras: { ...draft.extras, waterBottles } })} label={t("booking.water")} />
             </Row>
             <Row title={t("booking.ball")} hint={t("booking.ballHint", { price: `$${APP.ballRentalUsd}` })} htmlFor="ball">

@@ -7,7 +7,7 @@
  *    get Accept / Decline buttons that answer the request right from Telegram.
  */
 import { randomBytes } from "node:crypto";
-import { isoInPP, type BookingDetail, type NotificationType, type User } from "@pitchkh/shared";
+import { formatUsd, isoInPP, type BookingDetail, type NotificationType, type User } from "@pitchkh/shared";
 import { eq } from "drizzle-orm";
 import type { Database } from "./db/client";
 import { toBooking, toUser } from "./db/mappers";
@@ -86,7 +86,7 @@ export function bookingMessage(booking: BookingDetail, type: NotificationType, l
     `${booking.venue.name} · ${booking.field.name} (${booking.field.format})`,
     `📅 ${booking.date}  🕒 ${time}`,
     `👤 ${booking.customer.name} · ${booking.customer.phone} · ${booking.teamSize} ${tx.players}`,
-    `💵 $${booking.price.totalUsd.toFixed(2)} · ${booking.paymentMethod.toUpperCase()}`,
+    `💵 ${formatUsd(booking.price.totalUsd)} · ${booking.paymentMethod.toUpperCase()}`,
     `#${booking.code}`,
   ].join("\n");
 }

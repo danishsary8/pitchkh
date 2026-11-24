@@ -1,6 +1,6 @@
 "use client";
 
-import { APP, calculatePrice, defaultTeamSize, isApiError, minutesOf, supportsMatching, timeOf, type PaymentIntent, type Sport } from "@pitchkh/shared";
+import { APP, calculatePrice, defaultTeamSize, formatUsd, isApiError, minutesOf, supportsMatching, timeOf, type PaymentIntent, type Sport } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -158,7 +158,7 @@ export function BookingFlow({ slug }: { slug: string }) {
     ) : (
       <Button size="lg" variant="accent" disabled={!price || create.isPending || status === "loading"} onClick={pay} className="flex-1 lg:flex-none lg:px-10">
         {create.isPending ? <Spinner /> : null}
-        {!user ? t("booking.signInToPay") : draft.paymentMethod === "cash" ? t("booking.requestBooking") : t("booking.payAmount", { amount: `$${price?.totalUsd.toFixed(2) ?? ""}` })}
+        {!user ? t("booking.signInToPay") : draft.paymentMethod === "cash" ? t("booking.requestBooking") : t("booking.payAmount", { amount: price ? formatUsd(price.totalUsd) : "" })}
       </Button>
     );
 

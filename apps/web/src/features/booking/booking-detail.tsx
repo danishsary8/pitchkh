@@ -1,6 +1,6 @@
 "use client";
 
-import { bookingToGoogleCalendarUrl, bookingToIcs, type BookingDetail as Booking, type BookingStatus, type PaymentIntent } from "@pitchkh/shared";
+import { bookingToGoogleCalendarUrl, bookingToIcs, formatUsd, type BookingDetail as Booking, type BookingStatus, type PaymentIntent } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarPlus, CalendarSync, Check, Clock, Download, MapPin, Navigation, Repeat, Send, Star, Swords, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -208,7 +208,7 @@ export function BookingDetail({ id }: { id: string }) {
             <p className="text-sm text-pretty">{t("booking.awaitingBody", { time: booking.paymentDueAt ? dates.time(booking.paymentDueAt) : "" })}</p>
             <Button size="lg" variant="accent" disabled={startPay.isPending} onClick={() => startPay.mutate()}>
               {startPay.isPending ? <Spinner /> : null}
-              {t("booking.payAmount", { amount: `$${booking.price.totalUsd.toFixed(2)}` })}
+              {t("booking.payAmount", { amount: formatUsd(booking.price.totalUsd) })}
             </Button>
           </div>
         ) : null}
@@ -291,7 +291,7 @@ export function BookingDetail({ id }: { id: string }) {
         open={cancelOpen}
         onOpenChange={setCancelOpen}
         title={t("booking.cancelTitle")}
-        description={booking.paymentStatus === "paid" ? t("booking.cancelBodyPaid", { amount: `$${booking.price.totalUsd.toFixed(2)}`, method: t(`payment.${booking.paymentMethod}`) }) : t("booking.cancelBodyUnpaid")}
+        description={booking.paymentStatus === "paid" ? t("booking.cancelBodyPaid", { amount: formatUsd(booking.price.totalUsd), method: t(`payment.${booking.paymentMethod}`) }) : t("booking.cancelBodyUnpaid")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setCancelOpen(false)}>{t("booking.keep")}</Button>

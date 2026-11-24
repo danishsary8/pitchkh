@@ -149,6 +149,9 @@ export function createOwnerApi(t: Transport) {
     createBlock: (dto: T.CreateBlockDto) => t<T.AvailabilityBlock>({ method: "POST", path: "/owner/blocks", body: dto }),
     deleteBlock: (blockId: string) => t<void>({ method: "DELETE", path: `/owner/blocks/${id(blockId)}` }),
     earnings: () => t<T.OwnerEarnings>({ method: "GET", path: "/owner/earnings" }),
+    /** Telegram booking alerts: status, a fresh link code, or unlink. */
+    telegram: () => t<T.TelegramStatus>({ method: "GET", path: "/owner/telegram" }),
+    unlinkTelegram: () => t<T.TelegramStatus>({ method: "DELETE", path: "/owner/telegram" }),
   };
 }
 

@@ -132,3 +132,13 @@ export const AdminVenueListQuery = PageQuery.extend({
   status: z.enum(["pending", "approved", "rejected", "suspended"]).optional(),
   q: z.string().trim().optional(),
 });
+
+/* ----------------------------- Telegram ----------------------------- */
+/** An owner's Telegram alerts: is the bot set up, is their chat linked, and the link that connects it. */
+export const TelegramStatus = z.object({
+  /** False when the server has no bot configured. */
+  enabled: z.boolean(),
+  linked: z.boolean(),
+  /** t.me/<bot>?start=<one-time code>; null when disabled or already linked. */
+  linkUrl: z.string().nullable(),
+});

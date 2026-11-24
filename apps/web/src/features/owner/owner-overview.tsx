@@ -13,6 +13,7 @@ import { BarChart, Kpi, Panel, ResponsiveTable, ShareBars } from "@/features/das
 import { api } from "@/lib/api";
 import { useDates, useMoney } from "@/lib/format";
 import { qk } from "@/lib/query";
+import { TelegramCard } from "./telegram-card";
 
 const SPORT_COLOR = { football: "var(--sport-football)", volleyball: "var(--sport-volleyball)", tennis: "var(--sport-tennis)" } as const;
 
@@ -40,6 +41,7 @@ export function OwnerOverview() {
             <Kpi icon={Gauge} label={t("owner.kpi.occupancy")} value={`${Math.round(data.occupancyRate * 100)}%`} hint={t("owner.kpi.occupancyHint")} />
             <Kpi tone={data.pendingRequests ? "accent" : "default"} icon={Clock} label={t("owner.kpi.pending")} value={data.pendingRequests} hint={t("owner.kpi.pendingHint")} />
           </div>
+          <TelegramCard />
           {data.pendingRequests > 0 ? (
             <Button asChild variant="accent" size="lg" className="sm:w-fit"><Link href="/owner/bookings">{t("owner.reviewRequests", { count: data.pendingRequests })}</Link></Button>
           ) : null}

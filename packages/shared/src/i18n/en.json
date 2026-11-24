@@ -933,6 +933,15 @@
       "gapTip": "Tip: leave about {gap} m between pitches for paths and benches.",
       "emptyTitle": "No pitches yet",
       "emptyBody": "Add a pitch to this venue first, then place it on the map."
+    },
+    "telegram": {
+      "title": "Booking alerts on Telegram",
+      "body": "Get every new booking in Telegram, and accept or decline cash requests with one tap.",
+      "linkedBody": "New bookings, cancellations and changes arrive in your Telegram chat.",
+      "connect": "Connect Telegram",
+      "disconnect": "Disconnect",
+      "disconnected": "Telegram alerts turned off",
+      "on": "On"
     }
   },
   "admin": {

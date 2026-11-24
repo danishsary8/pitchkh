@@ -7,10 +7,16 @@ import { registerAuthRoutes } from "./routes/auth";
 import { registerBookingRoutes } from "./routes/bookings";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerOwnerRoutes } from "./routes/owner";
+import { registerTelegramRoutes } from "./routes/telegram";
+import { alertOwner, type TelegramClient } from "./telegram";
 import { registerVenueRoutes } from "./routes/venues";
 
-export function createApp(services: Services, corsOrigins: string[]): Hono {
+export function createApp(services: Services, corsOrigins: string[], telegram?: TelegramClient): Hono {
   const app = new Hono();
+  // Booking alerts go to the owner's Telegram after the response; a Telegram outage never fails a booking.
+  if (telegram && !services.onNotify) {
+    services = { ...services, onNotify: (n) => void alertOwner(services.db, telegram, n, services.clock()).catch((e: unknown) => console.error("telegram alert failed", e)) };
+  }
   app.use("*", cors({ origin: corsOrigins, allowHeaders: ["Authorization", "Content-Type"], allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], maxAge: 600 }));
 
   // Every error leaves in the contract's shape: { error: { code, message, details } }.
@@ -33,6 +39,7 @@ export function createApp(services: Services, corsOrigins: string[]): Hono {
   registerNotificationRoutes(route);
   registerOwnerRoutes(route);
   registerAdminRoutes(route);
+  registerTelegramRoutes(route, telegram);
   app.route("/api/v1", api);
   return app;
 }

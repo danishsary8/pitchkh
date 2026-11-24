@@ -171,6 +171,10 @@ export function registerOwnerRoutes(server: MockServer): void {
     return undefined;
   });
 
+  // The mock has no bot: it shows what the real link looks like, and "linked" stays off.
+  server.route("GET", "/owner/telegram", OWNER, () => ({ enabled: true, linked: false, linkUrl: "https://t.me/PitchKHBot?start=demo" }));
+  server.route("DELETE", "/owner/telegram", OWNER, () => ({ enabled: true, linked: false, linkUrl: "https://t.me/PitchKHBot?start=demo" }));
+
   server.route("GET", "/owner/earnings", OWNER, (ctx): OwnerEarnings => {
     const venues = myVenues(ctx);
     const venueIds = new Set(venues.map((v) => v.id));

@@ -29,6 +29,8 @@ export interface Ctx {
   nowIso: string;
   requireUser(): User;
   newId(): string;
+  /** A request header, e.g. Telegram's webhook secret. */
+  header(name: string): string | undefined;
   /** Writes an in-app notification (inside the caller's transaction when given). */
   notify(tx: Tx, userId: string, type: NotificationType, params: Record<string, string>, href: string, meta?: Record<string, string>): Promise<void>;
   /** Run after the response is committed, e.g. outside notifications. */
@@ -82,8 +84,9 @@ export function createRouter(app: Hono, services: Services) {
           return user;
         },
         newId: () => randomUUID(),
+        header: (name) => c.req.header(name),
         notify: async (tx, userId, type, params, href, meta) => {
-          await tx.insert(notifications).values({ id: randomUUID(), userId, type, params, href, read: false, createdAt: now });
+          await insertNotification(tx, now, userId, type, params, href);
           if (services.onNotify) afterHooks.push(() => services.onNotify?.({ userId, type, params, href, meta }));
         },
         after: (fn) => afterHooks.push(fn),
@@ -102,6 +105,10 @@ export function createRouter(app: Hono, services: Services) {
 }
 
 export type Route = ReturnType<typeof createRouter>;
+
+export async function insertNotification(tx: Tx, now: Date, userId: string, type: NotificationType, params: Record<string, string>, href: string): Promise<void> {
+  await tx.insert(notifications).values({ id: randomUUID(), userId, type, params, href, read: false, createdAt: now });
+}
 
 /** Postgres error codes we turn into API errors. */
 export function toApiErrorFromDb(e: unknown): ApiError | null {

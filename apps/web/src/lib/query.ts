@@ -37,6 +37,7 @@ export const qk = {
     bookings: (params?: OwnerBookingListQuery) => ["owner", "bookings", params ?? {}] as const,
     schedule: (venueId: string, date: string) => ["owner", "schedule", venueId, date] as const,
     earnings: ["owner", "earnings"] as const,
+    telegram: ["owner", "telegram"] as const,
   },
   admin: {
     analytics: ["admin", "analytics"] as const,

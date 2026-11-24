@@ -10,6 +10,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { KramaStrip } from "@/components/brand/pitch-art";
 import { Link, useNavigate } from "@/components/common/link";
+import { demoLogin } from "@/lib/features";
 import { Container } from "@/components/common/page";
 import { useErrorMessage } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
@@ -97,26 +98,28 @@ export function LoginPage() {
 
   return (
     <AuthFrame title={t("signInTitle")} body={t("signInBody")}>
-      <section aria-labelledby="demo-title" className="flex flex-col gap-3 rounded-2xl bg-secondary p-4">
-        <div>
-          <h2 id="demo-title" className="font-bold">{t("demoTitle")}</h2>
-          <p className="text-sm text-muted-foreground">{t("demoBody")}</p>
-        </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          {DEMO_ACCOUNTS.map((account) => {
-            const meta = demoMeta[account.role];
-            return (
-              <button key={account.email} type="button" disabled={demoPending !== null} onClick={() => void demo(account.email)} className="press flex min-h-14 items-center gap-3 rounded-xl bg-card px-3 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 sm:flex-col sm:items-start sm:gap-1.5 sm:py-3">
-                {demoPending === account.email ? <Spinner className="size-5 text-primary" /> : <meta.icon className="size-5 shrink-0 text-primary" />}
-                <span className="flex flex-col">
-                  <span className="text-sm font-bold">{meta.label}</span>
-                  <span className="text-xs text-muted-foreground">{meta.hint}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      {demoLogin ? (
+        <section aria-labelledby="demo-title" className="flex flex-col gap-3 rounded-2xl bg-secondary p-4">
+          <div>
+            <h2 id="demo-title" className="font-bold">{t("demoTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("demoBody")}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {DEMO_ACCOUNTS.map((account) => {
+              const meta = demoMeta[account.role];
+              return (
+                <button key={account.email} type="button" disabled={demoPending !== null} onClick={() => void demo(account.email)} className="press flex min-h-14 items-center gap-3 rounded-xl bg-card px-3 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 sm:flex-col sm:items-start sm:gap-1.5 sm:py-3">
+                  {demoPending === account.email ? <Spinner className="size-5 text-primary" /> : <meta.icon className="size-5 shrink-0 text-primary" />}
+                  <span className="flex flex-col">
+                    <span className="text-sm font-bold">{meta.label}</span>
+                    <span className="text-xs text-muted-foreground">{meta.hint}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <form onSubmit={form.handleSubmit(submit)} noValidate>
         <FieldGroup>

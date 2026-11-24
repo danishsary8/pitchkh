@@ -44,6 +44,11 @@ export async function seed(db: Database, now = new Date()): Promise<void> {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   loadEnvFile();
+  // Demo users share a public password: never create them on a production database by accident.
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "1") {
+    console.error("Refusing to seed demo data in production (it empties every table and adds demo logins). Set ALLOW_DEMO_SEED=1 to force.");
+    process.exit(1);
+  }
   const { sql, db } = createDb();
   await seed(db);
   const [{ count }] = (await sql`SELECT count(*)::int AS count FROM bookings`) as unknown as [{ count: number }];

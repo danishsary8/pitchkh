@@ -37,8 +37,9 @@ chat or commit them: they go only into the hosting dashboards.
    - the Bakong values from step 2
    - `RESEND_API_KEY` (step 6), `TELEGRAM_BOT_TOKEN` and `TELEGRAM_BOT_USERNAME` (step 5)
 3. Deploy. Open `https://<your-api>/health`: it should say `{"ok":true}`.
-4. Optional demo data: in the Render shell run `node dist/seed.js`
-   (**it empties every table**, so only on a fresh database).
+4. Optional demo data (for a test/staging site only): in the Render shell run
+   `ALLOW_DEMO_SEED=1 node dist/seed.js` (**it empties every table** and creates demo logins
+   with the password `password`, so never on the real production database).
 
 ## 4. Vercel (web app)
 

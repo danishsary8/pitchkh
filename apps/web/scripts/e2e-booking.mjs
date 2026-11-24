@@ -18,7 +18,10 @@ const step = async (name, fn) => { await fn(); await page.waitForTimeout(700); a
 
 await step("1-login", async () => { await page.goto(`${base}/en/login?next=/book/russey-keo-futsal`, { waitUntil: "networkidle" }); });
 await step("2-pick-pitch", async () => {
-  await page.getByRole("button", { name: /Player/ }).click();
+  // Sign in with the form (demo buttons are hidden in real mode).
+  await page.fill("#email", "dara@pitchkh.app");
+  await page.fill("#password", "password");
+  await page.click('button[type="submit"]');
   await page.waitForURL(/\/book\//);
   await page.getByRole("radiogroup", { name: "Day" }).getByRole("radio").nth(5).click();
   // Tap the pitch on the map (each pitch is a radio named "Court 1, 5v5, Free").

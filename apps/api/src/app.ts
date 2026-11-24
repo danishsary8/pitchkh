@@ -2,9 +2,11 @@ import { ApiError } from "@pitchkh/shared";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createRouter, toApiErrorFromDb, type Services } from "./http";
+import { registerAdminRoutes } from "./routes/admin";
 import { registerAuthRoutes } from "./routes/auth";
 import { registerBookingRoutes } from "./routes/bookings";
 import { registerNotificationRoutes } from "./routes/notifications";
+import { registerOwnerRoutes } from "./routes/owner";
 import { registerVenueRoutes } from "./routes/venues";
 
 export function createApp(services: Services, corsOrigins: string[]): Hono {
@@ -29,6 +31,8 @@ export function createApp(services: Services, corsOrigins: string[]): Hono {
   registerVenueRoutes(route);
   registerBookingRoutes(route);
   registerNotificationRoutes(route);
+  registerOwnerRoutes(route);
+  registerAdminRoutes(route);
   app.route("/api/v1", api);
   return app;
 }

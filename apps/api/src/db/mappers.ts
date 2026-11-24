@@ -11,8 +11,11 @@ type Row<T extends { $inferSelect: unknown }> = T["$inferSelect"];
 export const iso = (d: Date): string => isoInPP(d);
 
 export function toUser(row: Row<typeof t.users>): User {
-  const { passwordHash: _hidden, createdAt, homeProvince, ...rest } = row;
-  return { ...rest, homeProvince: homeProvince as Province, createdAt: iso(createdAt) };
+  // Listed field by field so a new column (like password_hash) can never leak out by accident.
+  return {
+    id: row.id, role: row.role, name: row.name, email: row.email, phone: row.phone, avatarUrl: row.avatarUrl, locale: row.locale,
+    status: row.status, teamId: row.teamId, homeProvince: row.homeProvince as Province, createdAt: iso(row.createdAt),
+  };
 }
 
 export function toVenue(row: Row<typeof t.venues>): Venue {

@@ -67,7 +67,8 @@
     "switchToEnglish": "English",
     "toggleTheme": "Switch theme",
     "openMenu": "Open menu",
-    "khrApprox": "about {amount}"
+    "khrApprox": "about {amount}",
+    "view": "View"
   },
   "nav": {
     "home": "Home",
@@ -368,7 +369,8 @@
     "removedFromFavorites": "Removed from favorites",
     "results": "Results",
     "nextFree": "Free start times, {day}",
-    "bookAt": "Book at {time}, {day}"
+    "bookAt": "Book at {time}, {day}",
+    "shownOf": "Showing {shown} of {total}"
   },
   "venue": {
     "gallery": "Photos of {name}",

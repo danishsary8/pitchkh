@@ -67,7 +67,8 @@
     "switchToEnglish": "English",
     "toggleTheme": "ប្តូររូបរាង",
     "openMenu": "បើកម៉ឺនុយ",
-    "khrApprox": "ប្រហែល {amount}"
+    "khrApprox": "ប្រហែល {amount}",
+    "view": "មើល"
   },
   "nav": {
     "home": "ទំព័រដើម",
@@ -368,7 +369,8 @@
     "removedFromFavorites": "បានដកចេញពីទីលានចូលចិត្ត",
     "results": "លទ្ធផល",
     "nextFree": "ម៉ោងចាប់ផ្តើមទំនេរ {day}",
-    "bookAt": "កក់ម៉ោង {time} {day}"
+    "bookAt": "កក់ម៉ោង {time} {day}",
+    "shownOf": "បង្ហាញ {shown} ក្នុងចំណោម {total}"
   },
   "venue": {
     "gallery": "រូបភាព {name}",

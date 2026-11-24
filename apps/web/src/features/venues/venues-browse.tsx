@@ -1,12 +1,12 @@
 "use client";
 
 import { VENUE_SORTS, type VenueSort } from "@pitchkh/shared";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { List, Map as MapIcon, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { Container, PageHeader, Pagination } from "@/components/common/page";
+import { Container, PageHeader } from "@/components/common/page";
 import { EmptyState, ErrorState } from "@/components/common/states";
 import { Stagger, StaggerItem } from "@/components/common/motion";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/misc";
 import { api } from "@/lib/api";
 import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
@@ -42,9 +43,16 @@ export function VenuesBrowse() {
     return () => window.clearTimeout(timer);
   }, [search, filters.q, setFilters]);
 
-  const { data, isPending, isError, error, refetch, isPlaceholderData } = useQuery({ queryKey: qk.venues(query), queryFn: () => api.venues.list(query), placeholderData: keepPreviousData });
-  const venues = data?.data ?? [];
-  const total = data?.meta.total ?? 0;
+  // "Show more" appends the next page, so phones scroll one list instead of paging.
+  const { data, isPending, isError, error, refetch, isPlaceholderData, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: [...qk.venues(query), "infinite"],
+    queryFn: ({ pageParam }) => api.venues.list({ ...query, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (last) => (last.meta.page < last.meta.totalPages ? last.meta.page + 1 : undefined),
+    placeholderData: keepPreviousData,
+  });
+  const venues = data?.pages.flatMap((p) => p.data) ?? [];
+  const total = data?.pages[0]?.meta.total ?? 0;
   const clear = (): void => {
     setSearch("");
     setFilters({ q: "", sport: null, province: null, district: null, maxPrice: null, date: null, from: null });
@@ -70,7 +78,15 @@ export function VenuesBrowse() {
           </StaggerItem>
         ))}
       </Stagger>
-      {filters.view === "list" ? <Pagination page={filters.page} totalPages={data?.meta.totalPages ?? 1} onChange={(page) => { setFilters({ page }); window.scrollTo({ top: 0 }); }} /> : null}
+      {filters.view === "list" && hasNextPage ? (
+        <div className="flex flex-col items-center gap-2 pt-6">
+          <p className="text-sm text-muted-foreground">{t("venues.shownOf", { shown: venues.length, total })}</p>
+          <Button variant="secondary" className="min-w-44" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>
+            {isFetchingNextPage ? <Spinner /> : null}
+            {t("common.seeMore")}
+          </Button>
+        </div>
+      ) : null}
     </>
   );
 
@@ -102,7 +118,7 @@ export function VenuesBrowse() {
             </Select>
             <div className="flex rounded-full bg-secondary p-1" role="group" aria-label={t("venues.viewMode")}>
               {(["list", "map"] as const).map((view) => (
-                <button key={view} type="button" aria-pressed={filters.view === view} onClick={() => setFilters({ view, page: filters.page })} className="grid h-8 w-10 place-items-center rounded-full text-muted-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring aria-pressed:bg-card aria-pressed:text-foreground" aria-label={t(`venues.view.${view}`)}>
+                <button key={view} type="button" aria-pressed={filters.view === view} onClick={() => setFilters({ view })} className="grid h-8 w-10 place-items-center rounded-full text-muted-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring aria-pressed:bg-card aria-pressed:text-foreground" aria-label={t(`venues.view.${view}`)}>
                   {view === "list" ? <List className="size-4.5" /> : <MapIcon className="size-4.5" />}
                 </button>
               ))}

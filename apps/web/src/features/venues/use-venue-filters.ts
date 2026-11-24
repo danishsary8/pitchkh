@@ -17,7 +17,6 @@ export interface VenueFilters {
   duration: number;
   sort: VenueSort;
   view: "list" | "map";
-  page: number;
 }
 
 const oneOf = <T extends string>(list: readonly T[], value: string | null): T | null => (value && (list as readonly string[]).includes(value) ? (value as T) : null);
@@ -44,13 +43,12 @@ export function useVenueFilters(today: string) {
       duration: [60, 90, 120].includes(Number(params.get("dur"))) ? Number(params.get("dur")) : 60,
       sort: oneOf(VENUE_SORTS, params.get("sort")) ?? "recommended",
       view: params.get("view") === "map" ? "map" : "list",
-      page: Math.max(1, Number(params.get("page")) || 1),
     };
   }, [params, today]);
 
   const setFilters = useCallback(
     (patch: Partial<VenueFilters>) => {
-      const next = { ...filters, page: 1, ...patch };
+      const next = { ...filters, ...patch };
       if (patch.province !== undefined && patch.province !== filters.province) next.district = null;
       const search = new URLSearchParams();
       const put = (key: string, value: string | number | null, skip?: string | number): void => {
@@ -66,14 +64,13 @@ export function useVenueFilters(today: string) {
       put("dur", next.date && next.from ? next.duration : null, 60);
       put("sort", next.sort, "recommended");
       put("view", next.view, "list");
-      put("page", next.page, 1);
       const qs = search.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
     [filters, pathname, router],
   );
 
-  /** The same filters as API query params. */
+  /** The same filters as API query params. The list loads more pages on demand ("Show more"); the map gets one big page. */
   const query = useMemo<VenueListQuery>(() => {
     const window = filters.date && filters.from ? { date: filters.date, from: filters.from, to: timeOf(Math.min(24 * 60, minutesOf(filters.from) + filters.duration)) } : {};
     return {
@@ -84,7 +81,6 @@ export function useVenueFilters(today: string) {
       maxPrice: filters.maxPrice ?? undefined,
       ...window,
       sort: filters.sort,
-      page: filters.view === "map" ? 1 : filters.page,
       pageSize: filters.view === "map" ? 50 : 12,
     };
   }, [filters]);

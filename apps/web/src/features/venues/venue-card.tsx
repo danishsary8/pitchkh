@@ -86,7 +86,6 @@ export function VenueCard({ venue, priority = false, className, href, layout = "
             />
           ) : null}
           <div className={cn("absolute top-3 left-3 flex flex-wrap gap-1.5", row && "max-sm:top-1.5 max-sm:left-1.5")}>
-            {venue.featured ? <Badge variant="accent" className={cn(row && "max-sm:px-1.5 max-sm:text-[0.65rem]")}>{t("common.featured")}</Badge> : null}
             {venue.availableFieldCount ? <Badge variant="default" className={cn(row && "max-sm:hidden")}>{t("venues.fieldsFree", { count: venue.availableFieldCount })}</Badge> : null}
           </div>
         </div>

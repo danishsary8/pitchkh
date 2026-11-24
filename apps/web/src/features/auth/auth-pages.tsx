@@ -27,11 +27,12 @@ export function useAfterAuth() {
   const params = useSearchParams();
   const t = useTranslations("auth");
   return (user: { name: string; role: Role }) => {
-    toast.success(t("welcome", { name: user.name.split(" ").pop() ?? user.name }));
     const next = params.get("next");
     // Only follow internal paths, and never send a player into a dashboard.
     const safe = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
     const allowed = safe && !((safe.startsWith("/owner") && user.role === "player") || (safe.startsWith("/admin") && user.role !== "admin"));
+    // Back into a flow (e.g. booking): skip the toast so it doesn't cover the page they returned to.
+    if (!allowed) toast.success(t("welcome", { name: user.name.split(" ").pop() ?? user.name }));
     navigate(allowed ? safe : homeFor(user.role), { replace: true });
   };
 }

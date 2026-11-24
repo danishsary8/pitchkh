@@ -895,7 +895,30 @@
     "descriptionPlaceholder": "What makes your venue good to play at?",
     "address": "Street address",
     "opens": "Opens",
-    "closes": "Closes"
+    "closes": "Closes",
+    "layout": {
+      "edit": "Pitch map",
+      "title": "Pitch map",
+      "subtitle": "Place your pitches as they really are",
+      "canvasLabel": "Pitch map editor for {name}. Select a pitch, then use the arrow keys to move it and R to rotate it.",
+      "pitchLabel": "{name}, at {x} by {y} metres, {w} by {h} metres",
+      "hint": "Drag pitches into place. Arrow keys move 1 m, Shift + arrow 5 m, R rotates.",
+      "length": "Length (m)",
+      "width": "Width (m)",
+      "rotate": "Rotate 90°",
+      "autoArrange": "Auto-arrange",
+      "arranged": "Pitches arranged by size. Drag to adjust, then save.",
+      "undo": "Undo changes",
+      "save": "Save map",
+      "saved": "Pitch map saved. Players see it now.",
+      "unsaved": "You have unsaved changes",
+      "upToDate": "Saved",
+      "overlapTitle": "Two pitches overlap",
+      "overlapBody": "{names} are on top of each other. Move one before saving.",
+      "gapTip": "Tip: leave about {gap} m between pitches for paths and benches.",
+      "emptyTitle": "No pitches yet",
+      "emptyBody": "Add a pitch to this venue first, then place it on the map."
+    }
   },
   "admin": {
     "title": "Admin panel",

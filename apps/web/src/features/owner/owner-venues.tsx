@@ -2,7 +2,7 @@
 
 import { AMENITIES, DISTRICTS, PROVINCE_CENTERS, PROVINCES, SPORTS, SURFACES, type Amenity, type Field as VenueField, type Province, type Sport, type Surface, type UpsertFieldDto, type UpsertVenueDto, type VenueDetail } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil, Plus, Store, Trash2 } from "lucide-react";
+import { ExternalLink, Map, Pencil, Plus, Store, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -148,7 +148,10 @@ export function OwnerVenues() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-bold">{t("owner.fieldsAndPricing")}</h3>
-                  <Button variant="ghost" size="sm" className="h-10" onClick={() => setFieldSheet({ venueId: venue.id, field: null })}><Plus />{t("owner.addField")}</Button>
+                  <div className="flex gap-1">
+                    {venue.fields.length > 0 ? <Button asChild variant="ghost" size="sm" className="h-10"><Link href={`/owner/venues/${venue.id}/layout`}><Map />{t("owner.layout.edit")}</Link></Button> : null}
+                    <Button variant="ghost" size="sm" className="h-10" onClick={() => setFieldSheet({ venueId: venue.id, field: null })}><Plus />{t("owner.addField")}</Button>
+                  </div>
                 </div>
                 {venue.fields.length === 0 ? <p className="rounded-xl bg-secondary p-3 text-sm text-muted-foreground">{t("owner.noFields")}</p> : (
                   <ul className="grid gap-2 md:grid-cols-2">

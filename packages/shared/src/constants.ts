@@ -27,3 +27,6 @@ export const DEMO_ACCOUNTS = [
   { role: "admin", email: "admin@pitchkh.app", name: "Keo Vanna" },
 ] as const;
 export const DEMO_PASSWORD = "password";
+
+/** Largest venue plan the pitch map supports, in metres per side. */
+export const PLAN_MAX_METRES = 400;

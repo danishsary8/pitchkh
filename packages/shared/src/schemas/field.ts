@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PLAN_MAX_METRES } from "../constants";
 import { SURFACES } from "../enums";
 import { Id, Sport } from "./common";
 
@@ -12,7 +13,6 @@ export const FieldStatus = z.enum(["active", "maintenance"]);
  * top-left corner. The longer side is the pitch length; h > w means it is
  * drawn vertically. null means "not placed yet" (the app auto-arranges it).
  */
-export const PLAN_MAX_METRES = 400;
 const metres = z.number().min(0).max(PLAN_MAX_METRES);
 export const FieldLayout = z
   .object({ x: metres, y: metres, w: z.number().min(4).max(PLAN_MAX_METRES), h: z.number().min(4).max(PLAN_MAX_METRES) })

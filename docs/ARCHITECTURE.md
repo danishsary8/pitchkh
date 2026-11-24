@@ -163,7 +163,9 @@ src/
 ## Mobile-first rules used everywhere
 
 - Layouts are written for 360-430 px first, then `md` (768), `lg` (1024), `xl`.
-- Below 1024 px: bottom tab bar, sticky bottom action bars, bottom sheets
+- Below 1024 px: bottom tab bar (players: Home/Venues/Matches/Bookings/Profile; owners and admins
+  get Dashboard/Admin instead of Bookings, and inside /owner or /admin the bar holds that
+  section's pages), sticky bottom action bars, bottom sheets
   (vaul) for filters and forms. From 1024 px: top navbar, sidebars, sticky cards.
 - Touch targets are at least 44 px; inputs are 16 px to stop iOS zoom.
 - Safe-area insets and `dvh` units; no hover-only interactions.

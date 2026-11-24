@@ -2,7 +2,7 @@
 
 import { ROLES, type Report, type Role, type User, type VenueDetail } from "@pitchkh/shared";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BarChart3, Building2, CalendarCheck, Check, Flag, Inbox, Search, ShieldAlert, Star, Store, Swords, Users, Wallet, X } from "lucide-react";
+import { Building2, CalendarCheck, Check, Flag, Inbox, Search, ShieldAlert, Star, Swords, Users, Wallet, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState, type ReactNode } from "react";
@@ -17,6 +17,7 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { Avatar, Spinner, Switch } from "@/components/ui/misc";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAdminLinks } from "@/features/dashboard/nav";
 import { BarChart, DashboardShell, Kpi, Panel, ResponsiveTable, ShareBars } from "@/features/dashboard/shared";
 import { api } from "@/lib/api";
 import { useDates, useMoney } from "@/lib/format";
@@ -24,17 +25,8 @@ import { qk } from "@/lib/query";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const t = useTranslations("admin");
-  const analytics = useQuery({ queryKey: qk.admin.analytics, queryFn: api.admin.analytics });
   return (
-    <DashboardShell
-      title={t("title")}
-      links={[
-        { href: "/admin", label: t("nav.analytics"), icon: BarChart3 },
-        { href: "/admin/venues", label: t("nav.venues"), icon: Store, badge: analytics.data?.pendingVenues },
-        { href: "/admin/users", label: t("nav.users"), icon: Users },
-        { href: "/admin/reports", label: t("nav.reports"), icon: Flag, badge: analytics.data?.openReports },
-      ]}
-    >
+    <DashboardShell title={t("title")} links={useAdminLinks()}>
       {children}
     </DashboardShell>
   );

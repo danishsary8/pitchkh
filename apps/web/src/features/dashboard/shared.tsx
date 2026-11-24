@@ -6,27 +6,19 @@ import { Link } from "@/components/common/link";
 import { Container } from "@/components/common/page";
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { type DashboardLink, isDashboardCurrent } from "./nav";
 
-export interface DashboardLink {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  badge?: number;
-}
-
-/** Dashboard frame: sidebar on desktop, a scrollable pill row on phones. */
+/** Dashboard frame: a sidebar on desktop. On phones the bottom tab bar shows the same links (see app-shell). */
 export function DashboardShell({ title, links, children }: { title: string; links: DashboardLink[]; children: ReactNode }) {
   const pathname = usePathname();
-  const root = links[0]?.href ?? "";
-  const isCurrent = (href: string): boolean => (href === root ? pathname === root : pathname.startsWith(href));
   return (
-    <Container className="grid grid-cols-1 gap-x-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:pt-8">
-      <nav aria-label={title} className="max-lg:sticky max-lg:top-(--header-h) max-lg:z-20 max-lg:-mx-4 max-lg:bg-background max-lg:py-2">
-        <p className="font-display hidden px-4 pb-3 text-sm text-muted-foreground lg:block">{title}</p>
-        <ul className="no-scrollbar flex gap-1.5 overflow-x-auto max-lg:px-4 lg:sticky lg:top-24 lg:flex-col lg:gap-1">
+    <Container className="grid grid-cols-1 gap-x-8 pt-4 lg:grid-cols-[14rem_minmax(0,1fr)] lg:pt-8">
+      <nav aria-label={title} className="hidden lg:block">
+        <p className="font-display px-4 pb-3 text-sm text-muted-foreground">{title}</p>
+        <ul className="sticky top-24 flex flex-col gap-1">
           {links.map((link) => (
             <li key={link.href} className="shrink-0">
-              <Link href={link.href} aria-current={isCurrent(link.href) ? "page" : undefined} className="flex h-11 items-center gap-2.5 rounded-full px-4 text-[0.95rem] font-semibold whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:bg-foreground aria-[current=page]:text-background max-lg:bg-card lg:aria-[current=page]:bg-card lg:aria-[current=page]:text-foreground">
+              <Link href={link.href} aria-current={isDashboardCurrent(links, pathname, link.href) ? "page" : undefined} className="flex h-11 items-center gap-2.5 rounded-full px-4 text-[0.95rem] font-semibold whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:bg-card aria-[current=page]:text-foreground">
                 <link.icon className="size-4.5" />
                 {link.label}
                 {link.badge ? <span className="font-num grid h-5 min-w-5 place-items-center rounded-full bg-destructive px-1.5 text-xs font-bold text-destructive-foreground">{link.badge}</span> : null}

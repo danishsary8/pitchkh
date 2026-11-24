@@ -90,7 +90,9 @@
     "listVenue": "List your venue",
     "main": "Main navigation",
     "account": "Account",
-    "myTeam": "My team"
+    "myTeam": "My team",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
   },
   "sport": {
     "football": "Football",

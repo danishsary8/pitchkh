@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, Home, MapPin, Swords, User as UserIcon } from "lucide-react";
+import { CalendarCheck, Home, LayoutDashboard, type LucideIcon, MapPin, ShieldCheck, Swords, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
@@ -8,6 +8,7 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { Link } from "@/components/common/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
+import { type DashboardLink, isDashboardCurrent, useAdminLinks, useOwnerLinks } from "@/features/dashboard/nav";
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { LocaleToggle, NotificationBell, ThemeToggle } from "./controls";
@@ -76,41 +77,79 @@ function Header() {
   );
 }
 
-function BottomTabs() {
+type Tab = { href: string; label: string; icon: LucideIcon; badge?: number; current: boolean };
+
+function TabBar({ tabs }: { tabs: Tab[] }) {
   const t = useTranslations("nav");
-  const pathname = usePathname();
-  const tabs = [
-    { href: "/", label: t("home"), icon: Home },
-    { href: "/venues", label: t("venues"), icon: MapPin },
-    ...(features.matches ? [{ href: "/matches", label: t("matches"), icon: Swords }] : []),
-    { href: "/account/bookings", label: t("bookings"), icon: CalendarCheck },
-    { href: "/account", label: t("profile"), icon: UserIcon },
-  ];
-  // "Profile" owns everything under /account except the bookings tab.
-  const active = (href: string): boolean => (href === "/account" ? pathname.startsWith("/account") && !pathname.startsWith("/account/bookings") : isActive(pathname, href));
   return (
     <nav aria-label={t("main")} className="pb-safe fixed inset-x-0 bottom-0 z-40 bg-card shadow-[0_-1px_0_var(--border)] lg:hidden">
       <ul className="mx-auto flex h-(--tabbar-h) max-w-xl items-stretch">
-        {tabs.map((tab) => {
-          const current = active(tab.href);
-          return (
-            <li key={tab.href} className="flex-1">
-              <Link
-                href={tab.href}
-                aria-current={current ? "page" : undefined}
-                className={cn("press flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem] font-semibold outline-none focus-visible:bg-secondary", current ? "text-primary" : "text-muted-foreground")}
-              >
-                <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors duration-150", current && "bg-primary/12")}>
-                  <tab.icon className="size-5.5" strokeWidth={current ? 2.4 : 2} />
-                </span>
-                <span className="max-w-full truncate px-0.5">{tab.label}</span>
-              </Link>
-            </li>
-          );
-        })}
+        {tabs.map((tab) => (
+          <li key={tab.href} className="min-w-0 flex-1">
+            <Link
+              href={tab.href}
+              aria-current={tab.current ? "page" : undefined}
+              className={cn("press flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem] font-semibold outline-none focus-visible:bg-secondary", tab.current ? "text-primary" : "text-muted-foreground")}
+            >
+              <span className={cn("relative grid h-8 w-14 place-items-center rounded-full transition-colors duration-150", tab.current && "bg-primary/12")}>
+                <tab.icon className="size-5.5" strokeWidth={tab.current ? 2.4 : 2} />
+                {tab.badge ? (
+                  <span className="font-num absolute -top-1 right-2 grid h-4.5 min-w-4.5 place-items-center rounded-full bg-destructive px-1 text-[0.65rem] leading-none font-bold text-destructive-foreground">
+                    {tab.badge > 99 ? "99+" : tab.badge}
+                  </span>
+                ) : null}
+              </span>
+              <span className="max-w-full truncate px-0.5">{tab.label}</span>
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );
+}
+
+/** Players (and guests) browse and book. Owners and admins swap "Bookings" for their dashboard; their own bookings stay under Profile. */
+function PlayerTabs() {
+  const t = useTranslations("nav");
+  const pathname = usePathname();
+  const { user } = useAuth();
+  const fourth =
+    user?.role === "owner" ? { href: "/owner", label: t("dashboard"), icon: LayoutDashboard }
+    : user?.role === "admin" ? { href: "/admin", label: t("admin"), icon: ShieldCheck }
+    : { href: "/account/bookings", label: t("bookings"), icon: CalendarCheck };
+  const links = [
+    { href: "/", label: t("home"), icon: Home },
+    { href: "/venues", label: t("venues"), icon: MapPin },
+    ...(features.matches ? [{ href: "/matches", label: t("matches"), icon: Swords }] : []),
+    fourth,
+    { href: "/account", label: t("profile"), icon: UserIcon },
+  ];
+  // "Profile" owns everything under /account, except the bookings tab when it is shown.
+  const current = (href: string): boolean =>
+    href === "/account" ? pathname.startsWith("/account") && !(fourth.href === "/account/bookings" && pathname.startsWith("/account/bookings")) : isActive(pathname, href);
+  return <TabBar tabs={links.map((link) => ({ ...link, current: current(link.href) }))} />;
+}
+
+/** Inside the owner dashboard or admin panel the tab bar holds that section's pages, plus Profile. */
+function DashboardTabs({ links }: { links: DashboardLink[] }) {
+  const t = useTranslations("nav");
+  const pathname = usePathname();
+  return <TabBar tabs={[...links.map((link) => ({ ...link, label: link.short ?? link.label, current: isDashboardCurrent(links, pathname, link.href) })), { href: "/account", label: t("profile"), icon: UserIcon, current: false }]} />;
+}
+
+function OwnerTabs() {
+  return <DashboardTabs links={useOwnerLinks()} />;
+}
+
+function AdminTabs() {
+  return <DashboardTabs links={useAdminLinks()} />;
+}
+
+function BottomTabs() {
+  const pathname = usePathname();
+  if (pathname === "/owner" || pathname.startsWith("/owner/")) return <OwnerTabs />;
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return <AdminTabs />;
+  return <PlayerTabs />;
 }
 
 export function AppShell({ children }: { children: ReactNode }) {

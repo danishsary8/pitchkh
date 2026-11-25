@@ -1090,5 +1090,21 @@
     "minutesAgo": "{count, plural, one {# minute ago} other {# minutes ago}}",
     "hoursAgo": "{count, plural, one {# hour ago} other {# hours ago}}",
     "daysAgo": "{count, plural, one {# day ago} other {# days ago}}"
+  },
+  "telegram": {
+    "venueButton": "Telegram",
+    "venueHello": "Hi! I found {venue} on PitchKH and have a question.",
+    "copied": "Message copied. Paste it in the Telegram chat.",
+    "bookTitle": "Prefer Telegram?",
+    "bookBody": "Send this request to the venue on Telegram instead. The owner checks the time and confirms with you there. Nothing is booked until they reply.",
+    "bookButton": "Ask on Telegram",
+    "bookingText": "Hi! I'd like to book on PitchKH:\n🏟 {venue}\n⚽ {pitch}\n📅 {day}, {time}\n👥 {players} players\n💵 {price}\nIs this time free?",
+    "bookingFrom": "Name: {name}",
+    "bookingNotes": "Notes: {notes}",
+    "postMatch": "Post to Telegram group",
+    "matchText": "⚽ {team} is looking for an opponent!\n{sport} · {level} · {size}\n📅 {day}, {time}\n📍 {venue}, {area}\nAsk to join on PitchKH:",
+    "groupTitle": "Matches on Telegram",
+    "groupBody": "Join the PitchKH group to see new matches as they are posted, and post yours there too.",
+    "groupButton": "Join group"
   }
 }

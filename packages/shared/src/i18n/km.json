@@ -1090,5 +1090,21 @@
     "minutesAgo": "{count} នាទីមុន",
     "hoursAgo": "{count} ម៉ោងមុន",
     "daysAgo": "{count} ថ្ងៃមុន"
+  },
+  "telegram": {
+    "venueButton": "Telegram",
+    "venueHello": "សួស្តី! ខ្ញុំឃើញ {venue} នៅលើ PitchKH ហើយមានសំណួរមួយ។",
+    "copied": "បានចម្លងសារ។ សូមបិទភ្ជាប់វាក្នុងការជជែក Telegram។",
+    "bookTitle": "ចូលចិត្ត Telegram ជាង?",
+    "bookBody": "ផ្ញើសំណើនេះទៅទីលានតាម Telegram ជំនួសវិញ។ ម្ចាស់ទីលាននឹងពិនិត្យម៉ោង ហើយបញ្ជាក់ជាមួយអ្នកនៅទីនោះ។ មិនទាន់កក់ទេ រហូតដល់ពួកគេឆ្លើយតប។",
+    "bookButton": "សួរតាម Telegram",
+    "bookingText": "សួស្តី! ខ្ញុំចង់កក់តាម PitchKH៖\n🏟 {venue}\n⚽ {pitch}\n📅 {day}, {time}\n👥 អ្នកលេង {players} នាក់\n💵 {price}\nតើម៉ោងនេះទំនេរទេ?",
+    "bookingFrom": "ឈ្មោះ៖ {name}",
+    "bookingNotes": "កំណត់ចំណាំ៖ {notes}",
+    "postMatch": "ប្រកាសក្នុងក្រុម Telegram",
+    "matchText": "⚽ {team} កំពុងរកគូប្រកួត!\n{sport} · {level} · {size}\n📅 {day}, {time}\n📍 {venue}, {area}\nស្នើសុំចូលរួមនៅលើ PitchKH៖",
+    "groupTitle": "ការប្រកួតនៅលើ Telegram",
+    "groupBody": "ចូលរួមក្រុម PitchKH ដើម្បីមើលការប្រកួតថ្មីៗភ្លាមៗ ហើយប្រកាសការប្រកួតរបស់អ្នកនៅទីនោះផងដែរ។",
+    "groupButton": "ចូលរួមក្រុម"
   }
 }

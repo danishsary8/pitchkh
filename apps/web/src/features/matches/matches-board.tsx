@@ -9,6 +9,7 @@ import { SportIcon } from "@/components/brand/pitch-art";
 import { Link } from "@/components/common/link";
 import { Stagger, StaggerItem } from "@/components/common/motion";
 import { Container, PageHeader, Pagination, StickyBar } from "@/components/common/page";
+import { TelegramGroupBanner } from "@/features/telegram/telegram";
 import { EmptyState, ErrorState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/input";
@@ -44,6 +45,7 @@ export function MatchesBoard() {
   return (
     <Container className="pb-20 lg:pb-0">
       <PageHeader title={t("matches.title")} subtitle={t("matches.subtitle")} action={<div className="hidden lg:block">{postButton}</div>} />
+      <TelegramGroupBanner className="mb-5" />
       <div className="flex flex-col gap-3 pb-5">
         <ToggleGroup type="single" value={sport} onValueChange={(v) => { if (v) { setSport(v as MatchSport | "all"); setPage(1); } }} aria-label={t("venues.filterSport")}>
           <ToggleGroupItem value="all">{t("common.all")}</ToggleGroupItem>

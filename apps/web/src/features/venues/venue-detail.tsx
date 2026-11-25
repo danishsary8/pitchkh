@@ -27,6 +27,7 @@ import { useUiStore } from "@/stores/ui";
 import { cn } from "@/lib/utils";
 import { FavoriteButton } from "./favorite-button";
 import { ReportSheet } from "./report-sheet";
+import { VenueTelegramButton } from "@/features/telegram/telegram";
 import { useVenueText } from "./text";
 import { WeatherHint } from "./weather-hint";
 import { pitchStates } from "@/features/pitch-map/availability";
@@ -236,6 +237,7 @@ export function VenueDetail({ slug }: { slug: string }) {
                   {t("venue.call")}
                 </a>
               </Button>
+              <VenueTelegramButton venue={venue} />
               {features.matches && venue.sports.some(supportsMatching) ? (
                 <Button variant="secondary" size="sm" className="h-10" asChild>
                   <Link href="/matches">

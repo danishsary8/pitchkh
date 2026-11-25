@@ -155,6 +155,8 @@ The public demo is the web app alone, on its built-in mock API: no server, datab
    workspace install, Singapore region). Leave "Include files outside the root directory" on.
 3. Environment variables: leave `NEXT_PUBLIC_API_MODE` unset (mock is the default) and set
    `NEXT_PUBLIC_SITE_URL` to the Vercel URL once you know it (link previews use it).
+   Set `NEXT_PUBLIC_TELEGRAM_GROUP_URL` to your Telegram group's invite link (the match board
+   links to it; until then it points to a placeholder).
 4. Deploy. Visitors see a "Demo" bar with **Reset demo**, and one-tap demo logins on the
    sign-in page. Sample data is kept in the browser and refreshes itself after a while.
 

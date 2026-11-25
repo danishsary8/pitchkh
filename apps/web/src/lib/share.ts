@@ -1,5 +1,7 @@
 "use client";
 
+import { telegramShareUrl as shareUrl } from "@pitchkh/shared";
+
 export interface ShareContent {
   title: string;
   text: string;
@@ -8,7 +10,7 @@ export interface ShareContent {
 
 /** Telegram's share link: opens the app (or web) with a chat picker. */
 export function telegramShareUrl({ text, url }: ShareContent): string {
-  return `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  return shareUrl(url, text);
 }
 
 /**

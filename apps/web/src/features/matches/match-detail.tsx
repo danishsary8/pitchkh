@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/auth-provider";
 import { ReviewSheet } from "@/features/booking/review-sheet";
 import { ReportSheet } from "@/features/venues/report-sheet";
+import { PostMatchToTelegram } from "@/features/telegram/telegram";
 import { useVenueText } from "@/features/venues/text";
 import { api } from "@/lib/api";
 import { useDates } from "@/lib/format";
@@ -111,6 +112,7 @@ export function MatchDetail({ id }: { id: string }) {
           {match.conversationId ? (
             <Button asChild size="lg" variant="accent"><Link href={`/account/messages/${match.conversationId}`}><MessageCircle />{t("matches.openChat")}</Link></Button>
           ) : null}
+          {match.status === "open" && !ended ? <PostMatchToTelegram match={match} /> : null}
           {canRate && rival ? <Button size="lg" variant="secondary" onClick={() => setReviewOpen(true)}><Star />{t("matches.rateOpponent", { team: rival.name })}</Button> : null}
 
           {match.isHost ? (

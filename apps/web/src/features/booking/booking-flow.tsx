@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/misc";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/auth-provider";
+import { TelegramBookingCard } from "@/features/telegram/telegram";
 import { useVenueText } from "@/features/venues/text";
 import { PitchMap } from "@/features/pitch-map/pitch-map";
 import { api } from "@/lib/api";
@@ -212,6 +213,9 @@ export function BookingFlow({ slug }: { slug: string }) {
             <motion.div key={step} initial={{ opacity: 0, transform: "translateX(16px)" }} animate={{ opacity: 1, transform: "translateX(0px)" }} exit={{ opacity: 0, transform: "translateX(-16px)" }} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}>
               {step === 0 ? <StepPick venue={venue} draft={draft} update={update} /> : null}
               {step === 1 && field ? <StepConfirm venue={venue} field={field} draft={draft} update={update} summary={summary} /> : null}
+              {step === 1 && field && price && draft.startTime && draft.endTime ? (
+                <TelegramBookingCard venue={venue} field={field} date={date} startTime={draft.startTime} endTime={draft.endTime} teamSize={draft.teamSize ?? defaultTeamSize(field.format, field.sport)} notes={draft.notes} price={price} className="mt-6" />
+              ) : null}
             </motion.div>
           </AnimatePresence>
           <div className="hidden justify-end pt-2 lg:flex">{primary}</div>

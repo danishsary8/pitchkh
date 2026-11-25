@@ -213,7 +213,9 @@
     "invalidEmail": "Enter a valid email",
     "tooShort": "Too short",
     "invalidPhone": "Enter a valid phone number",
-    "invalid_token": "This link has expired. Ask for a new one."
+    "invalid_token": "This link has expired. Ask for a new one.",
+    "rate_limited": "Too many attempts. Please wait a few minutes and try again.",
+    "payload_too_large": "That file is too large. Photos can be up to 4 MB."
   },
   "footer": {
     "blurb": "Sports pitches across Cambodia, booked in a minute.",

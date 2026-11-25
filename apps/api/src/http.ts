@@ -3,6 +3,7 @@
  * packages/shared/src/mock/handlers: route(method, path, access, handler).
  */
 import { randomUUID } from "node:crypto";
+import { setRequestUser } from "./observability";
 import { ApiError, isoInPP, type NotificationType, type Role, type User } from "@pitchkh/shared";
 import { eq } from "drizzle-orm";
 import type { Context, Hono } from "hono";
@@ -15,7 +16,6 @@ export interface Services {
   db: Database;
   /** Injectable clock so tests can freeze time. */
   clock: () => Date;
-  /** Called after a notification row is written (e.g. Telegram alerts). Never throws into the request. */
   /** Account emails (printed to the log when no email service is set). */
   mailer?: import("./mailer").Mailer;
   /** Venue photo storage (local disk by default). */
@@ -24,6 +24,11 @@ export interface Services {
   runJobs?: boolean;
   /** Online payment provider (sandbox by default). */
   payments?: import("./payments").PaymentProvider;
+  /** Rate limits on sign-in, sign-up, password reset and overall per IP. On unless false (tests turn them off). */
+  rateLimit?: boolean;
+  /** One JSON log line per request. Default: on, except under tests. */
+  logRequests?: boolean;
+  /** Called after a notification row is written (e.g. Telegram alerts). Never throws into the request. */
   onNotify?: (n: { userId: string; type: NotificationType; params: Record<string, string>; href: string; meta?: Record<string, string> }) => void;
 }
 
@@ -76,6 +81,7 @@ export function createRouter(app: Hono, services: Services) {
     app.on(method, path, async (c) => {
       const now = services.clock();
       const user = await authenticate(services, c, now);
+      if (user) setRequestUser(c, user.id);
       if (access !== "public") {
         if (!user) throw new ApiError(401, "unauthorized", "Sign in to continue.");
         if (access !== "auth" && !access.includes(user.role)) throw new ApiError(403, "forbidden", "You do not have access to this.");

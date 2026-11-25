@@ -1,6 +1,9 @@
 import { ApiError } from "@pitchkh/shared";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
+import { secureHeaders } from "hono/secure-headers";
+import { sql } from "drizzle-orm";
 import { createRouter, insertNotification, toApiErrorFromDb, type Ctx, type Services } from "./http";
 import { bakongProvider } from "./bakong";
 import { registerAdminRoutes } from "./routes/admin";
@@ -16,6 +19,8 @@ import { sandboxProvider } from "./payments";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createMailer, type Mailer } from "./mailer";
+import { log, requestIdOf, requestLogger } from "./observability";
+import { createRateLimiter, rateLimit } from "./rate-limit";
 import { localStorage, r2Storage, type PhotoStorage } from "./storage";
 import { alertOwner, type TelegramClient } from "./telegram";
 import { registerVenueRoutes } from "./routes/venues";
@@ -29,20 +34,35 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   };
   // Booking alerts go to the owner's Telegram after the response; a Telegram outage never fails a booking.
   if (telegram && !services.onNotify) {
-    services = { ...services, onNotify: (n) => void alertOwner(services.db, telegram, n, services.clock()).catch((e: unknown) => console.error("telegram alert failed", e)) };
+    services = { ...services, onNotify: (n) => void alertOwner(services.db, telegram, n, services.clock()).catch((e: unknown) => log("error", "telegram alert failed", { error: String(e) })) };
   }
-  app.use("*", cors({ origin: corsOrigins, allowHeaders: ["Authorization", "Content-Type"], allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], maxAge: 600 }));
+  // Request ID + one JSON log line per request; then standard security headers.
+  app.use("*", requestLogger({ enabled: services.logRequests ?? process.env.NODE_ENV !== "test" }));
+  // Photos under /uploads are shown on the web app's own domain, so they must be loadable cross-origin.
+  app.use("*", secureHeaders({ crossOriginResourcePolicy: "cross-origin" }));
+  app.use("*", cors({ origin: corsOrigins, allowHeaders: ["Authorization", "Content-Type"], exposeHeaders: ["X-Request-Id", "Retry-After"], allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], maxAge: 600 }));
 
   // Every error leaves in the contract's shape: { error: { code, message, details } }.
   app.onError((e, c) => {
     const known = e instanceof ApiError ? e : toApiErrorFromDb(e);
-    if (!known) console.error(e);
+    // Unexpected errors are logged with the request ID the client also received.
+    if (!known) log("error", "unhandled error", { requestId: requestIdOf(c), method: c.req.method, path: c.req.path, error: e instanceof Error ? (e.stack ?? e.message) : String(e) });
     const err = known ?? new ApiError(500, "server_error", "Something went wrong on our side.");
     return c.json({ error: { code: err.code, message: err.message, details: err.details } }, err.status as 400);
   });
   app.notFound((c) => c.json({ error: { code: "not_found", message: `No route for ${c.req.method} ${c.req.path}` } }, 404));
 
-  app.get("/health", (c) => c.json({ ok: true }));
+  // Healthy means the database answers (within 2 s). Render restarts the service when this fails.
+  app.get("/health", async (c) => {
+    const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("database check timed out")), 2_000).unref());
+    try {
+      await Promise.race([services.db.execute(sql`select 1`), timeout]);
+      return c.json({ ok: true, db: "up" });
+    } catch (e) {
+      log("error", "health check failed", { error: String(e) });
+      return c.json({ ok: false, db: "down" }, 503);
+    }
+  });
 
   // Uploaded venue photos (local storage). Names are random, so they can be cached forever.
   app.get("/uploads/:name", (c) => {
@@ -55,6 +75,9 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
 
   // All API routes live under /api/v1 (the web app's NEXT_PUBLIC_API_URL ends with it).
   const api = new Hono();
+  // Venue photos are up to 4 MB (about 5.4 MB as base64 JSON); nothing else comes close.
+  api.use("*", bodyLimit({ maxSize: 6 * 1024 * 1024, onError: () => { throw new ApiError(413, "payload_too_large", "That request is too large. Photos can be up to 4 MB."); } }));
+  if (services.rateLimit !== false) api.use("*", rateLimit(createRateLimiter(), "/api/v1"));
   const route = createRouter(api, services);
   registerAuthRoutes(route, services.mailer as Mailer);
   registerVenueRoutes(route);
@@ -72,7 +95,7 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
       services.onNotify?.({ userId, type, params, href, meta });
     };
     setInterval(() => {
-      checkPendingPayments({ db: services.db, now: services.clock(), notify }, provider).catch((e: unknown) => console.error("payment job failed", e));
+      checkPendingPayments({ db: services.db, now: services.clock(), notify }, provider).catch((e: unknown) => log("error", "payment job failed", { error: String(e) }));
     }, 10_000).unref();
   }
   app.route("/api/v1", api);

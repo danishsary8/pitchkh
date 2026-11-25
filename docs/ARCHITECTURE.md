@@ -92,7 +92,10 @@ Route guards: `<RequireAuth roles={[...]}>` wraps the `account`, `owner`,
 ```
 src/
   main.ts          starts the server (reads .env)
-  app.ts           Hono app: CORS, error shape, /health, mounts /api/v1
+  app.ts           Hono app: request IDs + JSON logs, security headers, CORS, body limit,
+                   rate limits, error shape, /health (checks the database), mounts /api/v1
+  rate-limit.ts    in-memory rate limits (sign-in, sign-up, password reset, per-IP cap)
+  observability.ts request IDs, client IP, structured logs
   http.ts          route(method, path, access, handler) + auth + notifications
   views.ts         read models: load rows, run the shared summary logic
   telegram.ts      bot client, alert messages (EN/KM), owner lookup

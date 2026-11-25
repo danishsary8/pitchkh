@@ -75,7 +75,10 @@ Every response is checked against the shared zod schemas.
 ```
 src/
   main.ts          starts the server (reads .env)
-  app.ts           Hono app: CORS, error shape, /health, mounts /api/v1
+  app.ts           Hono app: request IDs + JSON logs, security headers, CORS, body limit,
+                   rate limits, error shape, /health (checks the database), mounts /api/v1
+  rate-limit.ts    in-memory rate limits for sign-in, sign-up and password reset
+  observability.ts request IDs, client IP, one JSON log line per request
   http.ts          route(method, path, access, handler), auth, notifications
   views.ts         read models: load the rows, run the shared summary logic
   telegram.ts      Telegram bot client and alert messages (EN/KM)

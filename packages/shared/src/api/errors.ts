@@ -12,6 +12,8 @@ export const API_ERROR_CODES = [
   "cancellation_window_passed",
   "email_taken",
   "account_suspended",
+  "rate_limited",
+  "payload_too_large",
   "network_error",
   "server_error",
 ] as const;

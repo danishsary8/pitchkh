@@ -24,7 +24,8 @@ export async function startTestApi(now = NOW, telegram?: TelegramClient, extra: 
   await seed(db, now);
   // Tests can move time forward (e.g. to let a payment hold expire).
   let current = now;
-  const app = createApp({ db, clock: () => current, ...extra }, ["http://localhost:3000"], telegram, uploadDir);
+  // Rate limits are off by default here: many tests sign up from one address. hardening.test.ts turns them on.
+  const app = createApp({ db, clock: () => current, rateLimit: false, ...extra }, ["http://localhost:3000"], telegram, uploadDir);
   const server = serve({ fetch: app.fetch, port: 0 });
   await new Promise<void>((resolve) => server.once("listening", () => resolve()));
   const base = `http://localhost:${(server.address() as AddressInfo).port}/api/v1`;

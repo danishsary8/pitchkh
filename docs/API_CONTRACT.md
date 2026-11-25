@@ -43,7 +43,27 @@ response shapes are the zod schemas in `packages/shared/src/schemas` (names in
 | 409 | `cancellation_window_passed` | Less than 2 hours before start |
 | 409 | `email_taken` | Registration with an existing email |
 | 422 | `outside_booking_window` | Date is in the past or more than 30 days ahead |
+| 413 | `payload_too_large` | Request body over 6 MB (photos are up to 4 MB) |
+| 429 | `rate_limited` | Too many attempts; wait the seconds in the `Retry-After` header (limits below) |
 | 5xx | `server_error` | Anything else |
+
+Every response carries an `X-Request-Id` header (a well-formed incoming one is kept). The server logs
+each request as one JSON line with that ID, so an error a user reports can be found in the logs.
+
+**Rate limits** (real API only; the mock has none). Counted per client IP (the last
+`X-Forwarded-For` entry behind the proxy), and per account email where noted:
+
+| Route | Limit |
+| --- | --- |
+| every route | 600 requests / minute per IP |
+| `POST /auth/login` | 10 / 15 min per email, 30 / 15 min per IP |
+| `POST /auth/register` | 10 / hour per IP |
+| `POST /auth/forgot-password` | 3 / hour per email, 10 / hour per IP |
+| `POST /auth/reset-password` | 10 / 15 min per IP |
+| `POST /auth/refresh` | 120 / 15 min per IP |
+
+**Health.** `GET /health` (outside `/api/v1`) answers `200 { "ok": true, "db": "up" }` when the
+database replies within 2 s, else `503 { "ok": false, "db": "down" }`.
 
 `network_error` is produced by the client when the request never reaches the server.
 

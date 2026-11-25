@@ -68,6 +68,24 @@ The first screenshots key pages at 360, 390, 768, 1024 and 1440 px and fails on
 horizontal overflow or console errors (add `--login player|owner|admin`,
 `--pages /en/owner,...`). The second books a field end to end on a phone viewport.
 
+## Deploy to Vercel
+
+The app runs on mock data in the browser, so it deploys with no backend and no
+environment variables. `apps/web/vercel.json` holds the build settings.
+
+1. On vercel.com, **Add New -> Project** and import this repository.
+2. Set **Root Directory** to `apps/web` (Vercel only reads `vercel.json` from
+   the root directory, and it cannot be set from the file itself). Leave
+   "Include files outside the root directory" on so `packages/shared` is built.
+3. Click **Deploy**. Every push then gets a preview URL; pushes to the default
+   branch go to production.
+
+To deploy from a terminal instead, run `vercel` from the repository root with
+the Vercel CLI and set the root directory to `apps/web` when it asks.
+
+The site is served from Singapore (`sin1`), the closest Vercel region to
+Cambodia. Demo data still lives in each visitor's own browser.
+
 ## Switch to the real backend
 
 1. Build the API from `docs/API_CONTRACT.md` and `docs/DATA_MODEL.md`.

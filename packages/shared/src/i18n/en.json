@@ -1067,7 +1067,9 @@
     "selected": "Your pick",
     "legend": "Map key",
     "indoor": "Covered",
-    "lit": "Floodlit"
+    "lit": "Floodlit",
+    "parking": "Parking",
+    "entrance": "Entrance"
   },
   "share": {
     "withTeam": "Share with team",

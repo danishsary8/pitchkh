@@ -76,10 +76,12 @@ export interface PitchShapeProps {
   /** Short word drawn under the name, e.g. "Full". */
   stateLabel?: string;
   warn?: boolean;
+  /** Dashed roof outline for indoor pitches. Off on maps that draw roofs themselves. */
+  roofOutline?: boolean;
 }
 
 /** One pitch: surface, stripes, lines, roof outline when indoor, label, and state overlays. */
-export function PitchShape({ field, layout, state = "free", selected, dimmed, metresPerPx, showLabel = true, stateLabel, warn }: PitchShapeProps) {
+export function PitchShape({ field, layout, state = "free", selected, dimmed, metresPerPx, showLabel = true, stateLabel, warn, roofOutline = true }: PitchShapeProps) {
   const { x, y, w, h } = layout;
   const vertical = h > w;
   const L = vertical ? h : w;
@@ -94,7 +96,7 @@ export function PitchShape({ field, layout, state = "free", selected, dimmed, me
 
   return (
     <g opacity={dimmed ? 0.28 : 1} className="transition-opacity duration-200">
-      {field.indoor ? <rect x={x - roof} y={y - roof} width={w + roof * 2} height={h + roof * 2} rx={roof} fill="none" stroke="var(--muted-foreground)" strokeDasharray="5 4" strokeWidth={1.25} vectorEffect="non-scaling-stroke" /> : null}
+      {field.indoor && roofOutline ? <rect x={x - roof} y={y - roof} width={w + roof * 2} height={h + roof * 2} rx={roof} fill="none" stroke="var(--muted-foreground)" strokeDasharray="5 4" strokeWidth={1.25} vectorEffect="non-scaling-stroke" /> : null}
       <g transform={vertical ? `translate(${x + w} ${y}) rotate(90)` : `translate(${x} ${y})`} style={{ color: colours.line }}>
         <rect width={L} height={W} rx={Math.min(L, W) * 0.03} fill={colours.base} />
         {Array.from({ length: stripes }, (_, i) => (i % 2 ? <rect key={i} x={(L / stripes) * i} width={L / stripes} height={W} fill={colours.stripe ?? undefined} /> : null))}

@@ -28,8 +28,26 @@ describe("layout", () => {
       expect(l.x).toBeGreaterThanOrEqual(0);
       expect(l.y).toBeGreaterThanOrEqual(0);
     }
-    // Biggest pitch first.
-    expect(map.get("big")).toMatchObject({ x: 4, y: 4, w: 75, h: 48 });
+    // Biggest pitch first: it opens the top row.
+    expect(map.get("big")).toMatchObject({ y: 4, w: 75, h: 48 });
+  });
+
+  it("balances the plan: rows are centred and pitches sit in the middle of their row", () => {
+    // BKK-like venue: a 7v7 and a 5v5 side by side, then two tennis courts.
+    const fields = [field("seven", { format: "7v7" }), field("five", { format: "5v5" }), field("t1", { sport: "tennis", format: "Singles/Doubles" }), field("t2", { sport: "tennis", format: "Singles/Doubles" })];
+    const map = autoLayout(fields);
+    const { width } = planBounds(map.values());
+    const seven = map.get("seven") as FieldLayout;
+    const five = map.get("five") as FieldLayout;
+    // The smaller pitch is vertically centred next to the bigger one.
+    expect(five.y + five.h / 2).toBeCloseTo(seven.y + seven.h / 2);
+    // The tennis row is centred under the football row: same margin left and right.
+    const t1 = map.get("t1") as FieldLayout;
+    const t2 = map.get("t2") as FieldLayout;
+    const left = Math.min(t1.x, t2.x);
+    const right = width - Math.max(t1.x + t1.w, t2.x + t2.w);
+    expect(left).toBeCloseTo(right);
+    expect(noOverlaps(map)).toBe(true);
   });
 
   it("keeps saved layouts and places the rest around them", () => {

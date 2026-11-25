@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 import { PitchDefs, PitchShape, type PitchState } from "./pitch-shape";
+import { PARKING_DEPTH, Scenery } from "./scenery";
 
 export type { PitchState };
 
@@ -46,7 +47,10 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
   const t = useTranslations("pitchMap");
   const [ref, size] = useSize<SVGSVGElement>();
   const layouts = useMemo(() => resolveLayout(fields), [fields]);
-  const bounds = planBounds(layouts.values());
+  const site = planBounds(layouts.values());
+  // The full-size map adds the car park and entrance under the site.
+  const parking = !compact;
+  const bounds = { width: site.width, height: site.height + (parking ? PARKING_DEPTH : 0) };
   // The plan is scaled to fit both the width and the capped height ("meet").
   const metresPerPx = size.width > 0 && size.height > 0 ? Math.max(bounds.width / size.width, bounds.height / size.height) : bounds.width / 360;
   const interactive = !!onSelect && !compact;
@@ -88,7 +92,7 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
   };
 
   return (
-    <div className={cn("relative w-full overflow-hidden rounded-2xl bg-[#d9e4d2] dark:bg-[#16261d]", className)}>
+    <div className={cn("relative w-full overflow-hidden rounded-2xl bg-[#cfe0bf] dark:bg-[#17261b]", className)}>
       <svg
         ref={ref}
         viewBox={`0 0 ${bounds.width} ${bounds.height}`}
@@ -98,11 +102,7 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
         style={{ touchAction: "manipulation" }}
       >
         <PitchDefs />
-        {/* Faint ground grid, 10 m squares. */}
-        <g stroke="currentColor" className="text-foreground/[0.06]" strokeWidth={1} vectorEffect="non-scaling-stroke">
-          {Array.from({ length: Math.floor(bounds.width / 10) }, (_, i) => <line key={`x${i}`} x1={(i + 1) * 10} y1={0} x2={(i + 1) * 10} y2={bounds.height} vectorEffect="non-scaling-stroke" />)}
-          {Array.from({ length: Math.floor(bounds.height / 10) }, (_, i) => <line key={`y${i}`} x1={0} y1={(i + 1) * 10} x2={bounds.width} y2={(i + 1) * 10} vectorEffect="non-scaling-stroke" />)}
-        </g>
+        <Scenery pitches={fields.map((f) => ({ layout: layouts.get(f.id) as FieldLayout, indoor: f.indoor }))} width={site.width} height={site.height} parking={parking} metresPerPx={metresPerPx} labels={{ parking: t("parking"), entrance: t("entrance") }} />
         {fields.map((field) => {
           const layout = layouts.get(field.id) as FieldLayout;
           const state = stateOf(field);
@@ -127,7 +127,7 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
             >
               {/* Re-keyed on select so the bounce replays each time this pitch is picked. */}
               <g key={selected ? "on" : "off"} className={cn(selected && interactive && "motion-safe:animate-pitch-pop")} style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-              <PitchShape field={field} layout={layout} state={state} selected={selected} dimmed={dimmed} metresPerPx={metresPerPx} showLabel={!compact || selected} stateLabel={stateLabel} />
+              <PitchShape field={field} layout={layout} state={state} selected={selected} dimmed={dimmed} metresPerPx={metresPerPx} roofOutline={false} showLabel={!compact || selected} stateLabel={stateLabel} />
               </g>
               {pickable ? (
                 <>
@@ -154,7 +154,7 @@ export function PitchLegend({ className }: { className?: string }) {
       <li className="flex items-center gap-1.5"><span className="size-3.5 rounded bg-[#1d8a4a] ring-2 ring-accent ring-inset" />{t("selected")}</li>
       <li className="flex items-center gap-1.5"><span className="size-3.5 rounded bg-[#2b3a32]" />{t("state.full")}</li>
       <li className="flex items-center gap-1.5"><span className="size-3.5 rounded bg-[repeating-linear-gradient(45deg,#0b1510_0_3px,#c9a227_3px_5px)]" />{t("state.closed")}</li>
-      <li className="flex items-center gap-1.5"><span className="size-3.5 rounded border border-dashed border-muted-foreground" />{t("indoor")}</li>
+      <li className="flex items-center gap-1.5"><span className="size-3.5 rounded border border-[#9aa1a9] bg-[#d5d8dc] dark:border-[#56616d] dark:bg-[#36404a]" />{t("indoor")}</li>
     </ul>
   );
 }

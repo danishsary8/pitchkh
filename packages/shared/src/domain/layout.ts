@@ -31,23 +31,31 @@ export function autoLayout(fields: readonly Pick<Field, "id" | "sport" | "format
   const sized = fields
     .map((f) => ({ id: f.id, sport: f.sport, ...pitchSize(f.sport, f.format) }))
     .sort((a, b) => SPORT_ORDER[a.sport] - SPORT_ORDER[b.sport] || b.length * b.width - a.length * a.width);
-  const rowLimit = Math.max(MIN_ROW_WIDTH, ...sized.map((p) => p.length)) + LAYOUT_GAP;
-  const map = new Map<string, FieldLayout>();
-  let x = LAYOUT_GAP;
-  let y = top;
-  let rowHeight = 0;
-  let rowSport: Sport | null = null;
+  const rowLimit = Math.max(MIN_ROW_WIDTH, ...sized.map((p) => p.length));
+
+  // 1. Split into rows: one sport per row, wrapping when the row is full.
+  const rows: (typeof sized)[] = [];
   for (const p of sized) {
-    const newRow = x + p.length > rowLimit || (rowSport !== null && rowSport !== p.sport);
-    if (newRow && rowHeight > 0) {
-      x = LAYOUT_GAP;
-      y += rowHeight + LAYOUT_GAP;
-      rowHeight = 0;
+    const row = rows.at(-1);
+    const rowWidth = row ? row.reduce((sum, q) => sum + q.length + LAYOUT_GAP, 0) : 0;
+    if (!row || row[0]?.sport !== p.sport || rowWidth + p.length > rowLimit) rows.push([p]);
+    else row.push(p);
+  }
+
+  // 2. Centre every row across the plan, and every pitch within its row's height,
+  //    so the plan reads like a tidy site rather than a left-packed list.
+  const widthOf = (row: typeof sized): number => row.reduce((sum, q) => sum + q.length, 0) + LAYOUT_GAP * (row.length - 1);
+  const planInner = Math.max(...rows.map(widthOf));
+  const map = new Map<string, FieldLayout>();
+  let y = top;
+  for (const row of rows) {
+    const rowHeight = Math.max(...row.map((q) => q.width));
+    let x = LAYOUT_GAP + (planInner - widthOf(row)) / 2;
+    for (const p of row) {
+      map.set(p.id, { x, y: y + (rowHeight - p.width) / 2, w: p.length, h: p.width });
+      x += p.length + LAYOUT_GAP;
     }
-    map.set(p.id, { x, y, w: p.length, h: p.width });
-    x += p.length + LAYOUT_GAP;
-    rowHeight = Math.max(rowHeight, p.width);
-    rowSport = p.sport;
+    y += rowHeight + LAYOUT_GAP;
   }
   return map;
 }

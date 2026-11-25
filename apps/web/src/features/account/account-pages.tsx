@@ -90,9 +90,13 @@ export function MyBookings() {
           <Button asChild><Link href="/venues">{t("home.searchCta")}</Link></Button>
         </EmptyState>
       ) : (
-        <Stagger key={scope} className="flex flex-col gap-3">
-          {data.data.map((b) => <StaggerItem key={b.id}><BookingCard booking={b} /></StaggerItem>)}
-        </Stagger>
+        <>
+          {/* Keeps headings in order (page h1 → this h2 → each booking's h3) for screen readers. */}
+          <h2 className="sr-only">{t(scope === "upcoming" ? "account.upcoming" : "account.past")}</h2>
+          <Stagger key={scope} className="flex flex-col gap-3">
+            {data.data.map((b) => <StaggerItem key={b.id}><BookingCard booking={b} /></StaggerItem>)}
+          </Stagger>
+        </>
       )}
     </>
   );

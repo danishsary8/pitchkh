@@ -63,7 +63,6 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "switchToKhmer": "ភាសាខ្មែរ",
     "switchToEnglish": "English",
     "toggleTheme": "Switch theme",
     "openMenu": "Open menu",
@@ -93,7 +92,8 @@
     "account": "Account",
     "myTeam": "My team",
     "dashboard": "Dashboard",
-    "admin": "Admin"
+    "admin": "Admin",
+    "unread": "unread"
   },
   "sport": {
     "football": "Football",
@@ -906,7 +906,6 @@
     "venueSubmitted": "Venue submitted for review",
     "noVenuesTitle": "List your first venue",
     "noVenuesBody": "Add your venue and pitches to start taking bookings.",
-    "viewListing": "View public listing",
     "rejectedTitle": "Changes needed",
     "pendingTitle": "In review",
     "pendingBody": "Our team is checking this listing. You can still add pitches and prices.",
@@ -976,7 +975,8 @@
       "remove": "Remove photo {n}"
     },
     "now": "Now",
-    "goToVenues": "Go to your venues"
+    "goToVenues": "Go to your venues",
+    "publicListing": "public listing"
   },
   "admin": {
     "title": "Admin panel",
@@ -1073,7 +1073,8 @@
   },
   "demo": {
     "notice": "Demo with sample venues and bookings. Payments are simulated.",
-    "reset": "Reset demo"
+    "reset": "Reset demo",
+    "label": "Demo"
   },
   "calendar": {
     "weekdays": "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday",

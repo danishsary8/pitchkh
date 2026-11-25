@@ -45,7 +45,7 @@ export function TelegramCard() {
       {data.linked ? (
         <Button variant="ghost" disabled={unlink.isPending} onClick={() => unlink.mutate()}>{t("disconnect")}</Button>
       ) : data.linkUrl ? (
-        <Button asChild className="bg-[#229ED9] text-white hover:bg-[#1c8cc2]">
+        <Button asChild className="bg-[#1877AB] text-white hover:bg-[#15699A]">
           <a href={data.linkUrl} target="_blank" rel="noopener noreferrer">
             <Send />
             {t("connect")}

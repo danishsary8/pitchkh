@@ -26,10 +26,10 @@ export function LocaleToggle({ className }: { className?: string }) {
       size="sm"
       className={cn("h-11 min-w-11 px-3 font-bold", className)}
       onClick={() => router.replace(`${pathname}${window.location.search}`, { locale: next, scroll: false })}
-      aria-label={next === "km" ? t("switchToKhmer") : t("switchToEnglish")}
       lang={next}
     >
-      {next === "km" ? "ខ្មែរ" : "EN"}
+      {/* Named by its own text so the name contains what is shown ("EN English"): voice users can say "click EN". */}
+      {next === "km" ? "ខ្មែរ" : <>EN<span className="sr-only"> {t("switchToEnglish")}</span></>}
     </Button>
   );
 }
@@ -59,9 +59,16 @@ export function NotificationBell({ className }: { className?: string }) {
   if (!user) return null;
   return (
     <Button variant="ghost" size="icon" asChild className={cn("relative", className)}>
-      <Link href="/account/notifications" aria-label={unread ? `${t("notifications")} (${unread})` : t("notifications")}>
-        <Bell />
-        {unread > 0 ? <span className="font-num absolute top-1.5 right-1.5 grid h-4.5 min-w-4.5 place-items-center rounded-full bg-destructive px-1 text-[0.65rem] font-bold text-destructive-foreground">{unread > 9 ? "9+" : unread}</span> : null}
+      {/* Named by its own text ("Notifications 3 unread"), so the name always contains the visible badge. */}
+      <Link href="/account/notifications">
+        <Bell aria-hidden />
+        <span className="sr-only">{t("notifications")}</span>
+        {unread > 0 ? (
+          <span className="font-num absolute top-1.5 right-1.5 grid h-4.5 min-w-4.5 place-items-center rounded-full bg-destructive px-1 text-[0.65rem] font-bold text-destructive-foreground">
+            {unread > 9 ? "9+" : unread}
+            <span className="sr-only"> {t("unread")}</span>
+          </span>
+        ) : null}
       </Link>
     </Button>
   );

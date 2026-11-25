@@ -140,7 +140,7 @@ export function OwnerVenues() {
                   <p className="text-sm text-muted-foreground">{venue.district}, {t(`province.${venue.province}`)} · <Rating value={venue.rating} count={venue.reviewCount} className="align-middle" /></p>
                 </div>
                 <div className="flex gap-2">
-                  {venue.status === "approved" ? <Button asChild variant="ghost"><Link href={`/venues/${venue.slug}`} aria-label={t("owner.viewListing")}><ExternalLink />{t("common.view")}</Link></Button> : null}
+                  {venue.status === "approved" ? <Button asChild variant="ghost"><Link href={`/venues/${venue.slug}`}><ExternalLink aria-hidden />{t("common.view")}<span className="sr-only"> {t("owner.publicListing")}</span></Link></Button> : null}
                   <Button variant="secondary" onClick={() => setVenueSheet({ venue })}><Pencil />{t("common.edit")}</Button>
                 </div>
               </div>

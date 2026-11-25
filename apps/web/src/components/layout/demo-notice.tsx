@@ -22,7 +22,7 @@ export function DemoNotice() {
     window.location.reload();
   };
   return (
-    <div data-demo-notice className="pt-safe bg-secondary text-secondary-foreground">
+    <aside data-demo-notice aria-label={t("label")} className="pt-safe bg-secondary text-secondary-foreground">
       <div className="mx-auto flex min-h-11 w-full max-w-7xl items-center gap-2 px-4 text-xs lg:px-6">
         <FlaskConical className="size-4 shrink-0 text-primary" aria-hidden />
         <p className="min-w-0 flex-1 leading-snug">{t("notice")}</p>
@@ -31,6 +31,6 @@ export function DemoNotice() {
           {t("reset")}
         </button>
       </div>
-    </div>
+    </aside>
   );
 }

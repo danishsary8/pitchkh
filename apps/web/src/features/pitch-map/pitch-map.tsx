@@ -40,7 +40,7 @@ export interface PitchMapProps {
 /**
  * Top-down plan of a venue. Every pitch is drawn at its real size and place
  * (or auto-arranged if the owner hasn't placed it), and is a radio button:
- * tap or press Enter/Space to pick it.
+ * tap it, or Tab into the map, move with the arrow keys and press Enter/Space.
  */
 export function PitchMap({ fields, selectedId, states, sport, onSelect, compact, showStateLabels = true, className, label }: PitchMapProps) {
   const t = useTranslations("pitchMap");
@@ -54,10 +54,37 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
   const stateOf = (field: Field): PitchState => (field.status !== "active" ? "closed" : (states?.[field.id] ?? "free"));
   const canPick = (field: Field): boolean => (!sport || field.sport === sport) && stateOf(field) !== "closed";
 
+  // Keyboard: the map is one Tab stop. Arrow keys move between pickable pitches in reading
+  // order (top to bottom, then left to right); Enter or Space picks. Arrows only move focus,
+  // because picking can navigate away (e.g. on Home).
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const order = interactive
+    ? fields.filter(canPick).sort((a, b) => {
+        const la = layouts.get(a.id) as FieldLayout;
+        const lb = layouts.get(b.id) as FieldLayout;
+        return la.y - lb.y || la.x - lb.x;
+      })
+    : [];
+  const tabStop = [focusId, selectedId].find((id) => order.some((f) => f.id === id)) ?? order[0]?.id;
+  const moveFocus = (id: string | undefined): void => {
+    if (!id) return;
+    setFocusId(id);
+    ref.current?.querySelector<SVGGElement>(`[data-field-id="${id}"]`)?.focus();
+  };
+
   const onKey = (event: KeyboardEvent, field: Field): void => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    if (canPick(field)) onSelect?.(field.id);
+    const at = order.findIndex((f) => f.id === field.id);
+    const step: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    if (event.key in step) {
+      event.preventDefault();
+      moveFocus(order[(at + (step[event.key] ?? 0) + order.length) % order.length]?.id);
+    } else if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      moveFocus((event.key === "Home" ? order[0] : order.at(-1))?.id);
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (canPick(field)) onSelect?.(field.id);
+    }
   };
 
   return (
@@ -90,18 +117,25 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
               aria-checked={interactive ? selected : undefined}
               aria-disabled={interactive && !pickable ? true : undefined}
               aria-label={interactive ? t("pitchLabel", { name: field.name, format: field.format, state: t(`state.${state}`) }) : undefined}
-              tabIndex={pickable ? 0 : interactive ? -1 : undefined}
+              tabIndex={interactive ? (field.id === tabStop ? 0 : -1) : undefined}
               onClick={pickable ? () => onSelect?.(field.id) : undefined}
               onKeyDown={pickable ? (e) => onKey(e, field) : undefined}
+              onFocus={pickable ? () => setFocusId(field.id) : undefined}
               className={cn("group outline-none", pickable && "cursor-pointer active:opacity-90")}
               data-pitch={field.name}
+              data-field-id={field.id}
             >
               {/* Re-keyed on select so the bounce replays each time this pitch is picked. */}
               <g key={selected ? "on" : "off"} className={cn(selected && interactive && "motion-safe:animate-pitch-pop")} style={{ transformBox: "fill-box", transformOrigin: "center" }}>
               <PitchShape field={field} layout={layout} state={state} selected={selected} dimmed={dimmed} metresPerPx={metresPerPx} showLabel={!compact || selected} stateLabel={stateLabel} />
               </g>
               {pickable ? (
-                <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} fill="transparent" stroke="transparent" strokeWidth={3} vectorEffect="non-scaling-stroke" className="transition-[stroke] group-hover:stroke-white/60 group-focus-visible:stroke-[var(--ring)]" />
+                <>
+                  <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} fill="transparent" stroke="transparent" strokeWidth={3} vectorEffect="non-scaling-stroke" className="transition-[stroke] group-hover:stroke-white/60" />
+                  {/* Keyboard focus: a dark outline with a white inner line, visible on any pitch colour and theme. */}
+                  <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} fill="none" stroke="transparent" strokeWidth={7} vectorEffect="non-scaling-stroke" className="group-focus-visible:stroke-[#0b1510]" />
+                  <rect x={layout.x} y={layout.y} width={layout.w} height={layout.h} fill="none" stroke="transparent" strokeWidth={3} vectorEffect="non-scaling-stroke" className="group-focus-visible:stroke-white" />
+                </>
               ) : null}
             </g>
           );

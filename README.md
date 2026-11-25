@@ -20,6 +20,8 @@ This repo holds the **web app** and its **v1 backend**:
 - on the real API in `apps/api` (Node + PostgreSQL) by changing one setting.
   No UI code changes between the two.
 
+<img src="docs/images/home-map.webp" alt="Home: how it works on a real venue, a live pitch map with free pitches next to the three booking steps">
+
 ### Players
 
 <table>

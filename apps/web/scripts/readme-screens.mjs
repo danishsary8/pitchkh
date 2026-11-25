@@ -55,6 +55,16 @@ await page.waitForTimeout(3000);
 await save(page, "home-next-game");
 await page.context().close();
 
+// 0b. Home "how it works": the live pitch map next to the three steps (desktop).
+page = await desktop();
+await page.goto(`${base}/en`, { waitUntil: "networkidle" });
+await page.getByRole("radiogroup", { name: /Map of the pitches/ }).waitFor();
+await page.locator("#how-title").evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 96));
+await settle(page);
+// Crop below the sticky header.
+await save(page, "home-map", { x: 0, y: 64, width: 1280, height: 600 });
+await page.context().close();
+
 // 1. Pick screen: time first, then a pitch on the map (signed in, so we can pay at the end).
 page = await phone();
 await signIn(page, /Player/);

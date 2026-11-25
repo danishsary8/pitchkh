@@ -362,7 +362,8 @@
     "results": "Results",
     "nextFree": "Free start times, {day}",
     "bookAt": "Book at {time}, {day}",
-    "shownOf": "Showing {shown} of {total}"
+    "shownOf": "Showing {shown} of {total}",
+    "anyTime": "Any time"
   },
   "venue": {
     "gallery": "Photos of {name}",
@@ -780,7 +781,8 @@
     "noMessages": "No messages yet",
     "startHint": "Say hello to get things started.",
     "placeholder": "Write a message",
-    "send": "Send"
+    "send": "Send",
+    "seeMatches": "See open matches"
   },
   "account": {
     "upcoming": "Upcoming",
@@ -815,7 +817,8 @@
     "demoData": "Demo data",
     "demoDataBody": "Restore the sample venues and bookings.",
     "reset": "Reset",
-    "demoReset": "Demo data reset"
+    "demoReset": "Demo data reset",
+    "seePastBookings": "See past bookings"
   },
   "notif": {
     "booking_confirmed": "Booking {code} at {venue} is confirmed.",
@@ -972,7 +975,8 @@
       "makeCover": "Make photo {n} the cover",
       "remove": "Remove photo {n}"
     },
-    "now": "Now"
+    "now": "Now",
+    "goToVenues": "Go to your venues"
   },
   "admin": {
     "title": "Admin panel",

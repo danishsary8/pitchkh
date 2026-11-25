@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/auth-provider";
 import { api } from "@/lib/api";
+import { features } from "@/lib/features";
 import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,13 @@ export function ConversationList() {
   const { data, isPending, isError, error, refetch } = useQuery({ queryKey: qk.conversations, queryFn: api.chat.list, refetchInterval: 20_000 });
   if (isPending) return <div className="flex flex-col gap-2" aria-busy>{[0, 1, 2].map((i) => <Skeleton key={i} className="h-20" />)}</div>;
   if (isError) return <ErrorState error={error} onRetry={() => void refetch()} />;
-  if (data.length === 0) return <EmptyState icon={<MessageCircle />} title={t("emptyTitle")} body={t("emptyBody")} />;
+  if (data.length === 0) {
+    return (
+      <EmptyState icon={<MessageCircle />} title={t("emptyTitle")} body={t("emptyBody")}>
+        {features.matches ? <Button asChild variant="secondary"><Link href="/matches">{t("seeMatches")}</Link></Button> : null}
+      </EmptyState>
+    );
+  }
   return (
     <ul className="flex flex-col gap-2">
       {data.map((c) => {

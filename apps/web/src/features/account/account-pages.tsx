@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, CalendarCheck, CalendarDays, CalendarX2, CheckCheck, ChevronRight, Heart, LayoutDashboard, LogOut, MapPin, MessageCircle, RotateCcw, ShieldCheck, Star, Swords, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "@/components/common/link";
@@ -71,7 +72,8 @@ export function BookingCard({ booking, href }: { booking: BookingDetail; href?: 
 
 export function MyBookings() {
   const t = useTranslations();
-  const [scope, setScope] = useState<"upcoming" | "past">("upcoming");
+  // ?tab=past opens the Past tab (e.g. from "See past bookings" on the reviews page).
+  const [scope, setScope] = useState<"upcoming" | "past">(useSearchParams().get("tab") === "past" ? "past" : "upcoming");
   const query = { scope, pageSize: 30 };
   const { data, isPending, isError, error, refetch } = useQuery({ queryKey: qk.bookings(query), queryFn: () => api.bookings.list(query) });
   return (
@@ -161,7 +163,9 @@ export function MyReviews() {
       <section className="flex flex-col gap-3" aria-labelledby="written">
         <h2 id="written" className="font-display text-xl">{t("account.reviewsWritten")}</h2>
         {mine.isPending ? <ListSkeleton className="h-24" /> : mine.isError ? <ErrorState error={mine.error} onRetry={() => void mine.refetch()} /> : mine.data.data.length === 0 ? (
-          <EmptyState icon={<Star />} title={t("account.noReviewsTitle")} body={t("account.noReviewsBody")} />
+          <EmptyState icon={<Star />} title={t("account.noReviewsTitle")} body={t("account.noReviewsBody")}>
+            <Button asChild variant="secondary"><Link href="/account/bookings?tab=past">{t("account.seePastBookings")}</Link></Button>
+          </EmptyState>
         ) : (
           <ul className="flex flex-col gap-3">
             {mine.data.data.map((r) => (

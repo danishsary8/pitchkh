@@ -67,7 +67,11 @@ export function VenuesBrowse() {
     <ErrorState error={error} onRetry={() => void refetch()} />
   ) : venues.length === 0 ? (
     <EmptyState icon={<SearchX />} title={t("venues.emptyTitle")} body={t("venues.emptyBody")}>
-      <Button onClick={clear}>{t("venues.clearFilters")}</Button>
+      {/* A full evening is the usual dead end: offer to drop just the time, keeping sport and area. */}
+      <div className="flex flex-wrap justify-center gap-2">
+        {filters.date ? <Button onClick={() => setFilters({ date: null, from: null })}>{t("venues.anyTime")}</Button> : null}
+        <Button variant={filters.date ? "secondary" : "default"} onClick={clear}>{t("venues.clearFilters")}</Button>
+      </div>
     </EmptyState>
   ) : (
     <>

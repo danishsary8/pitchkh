@@ -6,6 +6,7 @@ import { Ban, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Link } from "@/components/common/link";
 import { PageHeader } from "@/components/common/page";
 import { EmptyState, ErrorState, useErrorMessage } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
@@ -58,7 +59,7 @@ export function OwnerSchedule() {
 
   if (venues.isPending) return <><PageHeader title={t("owner.nav.schedule")} /><Skeleton className="h-96" /></>;
   if (venues.isError) return <ErrorState error={venues.error} onRetry={() => void venues.refetch()} />;
-  if (!venue) return <><PageHeader title={t("owner.nav.schedule")} /><EmptyState icon={<Ban />} title={t("owner.noLiveVenueTitle")} body={t("owner.noLiveVenueBody")} /></>;
+  if (!venue) return <><PageHeader title={t("owner.nav.schedule")} /><EmptyState icon={<Ban />} title={t("owner.noLiveVenueTitle")} body={t("owner.noLiveVenueBody")}><Button asChild variant="secondary"><Link href="/owner/venues">{t("owner.goToVenues")}</Link></Button></EmptyState></>;
 
   const data = schedule.data;
   const open = data ? minutesOf(data.open) : 360;

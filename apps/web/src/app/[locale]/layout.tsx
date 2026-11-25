@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Providers } from "@/components/layout/providers";
 import { routing } from "@/i18n/routing";
+import { siteUrl } from "@/lib/site";
 import "../globals.css";
 
 // One variable family does all the Latin work: width axis 62-125 gives the
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale: hasLocale(routing.locales, locale) ? locale : "en", namespace: "meta" });
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchkh.vercel.app"),
+    metadataBase: new URL(siteUrl),
     title: { default: t("title"), template: `%s · PitchKH` },
     description: t("description"),
     applicationName: "PitchKH",

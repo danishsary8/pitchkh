@@ -66,6 +66,8 @@ Render's free disk is wiped on every redeploy, so photos live in an R2 bucket.
    - `NEXT_PUBLIC_API_MODE` = `real`
    - `NEXT_PUBLIC_API_URL` = `https://<your-api>/api/v1`
    - `NEXT_PUBLIC_PHOTOS_URL` = the R2 public URL from step 3
+   - `NEXT_PUBLIC_SITE_URL` = the web app's own address, e.g. `https://pitchkh.vercel.app`
+     (link previews and the sitemap use it; you can set it after the first deploy)
 3. Deploy, then put the Vercel URL into Render's `CORS_ORIGINS` and `WEB_URL`.
 
 ## 6. Telegram bot
@@ -97,4 +99,12 @@ Render's free disk is wiped on every redeploy, so photos live in an R2 bucket.
 - [ ] Post a match from a second account and chat.
 
 If something fails, the API logs in Render say why (missing setting, Bakong
-check failed, email failed...).
+check failed, email failed...). [`OPERATIONS.md`](OPERATIONS.md) explains the log
+messages, backups and key rotation.
+
+## 9. After launch (once)
+
+- [ ] Database backups: a plan with automatic backups, and one restore test
+      ([OPERATIONS.md → Backups](OPERATIONS.md#backups)).
+- [ ] Google Search Console: add the site and submit `https://<your-site>/sitemap.xml`.
+- [ ] Put a reminder in your calendar to renew the Bakong token before it expires.

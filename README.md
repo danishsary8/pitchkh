@@ -336,7 +336,9 @@ The second command runs Lighthouse (mobile) against the production server.
 ## Going live
 
 Everything that needs **your** accounts (Render, Vercel, Bakong KHQR, Telegram
-bot, email) is in one list: [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
+bot, email, Cloudflare R2) is in one list: [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
+Once live, [`docs/OPERATIONS.md`](docs/OPERATIONS.md) covers logs, health checks, backups,
+deploys and rotating keys.
 
 ## Running on the real backend
 

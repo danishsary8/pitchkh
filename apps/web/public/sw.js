@@ -1,7 +1,7 @@
 /* PitchKH service worker: installable PWA + offline fallback.
    Strategy: pages are network-first (live availability matters) and fall back
    to the offline page; static assets are cache-first. */
-const VERSION = "pitchkh-v1";
+const VERSION = "pitchkh-v3-photos";
 const OFFLINE_URLS = ["/en/offline", "/km/offline"];
 
 self.addEventListener("install", (event) => {

@@ -55,3 +55,32 @@ export function LegalPage({ kind }: { kind: "terms" | "privacy" }) {
     </>
   );
 }
+
+interface PhotoCredit { title: string; creator: string | null; license: string; licenseUrl: string | null; source: string; files: string[] }
+
+/** Sample photos are freely licensed (CC BY, CC BY-SA, CC0); this page gives each photographer credit. */
+export function CreditsPage({ credits }: { credits: PhotoCredit[] }) {
+  const t = useTranslations("credits");
+  return (
+    <>
+      <Container size="md">
+        <PageHeader title={t("title")} subtitle={t("subtitle")} />
+        <ul className="flex flex-col gap-3 pb-8">
+          {credits.map((c) => (
+            <li key={c.source} className="rounded-2xl bg-card p-4 text-[0.95rem]">
+              <a href={c.source} target="_blank" rel="noopener noreferrer" className="font-semibold underline-offset-4 hover:underline">{c.title || t("untitled")}</a>
+              <p className="text-muted-foreground">
+                {c.creator ? t("by", { name: c.creator }) : null}
+                {c.creator ? " · " : null}
+                {c.licenseUrl ? <a href={c.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{c.license}</a> : c.license}
+                {" · "}
+                {t("usedFor", { count: c.files.length })}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Container>
+      <SiteFooter />
+    </>
+  );
+}

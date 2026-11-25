@@ -225,7 +225,8 @@
     "privacy": "Privacy",
     "help": "Help & FAQ",
     "rights": "© {year} PitchKH. Made in Phnom Penh.",
-    "rate": "Prices in USD. 1 USD = 4,100 ៛"
+    "rate": "Prices in USD. 1 USD = 4,100 ៛",
+    "credits": "Photo credits"
   },
   "offline": {
     "title": "You're offline",
@@ -1106,5 +1107,12 @@
     "groupTitle": "Matches on Telegram",
     "groupBody": "Join the PitchKH group to see new matches as they are posted, and post yours there too.",
     "groupButton": "Join group"
+  },
+  "credits": {
+    "title": "Photo credits",
+    "subtitle": "The sample venue photos are freely licensed. Thank you to the photographers.",
+    "by": "by {name}",
+    "untitled": "Untitled photo",
+    "usedFor": "{count, plural, one {used in # place} other {used in # places}}"
   }
 }

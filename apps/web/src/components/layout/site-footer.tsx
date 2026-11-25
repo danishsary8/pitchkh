@@ -25,6 +25,7 @@ export function SiteFooter() {
               <Link className="py-1.5 opacity-80 hover:opacity-100" href="/help">{t("footer.help")}</Link>
               <Link className="py-1.5 opacity-80 hover:opacity-100" href="/terms">{t("footer.terms")}</Link>
               <Link className="py-1.5 opacity-80 hover:opacity-100" href="/privacy">{t("footer.privacy")}</Link>
+              <Link className="py-1.5 opacity-80 hover:opacity-100" href="/credits">{t("footer.credits")}</Link>
             </nav>
           </div>
         </div>

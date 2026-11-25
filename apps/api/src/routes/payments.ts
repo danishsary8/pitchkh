@@ -7,6 +7,7 @@ import * as t from "../db/schema";
 import type { Ctx, Route } from "../http";
 import type { PaymentProvider } from "../payments";
 import { findVenue } from "../views";
+import { log } from "../observability";
 
 type PaymentRow = typeof t.payments.$inferSelect;
 const isId = (v: string | undefined): v is string => !!v && /^[0-9a-f-]{36}$/i.test(v);
@@ -55,7 +56,7 @@ export async function checkWithProvider(ctx: Pick<Ctx, "notify" | "now" | "db">,
   try {
     if (!(await provider.checkPaid(payment.reference, { amountUsd: payment.amountUsd }))) return false;
   } catch (e) {
-    console.error("payment check failed", e);
+    log("error", "payment check failed", { paymentId: payment.id, error: String(e) });
     return false;
   }
   await ctx.db.transaction((tx) => confirmPayment(ctx, tx, payment.reference));

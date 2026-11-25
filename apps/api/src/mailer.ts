@@ -1,16 +1,20 @@
+import { log } from "./observability";
+
 /**
- * Sends account emails. Without RESEND_API_KEY the email is printed to the
- * server log (fine for development); with it, Resend delivers it.
+ * Sends account emails through Resend. Without RESEND_API_KEY: in development
+ * the email is printed to the log; in production nothing is sent and only a
+ * warning is logged (never the body, which holds single-use reset links).
  */
 export interface Mailer {
   send(to: string, subject: string, text: string): Promise<void>;
 }
 
-export function createMailer(resendKey: string, from: string, fetchImpl: typeof fetch = fetch): Mailer {
+export function createMailer(resendKey: string, from: string, fetchImpl: typeof fetch = fetch, production = false): Mailer {
   if (!resendKey) {
     return {
       async send(to, subject, text) {
-        console.log(`[mail to ${to}] ${subject}\n${text}`);
+        if (production) log("warn", "email not sent: RESEND_API_KEY is not set", { subject });
+        else console.log(`[mail to ${to}] ${subject}\n${text}`);
       },
     };
   }

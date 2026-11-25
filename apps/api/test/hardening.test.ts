@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createApp } from "../src/app";
 import type { Database } from "../src/db/client";
 import { NOW, startTestApi } from "./harness";
@@ -69,5 +69,18 @@ describe("health check", () => {
     const res = await app.request("/health");
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ ok: false, db: "down" });
+  });
+});
+
+describe("email without a provider", () => {
+  it("never writes the email body (reset links) to production logs", async () => {
+    const { createMailer } = await import("../src/mailer");
+    const lines: string[] = [];
+    const spies = [vi.spyOn(console, "log"), vi.spyOn(console, "error")].map((spy) => spy.mockImplementation((...args: unknown[]) => void lines.push(args.join(" "))));
+    await createMailer("", "PitchKH <no-reply@pitchkh.app>", fetch, true).send("dara@pitchkh.app", "Reset your PitchKH password", "https://pitchkh.app/reset-password?token=SECRET");
+    spies.forEach((spy) => spy.mockRestore());
+    expect(lines.join("\n")).toContain("email not sent");
+    expect(lines.join("\n")).not.toContain("SECRET");
+    expect(lines.join("\n")).not.toContain("dara@pitchkh.app");
   });
 });

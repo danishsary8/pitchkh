@@ -29,7 +29,7 @@ export function createApp(services: Services, corsOrigins: string[], telegram?: 
   const app = new Hono();
   services = {
     ...services,
-    mailer: services.mailer ?? createMailer(env.mail.resendKey, env.mail.from),
+    mailer: services.mailer ?? createMailer(env.mail.resendKey, env.mail.from, fetch, env.production),
     storage: services.storage ?? (env.storage.driver === "r2" ? r2Storage(env.storage.r2) : localStorage(uploadDir, env.publicUrl)),
   };
   // Booking alerts go to the owner's Telegram after the response; a Telegram outage never fails a booking.

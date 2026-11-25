@@ -9,6 +9,7 @@ import { mkdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { ApiError } from "@pitchkh/shared";
 import { AwsClient } from "aws4fetch";
+import { log } from "./observability";
 
 export interface PhotoStorage {
   /** Saves the image and returns its public URL. */
@@ -83,7 +84,7 @@ export function r2Storage(config: R2Config): PhotoStorage {
       if (!OWN_NAME.test(name)) return;
       // The photo is already gone from the venue; a leftover file must not fail the request.
       const res = await call("DELETE", name).catch((e: unknown) => e);
-      if (!(res instanceof Response) || (!res.ok && res.status !== 404)) console.error("R2 delete failed", name, res instanceof Response ? res.status : res);
+      if (!(res instanceof Response) || (!res.ok && res.status !== 404)) log("error", "R2 delete failed", { name, status: res instanceof Response ? res.status : undefined, error: res instanceof Response ? undefined : String(res) });
     },
   };
 }

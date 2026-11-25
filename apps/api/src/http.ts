@@ -3,7 +3,7 @@
  * packages/shared/src/mock/handlers: route(method, path, access, handler).
  */
 import { randomUUID } from "node:crypto";
-import { setRequestUser } from "./observability";
+import { log, setRequestUser } from "./observability";
 import { ApiError, isoInPP, type NotificationType, type Role, type User } from "@pitchkh/shared";
 import { eq } from "drizzle-orm";
 import type { Context, Hono } from "hono";
@@ -114,7 +114,7 @@ export function createRouter(app: Hono, services: Services) {
         try {
           fn();
         } catch (e) {
-          console.error("after-response hook failed", e);
+          log("error", "after-response hook failed", { error: String(e) });
         }
       }
       return result === undefined ? c.body(null, 204) : c.json(result as object);

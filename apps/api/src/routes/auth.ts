@@ -12,6 +12,7 @@ import { resetEmail, type Mailer } from "../mailer";
 const RESET_TTL_MS = 30 * 60_000;
 const sha256 = (v: string): string => createHash("sha256").update(v).digest("hex");
 import type { Route } from "../http";
+import { log } from "../observability";
 
 export function registerAuthRoutes(route: Route, mailer: Mailer): void {
   // Same answer whether or not the email exists, so accounts can't be discovered.
@@ -22,7 +23,7 @@ export function registerAuthRoutes(route: Route, mailer: Mailer): void {
       const token = randomBytes(24).toString("base64url");
       await db.insert(passwordResets).values({ tokenHash: sha256(token), userId: row.id, expiresAt: new Date(now.getTime() + RESET_TTL_MS) });
       const mail = resetEmail(row.locale, `${env.webUrl}/${row.locale}/reset-password?token=${token}`);
-      after(() => void mailer.send(row.email, mail.subject, mail.text).catch((e: unknown) => console.error("reset email failed", e)));
+      after(() => void mailer.send(row.email, mail.subject, mail.text).catch((e: unknown) => log("error", "reset email failed", { error: String(e) })));
     }
     return { sent: true };
   });

@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import dynamic from "next/dynamic";
 import { useEffect, useState, type ReactNode } from "react";
-import { AuthProvider } from "@/features/auth/auth-provider";
 import { TelegramMiniApp } from "@/features/telegram/mini-app";
 import { usePathname } from "@/i18n/navigation";
 import { makeQueryClient } from "@/lib/query";
@@ -49,13 +48,11 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
           {children}
           <DeferredToaster />
           <RouteTransitionSignal />
           <ServiceWorker />
           <TelegramMiniApp />
-        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

@@ -1,10 +1,10 @@
 "use client";
 
-import { isApiError } from "@pitchkh/shared";
 import { CloudOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { HttpError } from "@/lib/client";
 import { cn } from "@/lib/utils";
 
 export function EmptyState({ icon, title, body, children, className }: { icon?: ReactNode; title: string; body?: string; children?: ReactNode; className?: string }) {
@@ -20,8 +20,12 @@ export function EmptyState({ icon, title, body, children, className }: { icon?: 
 
 /** Translates any thrown value into a message the user can act on. */
 export function useErrorMessage(): (error: unknown) => string {
-  const t = useTranslations("errors");
-  return (error) => (isApiError(error) ? t(error.code) : t("server_error"));
+  const t = useTranslations("book.errors");
+  return (error) => {
+    const code = error instanceof HttpError ? (error.status === 0 ? "network" : error.code) : "unavailable";
+    type Key = Parameters<typeof t>[0];
+    return t.has(code as Key) ? t(code as Key) : t("unavailable");
+  };
 }
 
 export function ErrorState({ error, onRetry, className }: { error: unknown; onRetry?: () => void; className?: string }) {

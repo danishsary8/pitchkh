@@ -218,7 +218,7 @@
     "payload_too_large": "That file is too large. Photos can be up to 4 MB."
   },
   "footer": {
-    "blurb": "Sports pitches across Cambodia, booked in a minute.",
+    "blurb": "Football, volleyball and tennis pitches in Phnom Penh. Book in a minute, no account needed.",
     "explore": "Explore",
     "company": "PitchKH",
     "terms": "Terms",
@@ -234,8 +234,8 @@
     "retry": "Reload"
   },
   "meta": {
-    "title": "PitchKH: book sports pitches in Cambodia",
-    "description": "Book football, volleyball and tennis pitches in Phnom Penh, Siem Reap, Battambang and beyond. Pay with KHQR, ABA or Wing, and find an opponent for your team."
+    "title": "PitchKH: book a football, volleyball or tennis pitch",
+    "description": "Pick a branch, a pitch and a time, and send your booking. We confirm on Telegram. No account needed."
   },
   "auth": {
     "signInTitle": "Welcome back",
@@ -1114,5 +1114,128 @@
     "by": "by {name}",
     "untitled": "Untitled photo",
     "usedFor": "{count, plural, one {used in # place} other {used in # places}}"
+  },
+  "book": {
+    "home": {
+      "title": "Book a pitch in a minute",
+      "subtitle": "Football, volleyball and tennis. Pick a branch, a time and a pitch. No account needed.",
+      "branches": "Our branches",
+      "from": "from {price}/hr",
+      "step": {
+        "one": "Pick a time and a pitch",
+        "two": "Add your name and phone",
+        "three": "We confirm on Telegram"
+      }
+    },
+    "branch": {
+      "allBranches": "All branches",
+      "directions": "Directions",
+      "day": "Day",
+      "time": "Start time",
+      "duration": "How long",
+      "sport": "Sport",
+      "pitch": "Pitch",
+      "full": "Full",
+      "freeCount": "{count, plural, one {# free} other {# free}}",
+      "noTimes": "No more start times on this day. Try another day.",
+      "hintBoth": "Pick a start time, then tap a pitch on the map.",
+      "hintPitch": "Now tap a free pitch on the map.",
+      "hintTime": "Now pick a start time.",
+      "hintTaken": "This pitch is taken then. Pick another pitch or time.",
+      "continue": "Continue"
+    },
+    "form": {
+      "title": "Your details",
+      "name": "Your name",
+      "phone": "Phone number",
+      "players": "Number of players",
+      "note": "Note for us",
+      "notePlaceholder": "e.g. we need bibs and a ball",
+      "total": "Total",
+      "howItWorks": "This sends a booking request. We hold the pitch for you and confirm on Telegram or by phone. You pay at the venue.",
+      "send": "Send booking",
+      "nameMissing": "Enter your name",
+      "phoneInvalid": "Enter a phone number, e.g. 012 345 678",
+      "playersInvalid": "Enter a number from 1 to 40"
+    },
+    "done": {
+      "title": "Request sent!",
+      "body": "We have your request and hold the pitch for you. We will confirm by phone or on Telegram soon.",
+      "bodyTelegram": "We have your request and hold the pitch for you. This bot will message you when it is confirmed.",
+      "code": "Booking code",
+      "place": "Where",
+      "when": "When",
+      "price": "Price",
+      "payAtVenue": "pay at the venue",
+      "again": "Book another pitch"
+    },
+    "status": {
+      "pending": "Waiting for confirmation",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
+    "chat": {
+      "button": "Chat with us on Telegram",
+      "hello": "Hi! I have a question about {branch}.",
+      "aboutBooking": "Hi! About my booking {code}: {branch}, {pitch}, {when}."
+    },
+    "errors": {
+      "slot_taken": "Someone just booked that time. Please pick another pitch or time.",
+      "network": "No connection. Check your internet and try again.",
+      "unavailable": "Something went wrong on our side. Please try again in a moment.",
+      "too_many": "Too many requests. Please wait a few minutes.",
+      "past": "That time has already started. Pick a later time.",
+      "outside_hours": "That time is outside opening hours.",
+      "bad_date": "Bookings open up to 14 days ahead.",
+      "invalid": "Some details need fixing."
+    }
+  },
+  "staff": {
+    "title": "Bookings",
+    "add": "Add booking",
+    "addSave": "Save as confirmed",
+    "addInvalid": "Check the name and phone number.",
+    "addAt": "Add a booking on {pitch} at {time}",
+    "pending": "Waiting for you",
+    "noPending": "No requests waiting. New ones also arrive as a Telegram message.",
+    "schedule": "Schedule",
+    "branch": "Branch",
+    "freeTap": "Free: tap to add a walk-in",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "cancel": "Cancel booking",
+    "restore": "Restore",
+    "call": "Call",
+    "message": "Message",
+    "cancelledCount": "{count, plural, one {# cancelled booking} other {# cancelled bookings}}",
+    "detail": {
+      "status": "Status",
+      "place": "Pitch",
+      "when": "When",
+      "phone": "Phone",
+      "telegram": "Telegram",
+      "players": "Players",
+      "price": "Price",
+      "source": "From",
+      "sent": "Sent",
+      "note": "Note"
+    },
+    "source": {
+      "customer": "Customer app",
+      "admin": "Staff"
+    },
+    "toast": {
+      "confirmed": "{code} confirmed",
+      "cancelled": "{code} cancelled",
+      "pending": "{code} set to waiting",
+      "clash": "Another booking already holds that time."
+    },
+    "locked": {
+      "title": "Staff only",
+      "notInTelegram": "Open this page from the PitchKH bot in Telegram. Telegram tells us who you are, so there is no password.",
+      "notAdmin": "Your Telegram account isn't on the staff list. Send the number below to the owner to be added.",
+      "notConfigured": "The server isn't set up yet: TELEGRAM_BOT_TOKEN is missing.",
+      "yourId": "Your Telegram ID:"
+    }
   }
 }

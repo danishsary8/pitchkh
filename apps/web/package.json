@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
+    "@neondatabase/serverless": "^1.2.1",
     "@pitchkh/shared": "workspace:*",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
@@ -30,6 +31,7 @@
     "react-dom": "19.3.1",
     "react-hook-form": "^7.92.0",
     "react-leaflet": "^5.0.0",
+    "server-only": "^0.0.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.0.0",
     "three": "^0.187.0",

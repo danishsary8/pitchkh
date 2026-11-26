@@ -2,10 +2,12 @@
 
 import type { Field, Sport } from "@pitchkh/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarCheck, Clock, Lightbulb, MapPin, Navigation } from "lucide-react";
+import { CalendarCheck, Check, Clock, Lightbulb, MapPin, Navigation } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
+import { KramaStrip } from "@/components/brand/pitch-art";
 import { Link } from "@/components/common/link";
 import { Price } from "@/components/common/price";
 import { ErrorState } from "@/components/common/states";
@@ -38,6 +40,18 @@ function Chip({ active, disabled, onClick, children, className }: { active: bool
     >
       {children}
     </button>
+  );
+}
+
+/** Day → time → pitch is a real sequence, so each heading carries its number (a tick once done). */
+function StepHeading({ id, n, done, children }: { id: string; n: number; done: boolean; children: React.ReactNode }) {
+  return (
+    <h2 id={id} className="flex items-center gap-2.5 text-lg font-bold tracking-tight">
+      <span aria-hidden className={cn("font-num grid size-7 place-items-center rounded-full text-sm transition-colors", done ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground")}>
+        {done ? <Check className="size-4" strokeWidth={3} /> : n}
+      </span>
+      {children}
+    </h2>
   );
 }
 
@@ -97,13 +111,16 @@ export function BranchBooking({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pt-4 lg:px-6 lg:pt-8">
-      <header className="flex flex-col gap-2">
-        <Link href="/" className="w-fit text-sm font-semibold text-muted-foreground hover:text-foreground">
+    <>
+    <header className="relative isolate overflow-hidden bg-[#0c1f1a] text-white">
+      {branch.photos[0] ? <Image src={branch.photos[0]} alt="" fill priority sizes="100vw" className="-z-10 object-cover opacity-80" /> : null}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(7_18_14/0.45)_0%,rgb(7_18_14/0.9)_100%)]" />
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 pt-5 pb-6 lg:px-6 lg:pt-8 lg:pb-8">
+        <Link href="/" className="w-fit rounded-full bg-white/12 px-3 py-1 text-sm font-semibold text-white/90 backdrop-blur-md hover:bg-white/20">
           ← {t("book.branch.allBranches")}
         </Link>
-        <h1 className="font-display text-3xl leading-none tracking-tight sm:text-4xl">{branchName(branch, locale)}</h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        <h1 className="font-display mt-10 text-[clamp(2.25rem,9vw,4rem)] sm:mt-16">{branchName(branch, locale)}</h1>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
           <span className="flex items-center gap-1.5">
             <MapPin className="size-4" aria-hidden />
             {branch.address}, {branch.district}
@@ -114,18 +131,20 @@ export function BranchBooking({ slug }: { slug: string }) {
           </span>
         </div>
         <div className="flex flex-wrap gap-2 pt-1">
-          <Button asChild variant="secondary" size="sm">
+          <Button asChild variant="inverse" size="sm">
             <a href={branch.mapsUrl} target="_blank" rel="noopener noreferrer">
               <Navigation />
               {t("book.branch.directions")}
             </a>
           </Button>
-          <OwnerChatButton size="sm" message={t("book.chat.hello", { branch: branchName(branch, locale) })} />
+          <OwnerChatButton size="sm" variant="accent" message={t("book.chat.hello", { branch: branchName(branch, locale) })} />
         </div>
-      </header>
-
+      </div>
+    </header>
+    <KramaStrip />
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-7 px-4 pt-6 lg:px-6 lg:pt-8">
       <section aria-labelledby="pick-day" className="flex flex-col gap-2">
-        <h2 id="pick-day" className="font-bold">{t("book.branch.day")}</h2>
+        <StepHeading id="pick-day" n={1} done>{t("book.branch.day")}</StepHeading>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:px-0">
           {days.map((d) => (
             <Chip key={d} active={d === date} onClick={() => pickDate(d)} className="min-w-16">
@@ -139,7 +158,7 @@ export function BranchBooking({ slug }: { slug: string }) {
 
       <section aria-labelledby="pick-time" className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="pick-time" className="font-bold">{t("book.branch.time")}</h2>
+          <StepHeading id="pick-time" n={2} done={start !== null}>{t("book.branch.time")}</StepHeading>
           <div className="flex gap-1 rounded-xl bg-card p-1" role="group" aria-label={t("book.branch.duration")}>
             {DURATIONS.map((d) => (
               <button
@@ -181,7 +200,7 @@ export function BranchBooking({ slug }: { slug: string }) {
 
       <section aria-labelledby="pick-pitch" className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="pick-pitch" className="font-bold">{t("book.branch.pitch")}</h2>
+          <StepHeading id="pick-pitch" n={3} done={ready}>{t("book.branch.pitch")}</StepHeading>
           <div className="flex gap-1 rounded-xl bg-card p-1" role="group" aria-label={t("book.branch.sport")}>
             {[null, ...branchSports(branch)].map((s) => (
               <button
@@ -217,6 +236,7 @@ export function BranchBooking({ slug }: { slug: string }) {
         />
       ) : null}
     </div>
+    </>
   );
 }
 

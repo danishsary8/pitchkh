@@ -9,7 +9,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-16 overflow-hidden bg-foreground text-background lg:mt-24">
       <KramaStrip />
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-10 lg:px-6 lg:py-14">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-10 lg:px-6 lg:py-14">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between">
           <p className="max-w-xs text-lg font-medium text-balance">{t("footer.blurb")}</p>
           <div className="grid grid-cols-1 gap-x-10 gap-y-6 text-[0.95rem]">

@@ -1125,7 +1125,8 @@
         "one": "Pick a time and a pitch",
         "two": "Add your name and phone",
         "three": "We confirm on Telegram"
-      }
+      },
+      "book": "Book"
     },
     "branch": {
       "allBranches": "All branches",

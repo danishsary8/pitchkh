@@ -8,6 +8,7 @@ import {
   checkRules,
   isFieldFree,
   isPast,
+  openState,
   overlaps,
   priceFor,
   startTimes,
@@ -118,5 +119,15 @@ describe("branches", () => {
     const ids = BRANCHES.flatMap((b) => b.fields.map((f) => f.id));
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(BRANCHES.map((b) => b.slug)).size).toBe(BRANCHES.length);
+  });
+});
+
+describe("openState", () => {
+  it("is open between opening and closing time", () => {
+    expect(openState(branch, NOW)).toEqual({ open: true, until: "22:00" });
+  });
+  it("is closed after closing, with the next opening time", () => {
+    expect(openState(branch, new Date("2026-11-27T15:30:00Z"))).toEqual({ open: false, opensAt: "06:00" }); // 22:30
+    expect(openState(branch, new Date("2026-11-26T22:59:00Z"))).toEqual({ open: false, opensAt: "06:00" }); // 05:59
   });
 });

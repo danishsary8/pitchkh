@@ -23,19 +23,36 @@ English and Khmer, light and dark, phone first.
 | Path | What |
 |---|---|
 | `apps/web/src/lib/branches.ts` | Branches, pitches, hours and prices (edit this to change them) |
-| `apps/web/src/lib/booking-rules.ts` | Booking rules shared by the screens and the server |
-| `apps/web/src/app/api/` | Server routes: availability, bookings, admin, health |
-| `apps/web/src/server/` | Database (Postgres or in-memory), Telegram verification and messages |
-| `apps/web/src/features/book/` | Customer screens |
+| `apps/web/src/lib/booking-rules.ts` | Booking rules and the request schema, shared by the screens and the server |
+| `apps/web/src/lib/availability.ts` | Free/taken logic for the customer screens (pure, tested) |
+| `apps/web/src/lib/client.ts` | Typed calls to the app's own REST API |
+| `apps/web/src/app/api/` | REST API: availability, bookings, staff, health |
+| `apps/web/src/server/` | Database (Postgres or in-memory), Telegram identity checks and bot messages |
+| `apps/web/src/features/book/` | Customer screens: home, branch booking (day, time, pitch pickers, summary), form, ticket |
 | `apps/web/src/features/staff/` | Staff screens |
 | `apps/web/db/schema.sql` | Database schema (applied automatically) |
 | `packages/shared/` | Shared types, pitch-map layout, pricing helpers and translations |
+
+### REST API
+
+| Method and path | Who | What |
+|---|---|---|
+| `GET /api/branches/:slug/taken?date=` | anyone | Which pitches are taken when (no personal data) |
+| `POST /api/bookings` | anyone | Ask for a pitch; saved as waiting. 409 if the slot was just taken |
+| `GET /api/admin/bookings?branch=&date=` | staff | A day's bookings plus every waiting request |
+| `POST /api/admin/bookings` | staff | Walk-in or phone booking, confirmed at once |
+| `PATCH /api/admin/bookings/:id` | staff | Confirm, cancel or restore |
+| `GET /api/health` | anyone | Database, bot and staff setup at a glance |
+
+Staff are recognised by the signed Telegram Mini App identity (`x-telegram-init-data`), checked
+against `ADMIN_TELEGRAM_IDS`. Errors are JSON `{ "error": "<code>" }`.
 
 ## Develop
 
 ```bash
 pnpm install
 pnpm dev        # http://localhost:3000. Bookings in memory, /admin open locally
+pnpm test       # unit and API-route tests (vitest)
 pnpm check      # translations, types, lint, tests, build
 ```
 

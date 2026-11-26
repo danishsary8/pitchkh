@@ -1149,7 +1149,7 @@
       "title": "Your details",
       "name": "Your name",
       "phone": "Phone number",
-      "players": "Number of players",
+      "players": "Players",
       "note": "Note for us",
       "notePlaceholder": "e.g. we need bibs and a ball",
       "total": "Total",
@@ -1189,6 +1189,17 @@
       "outside_hours": "That time is outside opening hours.",
       "bad_date": "Bookings open up to 14 days ahead.",
       "invalid": "Some details need fixing."
+    },
+    "summary": {
+      "title": "Your booking",
+      "where": "Where",
+      "day": "Day",
+      "time": "Time",
+      "notChosen": "Not chosen yet"
+    },
+    "open": {
+      "now": "Open now, until {time}",
+      "later": "Opens at {time}"
     }
   },
   "staff": {

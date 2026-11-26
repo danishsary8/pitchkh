@@ -144,3 +144,11 @@ export function bookingCode(random: () => number = Math.random): string {
   for (let i = 0; i < 5; i++) out += chars[Math.floor(random() * chars.length)];
   return `PK-${out}`;
 }
+
+export type OpenState = { open: true; until: string } | { open: false; opensAt: string };
+
+/** Whether a branch is open right now (Phnom Penh time), and until or from when. */
+export function openState(branch: Pick<Branch, "open" | "close">, now: Date = new Date()): OpenState {
+  const minute = minutesOf(timeInPP(now));
+  return minute >= minutesOf(branch.open) && minute < minutesOf(branch.close) ? { open: true, until: branch.close } : { open: false, opensAt: branch.open };
+}

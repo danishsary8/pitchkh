@@ -9,7 +9,7 @@ import { LocaleToggle, ThemeToggle } from "./controls";
 function Header() {
   return (
     <header className="pt-safe sticky top-0 z-40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/85">
-      <div className="mx-auto flex h-(--header-h) w-full max-w-5xl items-center gap-2 px-4 lg:h-16 lg:px-6">
+      <div className="mx-auto flex h-(--header-h) w-full max-w-6xl items-center gap-2 px-4 lg:h-16 lg:px-6">
         <Link href="/" aria-label="PitchKH" className="mr-auto rounded-lg">
           <Wordmark />
         </Link>

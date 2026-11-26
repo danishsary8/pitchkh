@@ -3,7 +3,7 @@
 **Book a football, volleyball or tennis pitch anywhere in Cambodia, and find a team to play against.**
 
 [![CI](https://github.com/danishsary8/pitchkh/actions/workflows/ci.yml/badge.svg)](https://github.com/danishsary8/pitchkh/actions/workflows/ci.yml)
-&nbsp;Next.js 16 · React 19 · TypeScript · Hono · PostgreSQL 16 · Drizzle · Bakong KHQR · Telegram Bot API · Cloudflare R2
+&nbsp;Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Telegram
 
 **Try it:** live demo (link added after deploy, see [Deploy the demo](#deploy-the-demo)). On the sign-in page,
 one tap logs you in as a **player**, a **venue owner** or an **admin**; the demo runs on sample data and
@@ -14,11 +14,9 @@ and pay in two screens. Venue owners draw their venue's map, answer booking requ
 (also from Telegram) and manage prices. Admins approve venues and handle reports.
 English and Khmer, light and dark, phone first.
 
-This repo holds the **web app** and its **v1 backend**:
-
-- `apps/web` runs on its own with a built-in mock API (the public demo), or
-- on the real API in `apps/api` (Node + PostgreSQL) by changing one setting.
-  No UI code changes between the two.
+This repo is the **web app**. It runs entirely in the browser on demo data, with no
+server or database, and bookings are arranged with the venue owner **on Telegram**.
+A real backend is a [future plan](#future-plan-backend).
 
 <img src="docs/images/home-map.webp" alt="Home: how it works on a real venue, a live pitch map with free pitches next to the three booking steps">
 
@@ -75,28 +73,17 @@ This repo holds the **web app** and its **v1 backend**:
 
 ## Engineering highlights
 
-- **No double booking, guaranteed by the database.** A PostgreSQL exclusion constraint
-  (`btree_gist`) means two active bookings of one pitch can never overlap. A test sends
-  10 players at the same slot at the same moment: exactly one wins, the rest get
-  `409 slot_unavailable`.
-- **One API contract, two backends.** The UI only calls `api.*` (TanStack Query → typed client).
-  A built-in mock server and the real Hono + PostgreSQL API serve the same 72 endpoints and
-  validate with the same zod schemas from `packages/shared`. Switching is one environment variable.
-- **Real Cambodian payments.** Bakong KHQR: a dynamic QR per booking, the slot is held for
-  10 minutes, and the paid status is confirmed with Bakong's API (on each poll and in the
-  background every 10 s). Providers sit behind one interface, with a sandbox for tests.
-- **Owner alerts in Telegram** with Accept / Decline buttons. Alerts are sent after the booking
-  is saved, so a Telegram outage never fails a booking.
-- **Security basics done properly:** bcrypt passwords, short-lived JWT access tokens and rotating
-  refresh tokens stored as hashes, role checks on every route, signed payment and Telegram
-  webhooks, uploads checked by their real file signature (not the label).
-- **Photos on Cloudflare R2** (S3 API, SigV4-signed requests), so they survive redeploys on a free
-  host; the API only ever deletes files it named itself.
+- **One API contract, ready for a backend.** The UI only calls `api.*` (TanStack Query → typed
+  client). Today a built-in mock server answers in the browser, validating with the same zod
+  schemas a real backend will use; switching later is one environment variable.
+- **Booking by Telegram, no server needed.** "Ask on Telegram" sends the chosen pitch, time,
+  players and price to the owner's chat; matches are shared to a Telegram group.
+- **A pitch map that looks like the real site:** balanced rows, paved borders, roofs over
+  indoor courts, trees, fence, car park and entrance, drawn from real pitch sizes.
 - **Bilingual and phone-first:** 874 UI strings in English and Khmer with type-checked keys, light
   and dark themes, 44 px touch targets, reduced motion respected, installable PWA.
-- **Tested:** 25 unit tests for the shared rules, 32 API tests against a real PostgreSQL (booking
-  race, payments, and fake Bakong, R2 and Telegram servers), a Playwright booking run on a phone
-  screen, and CI on every push.
+- **Tested:** unit tests for the shared rules, mock API, pitch layout and Telegram links, a
+  Playwright booking run on a phone screen, a screenshot check at five widths, and CI on every push.
 
 The full story (problem, how it was built, numbers) is in [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md).
 
@@ -112,7 +99,7 @@ The full story (problem, how it was built, numbers) is in [`docs/CASE_STUDY.md`]
 6. [How the code is organised](#how-the-code-is-organised)
 7. [Tech stack](#tech-stack)
 8. [Scripts and checks](#scripts-and-checks)
-9. [Running on the real backend](#running-on-the-real-backend)
+9. [Future plan: backend](#future-plan-backend)
 10. [Roadmap](#roadmap)
 11. [Notes](#notes)
 
@@ -160,7 +147,7 @@ The public demo is the web app alone, on its built-in mock API: no server, datab
 4. Deploy. Visitors see a "Demo" bar with **Reset demo**, and one-tap demo logins on the
    sign-in page. Sample data is kept in the browser and refreshes itself after a while.
 
-For the real backend instead, follow [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
+
 
 ---
 
@@ -258,15 +245,14 @@ pitchkh/
 │  │  │  ├─ venues/ owner/ admin/ matches/ chat/ account/ auth/ home/ field3d/ ...
 │  │  ├─ src/components/      UI kit (buttons, sheets...), layout, brand
 │  │  └─ scripts/             e2e test, screenshots, asset renderer, lighthouse
-│  ├─ api/                    v1 backend: Hono + PostgreSQL (routes, SQL migrations, tests)
 │  └─ mobile/                 placeholder for the React Native app
-├─ packages/shared/           used by web, mobile and (as a reference) the backend
+├─ packages/shared/           used by web (and later mobile and the backend)
 │  ├─ schemas/                zod schemas = the exact JSON shapes of the API
 │  ├─ domain/                 pure logic: slots, prices, layout, time, rules (+ tests)
 │  ├─ api/                    typed API client (mock or real HTTP)
 │  ├─ mock/                   in-memory mock server + seed data
 │  └─ i18n/                   en.json, km.json
-└─ docs/                      architecture, data model, API contract, mobile plan
+└─ docs/                      architecture, mobile plan; future-backend/ holds the API contract
 ```
 
 **The one rule:** UI → TanStack Query → `api.*` service → transport → *(mock server | HTTP)*.
@@ -284,8 +270,8 @@ Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Data | TanStack Query (server state), zustand (booking draft), zod (validation) |
 | i18n | next-intl, English + Khmer (key parity checked by `scripts/i18n-merge.mjs`) |
 | Maps and 3D | SVG pitch map, Leaflet + OpenStreetMap, three.js (lazy-loaded) |
-| Backend | Hono on Node, PostgreSQL 16, Drizzle ORM, JWT (jose), bcrypt, Telegram Bot API |
-| Tests | vitest (shared logic + mock API, and API contract tests on PostgreSQL), Playwright e2e script |
+| Backend | None yet: an in-browser mock API (see [Future plan](#future-plan-backend)) |
+| Tests | vitest (shared logic + mock API), Playwright e2e and screenshot scripts |
 | Monorepo | pnpm workspaces |
 
 ---
@@ -321,12 +307,12 @@ node apps/web/scripts/readme-screens.mjs
    overflow or console errors (`--login player|owner|admin`, `--pages /en/owner,...`).
 3. **readme-screens** refreshes the images in `docs/images`.
 
-Images and 3D posters are rendered from the procedural three.js scenes (no stock
-photos). After changing a scene or adding a seed venue:
-
-```bash
-node apps/web/scripts/render-assets.mjs --only venues --venue <slug>
-```
+Venue, hero and sport photos are freely licensed (CC BY, CC BY-SA, CC0) and credited
+on the in-app **Photo credits** page (`/credits`, data in
+`apps/web/src/features/content/photo-credits.json`). To use a venue's own photos,
+replace `apps/web/public/assets/venues/<slug>-1.webp` to `-3.webp` and remove that
+venue's entries from the credits file. The 3D viewer posters are still rendered from
+the three.js scenes (`node apps/web/scripts/render-assets.mjs --only fields`).
 
 ```bash
 node apps/web/scripts/lighthouse.mjs
@@ -336,86 +322,53 @@ The second command runs Lighthouse (mobile) against the production server.
 
 ---
 
-## Going live
+## Future plan: backend
 
-Everything that needs **your** accounts (Render, Vercel, Bakong KHQR, Telegram
-bot, email, Cloudflare R2) is in one list: [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md).
-Once live, [`docs/OPERATIONS.md`](docs/OPERATIONS.md) covers logs, health checks, backups,
-deploys and rotating keys.
+There is no backend in this version, on purpose: the app is a demo that runs in the
+browser, and booking happens in a Telegram chat with the venue owner. Everything a
+player sees comes from the built-in mock API in `packages/shared/src/mock`, saved in
+the browser's `localStorage`.
 
-## Running on the real backend
+**What that means today**
 
-`apps/api` is the v1 backend: **Hono + PostgreSQL + Drizzle**, TypeScript. It
-reuses the shared schemas and booking rules, so it behaves exactly like the mock.
-Full guide: [`apps/api/README.md`](apps/api/README.md).
+- Each visitor has their own copy of the demo data, so two people can "book" the same slot.
+  The owner's reply on Telegram is what really confirms a booking.
+- Payments, owner and admin screens are simulated.
 
-```bash
-docker compose up -d
-```
-
-```bash
-cp apps/api/.env.example apps/api/.env
-```
-
-```bash
-pnpm db:migrate
-```
-
-```bash
-pnpm db:seed
-```
-
-```bash
-pnpm api:dev
-```
-
-Then point the web app at it in `apps/web/.env.local` and restart `pnpm dev`:
+**When the backend comes back**, the web app needs no UI changes: every screen talks
+to `api.*` services, and one setting switches them from the mock to HTTP.
 
 ```bash
 NEXT_PUBLIC_API_MODE=real
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_API_URL=https://<your-api>/api/v1
 ```
 
-Everything in the app runs on the real API:
-
-| Area | On the real API |
-| --- | --- |
-| Accounts | Register, sign in (JWT + rotating refresh tokens), **password reset by email link** |
-| Booking | Pitch map, availability, **database-level double-booking protection**, cash requests, **online payment flow** (slot held 10 min, signed provider webhook, sandbox provider until real KHQR/ABA keys) |
-| Owners | Dashboard, map editor, **venue photo upload**, requests, schedule, earnings, **Telegram alerts with Accept/Decline** |
-| Social | Teams, match board, join requests, chat, reviews and ratings |
-| Admin | Venue approval, users, reports, analytics |
-
-Run the API tests (they need PostgreSQL):
+A complete v1 backend was already built (Hono + PostgreSQL + Drizzle: accounts,
+bookings with double-booking protection, Bakong KHQR payments, Telegram alerts with
+Accept/Decline for owners, photo upload, admin). It was removed from this branch to
+keep the demo simple and is kept in git history: `apps/api`, `render.yaml` and
+`docker-compose.yml` on `main` (commit `5968298`). To restore it:
 
 ```bash
-pnpm api:test
+git checkout 5968298 -- apps/api render.yaml docker-compose.yml
 ```
 
-The contract lives in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) and the tables in
-[`docs/DATA_MODEL.md`](docs/DATA_MODEL.md).
-
---- | --- | --- |
-| GET | `/venues/:idOrSlug/availability?date=` | Slots for every pitch of a venue in one call (colours the map) |
-| PUT | `/owner/venues/:id/layout` | Owner saves pitch positions; reject overlaps with `422 validation_failed` |
-| – | `fields.layout` (jsonb, nullable) | `{ x, y, w, h }` in metres; reset to `null` when a pitch's sport or format changes |
+Its contract, data model, setup checklist and operations guide are in
+[`docs/future-backend/`](docs/future-backend/).
 
 ---
 
 ## Roadmap
 
-- [x] Web frontend on a mock API (all roles)
-- [x] Pitch map, 2-screen booking, owner map editor
-- [x] Real backend v1 (`apps/api`): accounts, venues, bookings, owner, admin, Telegram alerts
-- [x] Online payment flow (sandbox provider), photo upload, password reset
-- [x] Matches, chat and reviews on the API
-- [x] Bakong KHQR payments (real, scannable QR; paid status checked with Bakong)
-- [x] Venue photos on Cloudflare R2, public demo mode
-- [ ] Public demo on Vercel (mock mode, see [Deploy the demo](#deploy-the-demo))
-- [ ] Go live: Render + Vercel + Bakong + Telegram + Resend + R2, following [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md)
-- [ ] More payment providers (ABA PayWay, Wing)
+- [x] Web frontend on a mock API (players, owners, admins)
+- [x] Pitch map that looks like the real site, 2-screen booking, owner map editor
+- [x] Real, freely licensed photos
+- [x] Book via Telegram (chat with the owner), matches shared to a Telegram group
+- [x] Public demo on Vercel
+- [ ] Telegram Mini App: open PitchKH inside Telegram from a bot
+- [ ] Owners' real phone numbers and photos for each venue
+- [ ] Backend (see [Future plan](#future-plan-backend)): shared availability, real payments, owner alerts
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`
-- [ ] Real venue photos instead of rendered ones
 
 ---
 

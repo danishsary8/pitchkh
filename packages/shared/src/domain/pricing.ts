@@ -41,7 +41,7 @@ export interface PriceInput {
 
 /**
  * The single source of truth for what a booking costs. The UI calls this for an
- * instant quote; the backend must reproduce it exactly (see docs/API_CONTRACT.md).
+ * instant quote; the backend must reproduce it exactly (see docs/future-backend/API_CONTRACT.md).
  */
 export function calculatePrice(input: PriceInput): PriceBreakdown {
   const start = minutesOf(input.startTime);

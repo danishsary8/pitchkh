@@ -12,11 +12,6 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm --filter @pitchkh/shared test",
-    "check": "node scripts/i18n-merge.mjs && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
-    "api:dev": "pnpm --filter @pitchkh/api dev",
-    "api:test": "pnpm --filter @pitchkh/api test",
-    "api:build": "pnpm --filter @pitchkh/api build",
-    "db:migrate": "pnpm --filter @pitchkh/api db:migrate",
-    "db:seed": "pnpm --filter @pitchkh/api db:seed"
+    "check": "node scripts/i18n-merge.mjs && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   }
 }

@@ -5,7 +5,7 @@
 | | |
 | --- | --- |
 | **Role** | Full-stack: product, UI, API, database, payments, deployment |
-| **Status** | Feature-complete; public demo on the mock API, real launch next ([checklist](SETUP_CHECKLIST.md)) |
+| **Status** | Feature-complete; public demo on the mock API, real launch next ([checklist](future-backend/SETUP_CHECKLIST.md)) |
 | **Users** | Players, venue owners, admins |
 | **Languages** | English · ខ្មែរ |
 | **Payments** | Bakong KHQR · cash at the venue |

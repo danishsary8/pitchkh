@@ -30,7 +30,7 @@ UI component -> TanStack Query hook -> api service -> Transport -> (mock server 
     matches `method + path` to handlers, exactly like a REST backend.
   - `real`: `fetch` to `API_URL` with `Authorization: Bearer <token>`.
 - So the mock handlers **are** the API contract in executable form. A backend
-  that implements `docs/API_CONTRACT.md` is a drop-in replacement.
+  that implements `docs/future-backend/API_CONTRACT.md` is a drop-in replacement.
 
 ### Switching to the real backend
 
@@ -87,7 +87,11 @@ Route guards: `<RequireAuth roles={[...]}>` wraps the `account`, `owner`,
 `admin` and booking-detail routes. The server must still enforce roles; the
 "Roles" column in the API contract says which.
 
-## apps/api
+## apps/api (removed for now)
+
+> The backend is not part of the current demo, which runs entirely in the browser.
+> This section describes the v1 backend kept in git history; see "Future plan:
+> backend" in the README for how to bring it back.
 
 ```
 src/

@@ -62,7 +62,7 @@ export function paginate<T>(items: readonly T[], page: number, pageSize: number)
 }
 
 /**
- * An in-memory backend that implements docs/API_CONTRACT.md route for route.
+ * An in-memory backend that implements docs/future-backend/API_CONTRACT.md route for route.
  * Api services talk to it through the same Transport they use for real HTTP,
  * so swapping to a real backend changes no service or UI code.
  */

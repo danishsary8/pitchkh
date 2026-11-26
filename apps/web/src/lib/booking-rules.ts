@@ -72,6 +72,16 @@ export function startTimes(branch: Pick<Branch, "open" | "close">, duration: num
 }
 
 /**
+ * What customers pick from: back-to-back blocks of the chosen length from
+ * opening time (2h: 06:00–08:00, 08:00–10:00, ...). Fixed blocks keep the
+ * schedule free of awkward gaps between games.
+ */
+export function blockStarts(branch: Pick<Branch, "open" | "close">, duration: number): number[] {
+  const open = minutesOf(branch.open);
+  return startTimes(branch, duration).filter((m) => (m - open) % duration === 0);
+}
+
+/**
  * True if this start is already in the past (Phnom Penh time). `graceMin` lets
  * staff still enter a game that started a little while ago (a walk-in).
  */

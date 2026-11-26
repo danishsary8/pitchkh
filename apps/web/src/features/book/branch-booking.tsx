@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PitchLegend, PitchMap, type PitchState } from "@/features/pitch-map/pitch-map";
-import { bookableDates, DURATIONS, hhmm, isFieldFree, isPast, priceFor, startTimes, type TakenSlot } from "@/lib/booking-rules";
+import { bookableDates, DURATIONS, hhmm, isFieldFree, isPast, priceFor, blockStarts, type TakenSlot } from "@/lib/booking-rules";
 import { type Branch, branchName, branchSports, findBranch } from "@/lib/branches";
 import { client, type CreatedBooking, HttpError } from "@/lib/client";
 import { useDates } from "@/lib/format";
@@ -61,7 +61,7 @@ export function BranchBooking({ slug }: { slug: string }) {
   const slots: TakenSlot[] = taken.data ?? [];
 
   const fields = branch.fields.filter((f) => !sport || f.sport === sport);
-  const times = startTimes(branch, duration).filter((m) => !isPast(date, m));
+  const times = blockStarts(branch, duration).filter((m) => !isPast(date, m));
   const freeCount = (m: number): number => fields.filter((f) => isFieldFree(slots, f.id, m, m + duration)).length;
 
   const states: Record<string, PitchState> = {};
@@ -165,8 +165,12 @@ export function BranchBooking({ slug }: { slug: string }) {
             {times.map((m) => {
               const free = freeCount(m);
               return (
-                <Chip key={m} active={m === start} disabled={free === 0} onClick={() => setStart(m === start ? null : m)} className="min-w-18">
-                  <span className="font-num text-base">{hhmm(m)}</span>
+                <Chip key={m} active={m === start} disabled={free === 0} onClick={() => setStart(m === start ? null : m)} className="min-w-28">
+                  <span className="font-num text-base whitespace-nowrap">
+                    {hhmm(m)}
+                    <span className="opacity-60"> – </span>
+                    {hhmm(m + duration)}
+                  </span>
                   <span className="text-[0.7rem] font-medium opacity-80">{free === 0 ? t("book.branch.full") : t("book.branch.freeCount", { count: free })}</span>
                 </Chip>
               );

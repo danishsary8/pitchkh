@@ -21,15 +21,15 @@ export async function HomePage() {
         <Image src="/assets/brand/hero.webp" alt="" fill priority sizes="100vw" className="-z-10 object-cover object-[50%_60%] opacity-90" />
         {/* Night sky stays dark enough for white type; the grass shows through at the bottom. */}
         <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(7_18_14/0.55)_0%,rgb(7_18_14/0.25)_45%,rgb(7_18_14/0.88)_100%)]" />
-        <div className="mx-auto flex min-h-[min(78svh,40rem)] w-full max-w-6xl flex-col justify-end gap-6 px-4 pt-16 pb-8 lg:px-6 lg:pb-12">
-          <h1 id="home-title" className="font-display max-w-3xl text-[clamp(2.75rem,11vw,6.5rem)] text-balance drop-shadow-[0_2px_24px_rgb(0_0_0/0.35)]">
+        <div className="mx-auto flex min-h-[min(60svh,26rem)] w-full max-w-6xl flex-col justify-end gap-4 px-4 pt-14 pb-6 sm:min-h-[min(78svh,40rem)] sm:gap-6 sm:pb-8 lg:px-6 lg:pb-12">
+          <h1 id="home-title" className="font-display max-w-3xl text-[clamp(2.5rem,10.5vw,6.5rem)] text-balance drop-shadow-[0_2px_24px_rgb(0_0_0/0.35)]">
             {t("book.home.title")}
           </h1>
-          <p className="max-w-xl text-lg text-pretty text-white/85 sm:text-xl">{t("book.home.subtitle")}</p>
-          <ol className="flex flex-col gap-2 text-[0.95rem] sm:flex-row sm:gap-2">
+          <p className="max-w-xl text-base text-pretty text-white/85 sm:text-xl">{t("book.home.subtitle")}</p>
+          <ol className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 text-sm sm:mx-0 sm:px-0 sm:text-[0.95rem]">
             {(["one", "two", "three"] as const).map((step, i) => (
-              <li key={step} className="flex items-center gap-2.5 rounded-full bg-white/12 py-1.5 pr-4 pl-1.5 backdrop-blur-md">
-                <span className="font-num grid size-7 shrink-0 place-items-center rounded-full bg-accent font-bold text-accent-foreground">{i + 1}</span>
+              <li key={step} className="flex shrink-0 items-center gap-2 rounded-full bg-white/12 py-1.5 pr-3.5 pl-1.5 backdrop-blur-md">
+                <span className="font-num grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-bold text-accent-foreground sm:size-7 sm:text-sm">{i + 1}</span>
                 {t(`book.home.step.${step}`)}
               </li>
             ))}

@@ -19,15 +19,17 @@ export function BranchHero({ branch }: { branch: Branch }) {
       <header className="relative isolate overflow-hidden bg-[#0c1f1a] text-white">
         {branch.photos[0] ? <Image src={branch.photos[0]} alt="" fill priority sizes="100vw" className="-z-10 object-cover opacity-80" /> : null}
         <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(7_18_14/0.45)_0%,rgb(7_18_14/0.92)_100%)]" />
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 pt-5 pb-6 lg:px-6 lg:pt-8 lg:pb-9">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-2.5 px-4 pt-4 pb-5 sm:gap-3 lg:px-6 lg:pt-8 lg:pb-9">
           <Link href="/" className="w-fit rounded-full bg-white/12 px-3 py-1 text-sm font-semibold text-white/90 backdrop-blur-md hover:bg-white/20">
             ← {t("book.branch.allBranches")}
           </Link>
-          <h1 className="font-display mt-10 text-[clamp(2.25rem,9vw,4.25rem)] sm:mt-16">{name}</h1>
+          <h1 className="font-display mt-6 text-[clamp(2rem,8.5vw,4.25rem)] sm:mt-16">{name}</h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-4" aria-hidden />
-              {branch.address}, {branch.district}
+            <span className="flex min-w-0 items-center gap-1.5">
+              <MapPin className="size-4 shrink-0" aria-hidden />
+              {/* Phones show the district only; the full address is one tap away under Directions. */}
+              <span className="truncate sm:hidden">{branch.district}</span>
+              <span className="hidden sm:inline">{branch.address}, {branch.district}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <Clock className="size-4" aria-hidden />

@@ -43,10 +43,14 @@ function ServiceWorker() {
   return null;
 }
 
+/**
+ * Light by default for everyone; the moon button switches. The new storage key
+ * drops the dark choice older versions copied from Telegram's theme.
+ */
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(makeQueryClient);
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="pitchkh-theme-v2" disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
           {children}
           <DeferredToaster />

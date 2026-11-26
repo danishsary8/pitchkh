@@ -39,10 +39,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f5ef" },
-    { media: "(prefers-color-scheme: dark)", color: "#07120e" },
-  ],
+  themeColor: "#f2f5ef",
 };
 
 export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {

@@ -19,25 +19,28 @@ const COLORS = { light: "#f2f5ef", dark: "#07120e" } as const;
  */
 export function TelegramMiniApp() {
   const [loaded, setLoaded] = useState(false);
-  const { setTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
 
-  // Start-up: ready, full height, theme, and the user's language on first open.
+  // Telegram's header and background follow the app's own theme (light unless the
+  // customer switches), not Telegram's, so the brand looks the same for everyone.
+  useEffect(() => {
+    const app = getMiniApp();
+    if (!loaded || !app) return;
+    const scheme = resolvedTheme === "dark" ? "dark" : "light";
+    app.setHeaderColor(COLORS[scheme]);
+    app.setBackgroundColor(COLORS[scheme]);
+  }, [loaded, resolvedTheme]);
+
+  // Start-up: ready, full height, and the user's language on first open.
   useEffect(() => {
     const app = getMiniApp();
     if (!loaded || !app) return;
     document.documentElement.dataset.telegram = "true";
     app.ready();
     app.expand();
-    const syncTheme = (): void => {
-      setTheme(app.colorScheme);
-      app.setHeaderColor(COLORS[app.colorScheme]);
-      app.setBackgroundColor(COLORS[app.colorScheme]);
-    };
-    syncTheme();
-    app.onEvent("themeChanged", syncTheme);
 
     try {
       if (!localStorage.getItem(LOCALE_PICKED)) {
@@ -48,7 +51,6 @@ export function TelegramMiniApp() {
     } catch {
       // Storage blocked: keep the current language.
     }
-    return () => app.offEvent("themeChanged", syncTheme);
     // Runs once when the script is ready; language and path are read at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded]);

@@ -11,7 +11,7 @@
     "start": "pnpm --filter @pitchkh/web start",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter @pitchkh/shared test",
+    "test": "pnpm -r test",
     "check": "node scripts/i18n-merge.mjs && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   }
 }

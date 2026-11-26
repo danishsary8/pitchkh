@@ -3,13 +3,14 @@
 import { formatKhr, formatUsd, telegramChatUrl, telegramShareUrl, type Field, type MatchRequestDetail, type PriceBreakdown, type Venue } from "@pitchkh/shared";
 import { Send } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
 import { useVenueText } from "@/features/venues/text";
 import { useDates } from "@/lib/format";
 import { siteUrl } from "@/lib/site";
+import { openTelegramLink, telegramDisplayName } from "@/lib/telegram-webapp";
 import { cn } from "@/lib/utils";
 
 /**
@@ -28,12 +29,14 @@ function ChatLink({ phone, message, children, className, variant = "secondary", 
   const t = useTranslations("telegram");
   // A number we cannot use falls back to Telegram's share screen, where the person picks the chat.
   const href = telegramChatUrl(phone) ?? telegramShareUrl("", message);
-  const copy = () => {
-    if (typeof navigator === "undefined" || !navigator.clipboard) return;
-    navigator.clipboard.writeText(message).then(
-      () => toast.success(t("copied")),
-      () => undefined,
-    );
+  const copy = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(message).then(
+        () => toast.success(t("copied")),
+        () => undefined,
+      );
+    }
+    if (openTelegramLink(href)) event.preventDefault();
   };
   return (
     <Button variant={variant} size={size} className={className} asChild>
@@ -73,7 +76,9 @@ export function TelegramBookingCard({ venue, field, date, startTime, endTime, te
     }),
   ];
   if (notes.trim()) lines.push(t("bookingNotes", { notes: notes.trim() }));
-  if (user) lines.push(t("bookingFrom", { name: user.name }));
+  // Signed in: the account name. Opened from the Telegram bot: the Telegram name and @username.
+  const from = user?.name ?? telegramDisplayName();
+  if (from) lines.push(t("bookingFrom", { name: from }));
 
   return (
     <section aria-labelledby="tg-book-title" className={cn("flex flex-col gap-3 rounded-2xl border-2 border-dashed border-border p-4 sm:flex-row sm:items-center sm:justify-between", className)}>
@@ -107,7 +112,7 @@ export function PostMatchToTelegram({ match, className }: { match: MatchRequestD
   const url = `${siteUrl}/${locale}/matches/${match.id}`;
   return (
     <Button variant="secondary" size="lg" className={className} asChild>
-      <a href={telegramShareUrl(url, message)} target="_blank" rel="noopener noreferrer">
+      <a href={telegramShareUrl(url, message)} target="_blank" rel="noopener noreferrer" onClick={(e) => { if (openTelegramLink(telegramShareUrl(url, message))) e.preventDefault(); }}>
         <Send />
         {t("telegram.postMatch")}
       </a>
@@ -130,7 +135,7 @@ export function TelegramGroupBanner({ className }: { className?: string }) {
         </div>
       </div>
       <Button variant="secondary" className="shrink-0" asChild>
-        <a href={TELEGRAM_GROUP_URL} target="_blank" rel="noopener noreferrer">{t("groupButton")}</a>
+        <a href={TELEGRAM_GROUP_URL} target="_blank" rel="noopener noreferrer" onClick={(e) => { if (openTelegramLink(TELEGRAM_GROUP_URL)) e.preventDefault(); }}>{t("groupButton")}</a>
       </Button>
     </section>
   );

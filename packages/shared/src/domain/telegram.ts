@@ -27,3 +27,8 @@ export function telegramChatUrl(phone: string): string | null {
 export function telegramShareUrl(url: string, text: string): string {
   return `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
 }
+
+/** Site language for a Telegram user's app language (Telegram sends e.g. "km" or "en-GB"). */
+export function telegramLocale(languageCode: string | undefined): "km" | "en" {
+  return languageCode?.toLowerCase().startsWith("km") ? "km" : "en";
+}

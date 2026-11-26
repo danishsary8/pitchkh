@@ -284,8 +284,8 @@
   },
   "home": {
     "heroTitle": "Book a pitch. Bring a rival.",
-    "heroBody": "Football, volleyball and tennis pitches across Cambodia. See what's free tonight, pay with KHQR, and find a team to play if you don't have one.",
-    "heroImageAlt": "A floodlit seven-a-side football pitch at dusk",
+    "heroBody": "Football, volleyball and tennis pitches across Cambodia. See what's free tonight, then send the owner your booking on Telegram.",
+    "heroImageAlt": "Players training on a floodlit football pitch at dusk",
     "searchTitle": "Find a pitch",
     "searchCta": "Find pitches",
     "freeLoading": "Checking tonight's free pitches",
@@ -317,9 +317,6 @@
       "inHours": "in {hours}h {minutes}m",
       "inDays": "{days, plural, one {tomorrow} other {in # days}}"
     },
-    "heroLead": "Book a pitch. Bring a",
-    "heroWords": "rival|team|crew|friend",
-    "heroEnd": ".",
     "mapFree": "{day}: {free} of {total} pitches free"
   },
   "venues": {

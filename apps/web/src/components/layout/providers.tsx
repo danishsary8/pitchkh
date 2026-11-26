@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import dynamic from "next/dynamic";
 import { useEffect, useState, type ReactNode } from "react";
 import { AuthProvider } from "@/features/auth/auth-provider";
+import { TelegramMiniApp } from "@/features/telegram/mini-app";
 import { usePathname } from "@/i18n/navigation";
 import { makeQueryClient } from "@/lib/query";
 import { completeTransition } from "@/lib/view-transition";
@@ -53,6 +54,7 @@ export function Providers({ children }: { children: ReactNode }) {
           <DeferredToaster />
           <RouteTransitionSignal />
           <ServiceWorker />
+          <TelegramMiniApp />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Service-Worker-Allowed", value: "/" }] },
       // Standard browser protections on every page. The app uses share and clipboard only, so
-      // camera, microphone, location and payment APIs are switched off. No framing by other sites.
+      // camera, microphone, location and payment APIs are switched off. Only Telegram's web clients may frame it (Mini App).
       {
         source: "/:path*",
         headers: [
@@ -32,8 +32,10 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'" },
+          // Telegram Web (web.telegram.org) opens Mini Apps in a frame, so Telegram's own web
+          // clients may frame the app; every other site still can't. (X-Frame-Options has no
+          // allow-list, so frame-ancestors does this job alone.)
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self' https://web.telegram.org https://webk.telegram.org https://webz.telegram.org; base-uri 'self'; object-src 'none'; form-action 'self'" },
         ],
       },
     ];

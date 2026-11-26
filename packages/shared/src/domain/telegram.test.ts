@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { telegramChatUrl, telegramShareUrl, toKhInternational } from "./telegram";
+import { telegramChatUrl, telegramLocale, telegramShareUrl, toKhInternational } from "./telegram";
 
 describe("toKhInternational", () => {
   it("keeps numbers that already have the +855 country code", () => {
@@ -31,5 +31,15 @@ describe("telegramShareUrl", () => {
     expect(telegramShareUrl("https://pitchkh.app/en/matches/1", "Need a team?\n7v7 & fun")).toBe(
       "https://t.me/share/url?url=https%3A%2F%2Fpitchkh.app%2Fen%2Fmatches%2F1&text=Need%20a%20team%3F%0A7v7%20%26%20fun",
     );
+  });
+});
+
+describe("telegramLocale", () => {
+  it("opens the Khmer site for Khmer Telegram users and English for everyone else", () => {
+    expect(telegramLocale("km")).toBe("km");
+    expect(telegramLocale("km-KH")).toBe("km");
+    expect(telegramLocale("en")).toBe("en");
+    expect(telegramLocale("ru")).toBe("en");
+    expect(telegramLocale(undefined)).toBe("en");
   });
 });

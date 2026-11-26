@@ -322,6 +322,28 @@ The second command runs Lighthouse (mobile) against the production server.
 
 ---
 
+## Telegram Mini App
+
+PitchKH opens inside Telegram from a bot, with no extra code to deploy: the same site
+detects Telegram and adapts.
+
+- Full height, Telegram's light or dark theme, and Telegram's back button.
+- First open follows the person's Telegram language (Khmer or English).
+- "Ask on Telegram" and match sharing stay inside Telegram, and booking requests are
+  signed with the person's Telegram name and @username, so the owner can reply.
+
+**Set up the bot** (once, in Telegram):
+
+1. Open [@BotFather](https://t.me/BotFather), send `/newbot`, and pick a name and a
+   username (for example `PitchKHBot`).
+2. Send `/mybots` → your bot → **Bot Settings** → **Configure Mini App** → **Enable Mini App**,
+   and set the URL to your production site, e.g. `https://pitchkh.vercel.app/en`.
+3. Optional: **Menu Button** → same URL, button text "Book a pitch".
+4. Open `https://t.me/<your bot username>` and tap the button.
+
+The site's security headers allow framing only by Telegram's web clients
+(`web.telegram.org`), which Telegram Web needs to show the Mini App.
+
 ## Future plan: backend
 
 There is no backend in this version, on purpose: the app is a demo that runs in the
@@ -365,7 +387,7 @@ Its contract, data model, setup checklist and operations guide are in
 - [x] Real, freely licensed photos
 - [x] Book via Telegram (chat with the owner), matches shared to a Telegram group
 - [x] Public demo on Vercel
-- [ ] Telegram Mini App: open PitchKH inside Telegram from a bot
+- [x] Telegram Mini App: the site adapts when opened from a bot (setup above)
 - [ ] Owners' real phone numbers and photos for each venue
 - [ ] Backend (see [Future plan](#future-plan-backend)): shared availability, real payments, owner alerts
 - [ ] Mobile app (`apps/mobile`, plan in [`docs/MOBILE_PLAN.md`](docs/MOBILE_PLAN.md)), reusing `packages/shared`

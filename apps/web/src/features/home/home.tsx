@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { FeaturedVenues, FreeTonight, HowItWorksMap, OpenMatches, SearchCard } from "./home-islands";
 import { NextGame, PlayAgain } from "./my-games";
-import { RotatingWord } from "./rotating-word";
 import { features } from "@/lib/features";
 
 /*
@@ -31,17 +30,16 @@ export function HomePage() {
 
   return (
     <>
-      {/* Hero: the pitch itself is the page. Mown stripes, chalk lines, and the search on the centre spot. */}
-      <section className="pitch-stripes relative isolate overflow-hidden text-pitch-foreground">
-        <PitchLines className="absolute inset-0 -z-10 size-full text-white/25" />
-        <Container className="grid grid-cols-1 items-center gap-8 pt-8 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-14 lg:pt-16 lg:pb-20">
-          <div className="flex flex-col gap-4 lg:gap-6">
+      {/* Hero: a floodlit pitch at dusk fills the frame, chalk lines over it, the search on the right. */}
+      <section className="relative isolate overflow-hidden bg-pitch text-pitch-foreground">
+        <Image src="/assets/brand/hero.webp" alt={t("home.heroImageAlt")} fill priority sizes="100vw" className="-z-20 object-cover object-[60%_40%]" />
+        <span className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgba(4,32,20,0.92)_0%,rgba(4,32,20,0.78)_38%,rgba(4,32,20,0.35)_70%,rgba(4,32,20,0.55)_100%)]" aria-hidden />
+        <PitchLines className="absolute inset-0 -z-10 size-full text-white/12" />
+        <Container className="grid grid-cols-1 items-end gap-8 pt-10 pb-10 lg:min-h-[34rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-14 lg:pt-20 lg:pb-16">
+          <div className="flex flex-col gap-4 lg:gap-6 lg:pb-2">
             <NextGame />
-            <h1 className="font-display text-[2.65rem] text-balance min-[400px]:text-5xl md:text-6xl xl:text-7xl">{t("home.heroLead")} <RotatingWord words={t("home.heroWords").split("|")} suffix={t("home.heroEnd")} /></h1>
-            <p className="max-w-xl text-lg text-pretty text-white/90 lg:text-xl">{t("home.heroBody")}</p>
-            <div className="relative mt-2 hidden aspect-[16/9] overflow-hidden rounded-3xl lg:block">
-              <Image src="/assets/brand/hero.webp" alt={t("home.heroImageAlt")} fill loading="lazy" sizes="(min-width: 1024px) 50vw, 1px" className="object-cover" />
-            </div>
+            <h1 className="font-display max-w-[14ch] text-[2.65rem] leading-[0.95] text-balance min-[400px]:text-5xl md:text-6xl xl:text-7xl">{t("home.heroTitle")}</h1>
+            <p className="max-w-[46ch] text-lg text-pretty text-white/90 lg:text-xl">{t("home.heroBody")}</p>
           </div>
           <SearchCard />
         </Container>

@@ -215,7 +215,7 @@ export function BranchBooking({ slug }: { slug: string }) {
             ))}
           </div>
         </div>
-        <PitchMap fields={branch.fields} states={states} sport={sport} selectedId={fieldId} onSelect={setFieldId} label={t("pitchMap.label", { name: branchName(branch, locale) })} />
+        <PitchMap className="-mx-4 w-[calc(100%+2rem)] rounded-none sm:mx-0 sm:w-full sm:rounded-2xl" fields={branch.fields} states={states} sport={sport} selectedId={fieldId} onSelect={setFieldId} label={t("pitchMap.label", { name: branchName(branch, locale) })} />
         <PitchLegend />
       </section>
 

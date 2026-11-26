@@ -34,6 +34,7 @@ const field = (
   maxPlayers: number,
   price: number,
   peak: number,
+  layout: Field["layout"] = null,
 ): Field => ({
   id: `${branch}-${key}`,
   venueId: branch,
@@ -48,9 +49,26 @@ const field = (
   peakPricePerHourUsd: peak,
   lit: true,
   status: "active",
-  // null = arranged automatically into a tidy plan.
-  layout: null,
+  // Where it sits on the site plan, in metres (null = arranged automatically).
+  layout,
 });
+
+/**
+ * The same 8 pitches at every branch for now: one 10v10, two 6v6, an indoor
+ * 5v5 hall, two volleyball and two tennis courts, laid out as one compact site.
+ * Ids stay stable (f1 = Field A, f2 = Field B, v1, t1), so existing bookings
+ * keep pointing at the same pitch.
+ */
+const standardPitches = (b: string): Field[] => [
+  field(b, "f1", "football", "Field A", "Main pitch, floodlit", "artificial_turf", false, "10v10", 24, 40, 55, { x: 4, y: 4, w: 75, h: 48 }),
+  field(b, "f2", "football", "Field B", "Beside the main pitch", "artificial_turf", false, "6v6", 14, 18, 26, { x: 83, y: 4, w: 36, h: 22 }),
+  field(b, "f3", "football", "Field C", "Beside the main pitch", "artificial_turf", false, "6v6", 14, 18, 26, { x: 83, y: 30, w: 36, h: 22 }),
+  field(b, "f4", "football", "Field D", "Indoor hall", "futsal_court", true, "5v5", 12, 15, 22, { x: 4, y: 56, w: 30, h: 18 }),
+  field(b, "v1", "volleyball", "Volleyball 1", "Outdoor, sand", "sand", false, "4v4", 10, 8, 12, { x: 40, y: 56, w: 18, h: 9 }),
+  field(b, "v2", "volleyball", "Volleyball 2", "Outdoor, sand", "sand", false, "4v4", 10, 8, 12, { x: 40, y: 69, w: 18, h: 9 }),
+  field(b, "t1", "tennis", "Tennis 1", "Hard court", "hard_court", false, "Singles/Doubles", 4, 10, 14, { x: 64, y: 56, w: 23.77, h: 10.97 }),
+  field(b, "t2", "tennis", "Tennis 2", "Hard court", "hard_court", false, "Singles/Doubles", 4, 10, 14, { x: 93, y: 56, w: 23.77, h: 10.97 }),
+];
 
 export const BRANCHES: readonly Branch[] = [
   {
@@ -63,12 +81,7 @@ export const BRANCHES: readonly Branch[] = [
     open: "06:00",
     close: "22:00",
     photos: ["/assets/venues/sen-sok-sports-hub-1.webp", "/assets/venues/sen-sok-sports-hub-2.webp"],
-    fields: [
-      field("sen-sok", "f1", "football", "Field A", "Outdoor, front", "artificial_turf", false, "7v7", 16, 20, 30),
-      field("sen-sok", "f2", "football", "Field B", "Indoor hall", "futsal_court", true, "5v5", 12, 15, 22),
-      field("sen-sok", "v1", "volleyball", "Sand Court", "Outdoor, garden side", "sand", false, "4v4", 10, 8, 12),
-      field("sen-sok", "t1", "tennis", "Court 1", "Hard court, covered", "hard_court", true, "Singles/Doubles", 4, 11, 15),
-    ],
+    fields: standardPitches("sen-sok"),
   },
   {
     slug: "toul-kork",
@@ -80,12 +93,7 @@ export const BRANCHES: readonly Branch[] = [
     open: "06:00",
     close: "23:00",
     photos: ["/assets/venues/toul-kork-arena-1.webp", "/assets/venues/toul-kork-arena-2.webp"],
-    fields: [
-      field("toul-kork", "f1", "football", "Field 1", "Outdoor, main gate", "artificial_turf", false, "7v7", 16, 22, 32),
-      field("toul-kork", "f2", "football", "Field 2", "Outdoor, centre", "artificial_turf", false, "7v7", 16, 22, 32),
-      field("toul-kork", "v1", "volleyball", "Hall A", "Indoor, ground floor", "parquet", true, "6v6", 14, 12, 18),
-      field("toul-kork", "t1", "tennis", "Court 1", "Hard court, back", "hard_court", false, "Singles/Doubles", 4, 10, 14),
-    ],
+    fields: standardPitches("toul-kork"),
   },
   {
     slug: "bkk",
@@ -97,12 +105,7 @@ export const BRANCHES: readonly Branch[] = [
     open: "06:00",
     close: "23:00",
     photos: ["/assets/venues/bkk-sports-club-1.webp", "/assets/venues/bkk-sports-club-2.webp"],
-    fields: [
-      field("bkk", "f1", "football", "Field A", "Indoor hall", "futsal_court", true, "5v5", 12, 18, 25),
-      field("bkk", "f2", "football", "Field B", "Outdoor, street side", "artificial_turf", false, "7v7", 16, 25, 35),
-      field("bkk", "v1", "volleyball", "Court V", "Outdoor, hard floor", "hard_court", false, "6v6", 14, 9, 13),
-      field("bkk", "t1", "tennis", "Court 1", "Clay court, west", "clay", false, "Singles/Doubles", 4, 12, 16),
-    ],
+    fields: standardPitches("bkk"),
   },
 ];
 

@@ -96,7 +96,7 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
       <svg
         ref={ref}
         viewBox={`0 0 ${bounds.width} ${bounds.height}`}
-        className={cn("block h-auto w-full select-none", compact ? "max-h-56" : "max-h-[min(68vh,30rem)]")}
+        className={cn("block h-auto w-full select-none", compact ? "max-h-56" : "max-h-[min(82vh,48rem)]")}
         role={interactive ? "radiogroup" : "img"}
         aria-label={label}
         style={{ touchAction: "manipulation" }}

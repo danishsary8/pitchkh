@@ -1,5 +1,6 @@
 "use client";
 
+import { formatUsd } from "@pitchkh/shared";
 import { CheckCircle2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/components/common/link";
@@ -20,7 +21,7 @@ export function BookingDone({ branch, booking, onAgain }: { branch: Branch; book
   const field = branch.fields.find((f) => f.id === booking.fieldId);
   const when = `${dates.day(booking.date, false)}, ${hhmm(booking.startMin)}–${hhmm(booking.endMin)}`;
   const inTelegram = !!getMiniApp();
-  const message = t("book.chat.aboutBooking", { code: booking.code, branch: branchName(branch, locale), pitch: field ? `${field.name} (${field.format})` : "", when });
+  const message = t("book.chat.aboutBooking", { code: booking.code, branch: branchName(branch, locale), pitch: field ? `${field.name} · ${field.format}` : "", when, price: formatUsd(booking.priceUsd) });
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-5 px-4 pt-8">

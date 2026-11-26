@@ -1176,8 +1176,8 @@
     },
     "chat": {
       "button": "Chat with us on Telegram",
-      "hello": "Hi! I have a question about {branch}.",
-      "aboutBooking": "Hi! About my booking {code}: {branch}, {pitch}, {when}."
+      "hello": "👋 Hello PitchKH!\nI have a question about {branch}.",
+      "aboutBooking": "👋 Hello PitchKH!\nI just sent a booking request:\n\n🎫 Code: {code}\n📍 {branch}\n⚽ {pitch}\n🗓 {when}\n💵 {price}\n\nPlease confirm when you can. Thank you! 🙏"
     },
     "errors": {
       "slot_taken": "Someone just booked that time. Please pick another pitch or time.",

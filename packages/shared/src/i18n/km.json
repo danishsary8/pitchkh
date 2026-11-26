@@ -1176,8 +1176,8 @@
     },
     "chat": {
       "button": "ឆាតជាមួយយើងតាម Telegram",
-      "hello": "សួស្តី! ខ្ញុំមានសំណួរអំពី {branch}។",
-      "aboutBooking": "សួស្តី! អំពីការកក់ {code}: {branch}, {pitch}, {when}។"
+      "hello": "👋 សួស្តី PitchKH!\nខ្ញុំមានសំណួរអំពី {branch}។",
+      "aboutBooking": "👋 សួស្តី PitchKH!\nខ្ញុំទើបផ្ញើការស្នើសុំកក់៖\n\n🎫 លេខកូដ៖ {code}\n📍 {branch}\n⚽ {pitch}\n🗓 {when}\n💵 {price}\n\nសូមបញ្ជាក់ពេលអ្នកទំនេរ។ អរគុណ! 🙏"
     },
     "errors": {
       "slot_taken": "មានគេទើបកក់ម៉ោងនោះ។ សូមជ្រើសទីលាន ឬម៉ោងផ្សេង។",

@@ -363,7 +363,8 @@
     "nextFree": "Free start times, {day}",
     "bookAt": "Book at {time}, {day}",
     "shownOf": "Showing {shown} of {total}",
-    "anyTime": "Any time"
+    "anyTime": "Any time",
+    "freeTonight": "Free tonight at 7pm"
   },
   "venue": {
     "gallery": "Photos of {name}",

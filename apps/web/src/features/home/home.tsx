@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { KramaStrip, PitchLines } from "@/components/brand/pitch-art";
 import { Link } from "@/components/common/link";
-import { Reveal } from "@/components/common/motion";
 import { Container, SectionHeading } from "@/components/common/page";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -54,11 +53,10 @@ export function HomePage() {
           <SectionHeading title={t("home.sportsTitle")} className="[&>h2]:max-w-xl" />
           <h2 id="sports-title" className="sr-only">{t("home.sportsTitle")}</h2>
           <ul className="grid gap-3 md:grid-cols-3 md:gap-4">
-            {SPORTS.map((sport, i) => (
+            {SPORTS.map((sport) => (
               <li key={sport}>
-                <Reveal delay={i * 0.06}>
                   <Link href={`/venues?sport=${sport}`} className="group relative flex aspect-[16/9] items-end overflow-hidden rounded-3xl bg-pitch outline-none focus-visible:ring-3 focus-visible:ring-ring md:aspect-[4/5]">
-                    <Image src={`/assets/brand/sport-${sport}.webp`} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-105" />
+                    <Image src={`/assets/brand/sport-${sport}.webp`} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
                     <span className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/75 to-transparent" aria-hidden />
                     <span className="relative flex w-full items-end justify-between gap-3 p-5 text-white">
                       <span>
@@ -70,7 +68,6 @@ export function HomePage() {
                       </span>
                     </span>
                   </Link>
-                </Reveal>
               </li>
             ))}
           </ul>

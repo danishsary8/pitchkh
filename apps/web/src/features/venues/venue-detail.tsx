@@ -9,7 +9,6 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "@/components/common/link";
-import { Reveal } from "@/components/common/motion";
 import { Container, Rating, SportBadge, Stars, StickyBar } from "@/components/common/page";
 import { Price } from "@/components/common/price";
 import { ErrorState, useErrorMessage } from "@/components/common/states";
@@ -294,8 +293,6 @@ export function VenueDetail({ slug }: { slug: string }) {
               <FieldViewer key={selectedField.id} field={selectedField} />
             </section>
           ) : null}
-
-          <Reveal>
             <section aria-labelledby="amenities-title" className="flex flex-col gap-4">
               <h2 id="amenities-title" className="font-display text-2xl">{t("venue.amenities")}</h2>
               <ul className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
@@ -310,9 +307,6 @@ export function VenueDetail({ slug }: { slug: string }) {
                 })}
               </ul>
             </section>
-          </Reveal>
-
-          <Reveal>
             <section aria-labelledby="hours-title" className="grid gap-6 md:grid-cols-2">
               <div className="flex flex-col gap-3">
                 <h2 id="hours-title" className="font-display text-2xl">{t("venue.hours")}</h2>
@@ -346,11 +340,7 @@ export function VenueDetail({ slug }: { slug: string }) {
                 </Button>
               </div>
             </section>
-          </Reveal>
-
-          <Reveal>
             {features.reviews ? <Reviews venueId={venue.id} rating={venue.rating} count={venue.reviewCount} /> : null}
-          </Reveal>
 
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
             <p>{t("venue.managedBy", { name: venue.owner.name })}</p>

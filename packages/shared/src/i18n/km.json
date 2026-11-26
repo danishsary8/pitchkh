@@ -363,7 +363,8 @@
     "nextFree": "ម៉ោងចាប់ផ្តើមទំនេរ {day}",
     "bookAt": "កក់ម៉ោង {time} {day}",
     "shownOf": "បង្ហាញ {shown} ក្នុងចំណោម {total}",
-    "anyTime": "ម៉ោងណាក៏បាន"
+    "anyTime": "ម៉ោងណាក៏បាន",
+    "freeTonight": "ទំនេរយប់នេះ ម៉ោង ៧"
   },
   "venue": {
     "gallery": "រូបភាព {name}",

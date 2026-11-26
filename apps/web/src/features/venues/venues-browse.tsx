@@ -1,11 +1,12 @@
 "use client";
 
-import { VENUE_SORTS, type VenueSort } from "@pitchkh/shared";
+import { SPORTS, VENUE_SORTS, type VenueSort } from "@pitchkh/shared";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { List, Map as MapIcon, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { SportIcon } from "@/components/brand/pitch-art";
 import { Container, PageHeader } from "@/components/common/page";
 import { EmptyState, ErrorState } from "@/components/common/states";
 import { Stagger, StaggerItem } from "@/components/common/motion";
@@ -25,6 +26,9 @@ import { VenueCard, VenueCardSkeleton } from "./venue-card";
 import { VenueFilterFields } from "./venue-filters";
 import { venuesToPins } from "./map-pins";
 
+/** "Free tonight" = free for the usual length of a game from 7pm today. */
+const TONIGHT = "19:00";
+
 const VenuesMap = dynamic(() => import("./venues-map"), { ssr: false, loading: () => <Skeleton className="size-full rounded-none" /> });
 
 export function VenuesBrowse() {
@@ -32,6 +36,7 @@ export function VenuesBrowse() {
   const dates = useDates();
   const text = useVenueText();
   const { filters, setFilters, query, activeCount } = useVenueFilters(dates.today);
+  const tonight = filters.date === dates.today && filters.from === TONIGHT;
   const [sheetOpen, setSheetOpen] = useState(false);
   const [search, setSearch] = useState(filters.q);
   const [activePin, setActivePin] = useState<string | null>(null);
@@ -109,6 +114,18 @@ export function VenuesBrowse() {
             <span className="max-[380px]:sr-only">{t("venues.filters")}</span>
             {activeCount > 0 ? <Badge variant="default" className="font-num px-2 py-0.5">{activeCount}</Badge> : null}
           </Button>
+        </div>
+        {/* Phones: the two questions most people start with, one tap each. Desktop has the sidebar. */}
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] lg:hidden" role="group" aria-label={t("venues.filterSport")}>
+          {([null, ...SPORTS] as const).map((sport) => (
+            <button key={sport ?? "all"} type="button" aria-pressed={filters.sport === sport} onClick={() => setFilters({ sport })} className="press flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-secondary px-3.5 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground">
+              {sport ? <SportIcon sport={sport} className="size-4" /> : null}
+              {sport ? t(`sport.${sport}`) : t("common.all")}
+            </button>
+          ))}
+          <button type="button" aria-pressed={tonight} onClick={() => setFilters(tonight ? { date: null, from: null } : { date: dates.today, from: TONIGHT })} className="press flex h-9 shrink-0 items-center rounded-full border-2 border-primary/30 px-3.5 text-sm font-semibold text-primary outline-none focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground">
+            {t("venues.freeTonight")}
+          </button>
         </div>
         <div className="flex items-center justify-between gap-2">
           <p className="min-w-0 truncate text-sm text-muted-foreground" aria-live="polite">

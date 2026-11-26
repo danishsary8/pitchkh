@@ -50,6 +50,55 @@ export function getMiniApp(): MiniApp | null {
   return app && app.initData ? app : null;
 }
 
+const INIT_KEY = "pitchkh-tg-init";
+
+/** Pulls `tgWebAppData` out of a launch string such as Telegram's URL fragment. */
+function fromLaunchParams(raw: string | null | undefined): string {
+  if (!raw) return "";
+  try {
+    return new URLSearchParams(raw.replace(/^#/, "")).get("tgWebAppData") ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Telegram opens the Mini App with the signed identity in the URL fragment
+ * (#tgWebAppData=...). Read it the moment this module loads, before any page
+ * navigation can drop the fragment, and keep it for this tab.
+ */
+if (typeof window !== "undefined") {
+  const launched = fromLaunchParams(window.location.hash);
+  if (launched) {
+    try {
+      sessionStorage.setItem(INIT_KEY, launched);
+    } catch {
+      // Storage blocked: the script's own copy is still used below.
+    }
+  }
+}
+
+/**
+ * The signed identity to send to our server, or "" outside Telegram. Does not
+ * wait for telegram-web-app.js: it also reads the launch fragment and the
+ * copies kept in session storage (ours and Telegram's own).
+ */
+export function telegramInitData(): string {
+  if (typeof window === "undefined") return "";
+  const fromScript = window.Telegram?.WebApp?.initData;
+  if (fromScript) return fromScript;
+  const fromHash = fromLaunchParams(window.location.hash);
+  if (fromHash) return fromHash;
+  try {
+    const kept = sessionStorage.getItem(INIT_KEY);
+    if (kept) return kept;
+    const theirs = JSON.parse(sessionStorage.getItem("__telegram__initParams") ?? "null") as Record<string, string> | null;
+    return theirs?.tgWebAppData ?? "";
+  } catch {
+    return "";
+  }
+}
+
 /** "Dara Sok (@dara)" for booking messages, or null outside Telegram. */
 export function telegramDisplayName(): string | null {
   const user = getMiniApp()?.initDataUnsafe.user;

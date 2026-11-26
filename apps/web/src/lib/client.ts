@@ -1,7 +1,7 @@
 "use client";
 
 import type { Booking, BookingRequest, BookingStatus, TakenSlot } from "./booking-rules";
-import { getMiniApp } from "./telegram-webapp";
+import { telegramInitData } from "./telegram-webapp";
 
 export class HttpError extends Error {
   constructor(
@@ -15,7 +15,7 @@ export class HttpError extends Error {
 /** Calls the app's own server. Inside Telegram it adds the signed Telegram identity. */
 async function call<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
   const headers: Record<string, string> = {};
-  const initData = getMiniApp()?.initData;
+  const initData = telegramInitData();
   if (initData) headers["x-telegram-init-data"] = initData;
   if (init.body !== undefined) headers["content-type"] = "application/json";
   let response: Response;

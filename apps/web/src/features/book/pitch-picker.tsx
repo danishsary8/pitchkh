@@ -33,10 +33,18 @@ export function PitchPicker({ branch, sport, onSport, states, value, onChange, s
   const shown = branch.fields.filter((f) => !sport || f.sport === sport);
   const list = useRef<HTMLDivElement>(null);
   // A pitch picked on the map slides its card into view in the list below.
+  // Only the list scrolls sideways; the page itself never moves.
   useEffect(() => {
-    if (!value) return;
-    const card = list.current?.querySelector<HTMLElement>(`[data-option="${value}"]`);
-    card?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest", inline: "center" });
+    const row = list.current;
+    const card = value ? row?.querySelector<HTMLElement>(`[data-option="${value}"]`) : null;
+    if (!row || !card || row.scrollWidth <= row.clientWidth) return;
+    const left = card.offsetLeft - (row.clientWidth - card.offsetWidth) / 2;
+    // Animate only when the list is on screen; otherwise jump, so the card is ready when scrolled to.
+    const rect = row.getBoundingClientRect();
+    const onScreen = rect.bottom > 0 && rect.top < window.innerHeight;
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (onScreen && !calm) row.scrollTo({ left, behavior: "smooth" });
+    else row.scrollLeft = left;
   }, [value]);
   return (
     <section aria-labelledby="pick-pitch" className="flex flex-col gap-3">

@@ -63,5 +63,5 @@ export function Segmented<T extends string | number | null>({ value, options, on
 
 /** Lets a row scroll sideways on phones and wrap on wide screens, edge to edge with the page padding. */
 export function ScrollRow({ children, wrap = true, className, ref }: { children: ReactNode; wrap?: boolean; className?: string; ref?: Ref<HTMLDivElement> }) {
-  return <div ref={ref} className={cn("no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0", wrap && "lg:flex-wrap", className)}>{children}</div>;
+  return <div ref={ref} className={cn("no-scrollbar relative -mx-4 flex gap-2 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0", wrap && "lg:flex-wrap", className)}>{children}</div>;
 }

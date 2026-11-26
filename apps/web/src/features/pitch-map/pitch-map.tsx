@@ -125,8 +125,7 @@ export function PitchMap({ fields, selectedId, states, sport, onSelect, compact,
               data-pitch={field.name}
               data-field-id={field.id}
             >
-              {/* Re-keyed on select so the bounce replays each time this pitch is picked. */}
-              <g key={selected ? "on" : "off"} className={cn(selected && interactive && "motion-safe:animate-pitch-pop")} style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+              <g>
               <PitchShape field={field} layout={layout} state={state} selected={selected} dimmed={dimmed} metresPerPx={metresPerPx} roofOutline={false} showLabel={!compact || selected} stateLabel={stateLabel} />
               </g>
               {pickable ? (

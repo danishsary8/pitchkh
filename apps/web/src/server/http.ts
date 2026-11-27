@@ -7,6 +7,9 @@ export const fail = (status: number, error: string, extra?: Record<string, unkno
 
 /** Reads a JSON body of at most `limit` bytes; null if missing, too big or not JSON. */
 export async function readJson(request: Request, limit = 8_000): Promise<unknown> {
+  // Refuse an announced oversized body before reading it into memory.
+  const declared = Number(request.headers.get("content-length") ?? 0);
+  if (declared > limit) return null;
   const text = await request.text().catch(() => "");
   if (!text || text.length > limit) return null;
   try {

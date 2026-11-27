@@ -75,7 +75,7 @@ function memoryStore(): BookingStore {
 // ---------------------------------------------------------------- postgres
 
 /** Kept in sync with db/schema.sql. Safe to run on every cold start. */
-const SCHEMA = [
+export const SCHEMA = [
   `CREATE EXTENSION IF NOT EXISTS btree_gist`,
   `CREATE TABLE IF NOT EXISTS bookings (
     id uuid PRIMARY KEY,

@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import { nextStep, pitchAvailability, pitchesFor, timeOptions } from "@/lib/availability";
 import { bookableDates } from "@/lib/booking-rules";
 import { type Branch, findBranch } from "@/lib/branches";
-import { client, type CreatedBooking, HttpError } from "@/lib/client";
+import { useErrorMessage } from "@/components/common/states";
+import { client, type CreatedBooking } from "@/lib/client";
 import { qk } from "@/lib/query";
 import { BookingDone } from "./booking-done";
 import { BookingForm } from "./booking-form";
@@ -30,6 +31,7 @@ export function BranchBooking({ slug }: { slug: string }) {
   const branch = findBranch(slug) as Branch;
   const t = useTranslations();
   const queryClient = useQueryClient();
+  const errorMessage = useErrorMessage();
   const days = useMemo(() => bookableDates(), []);
   const [selection, dispatch] = useReducer(selectionReducer, days[0] ?? "", initialSelection);
   const [formOpen, setFormOpen] = useState(false);
@@ -57,10 +59,7 @@ export function BranchBooking({ slug }: { slug: string }) {
     void taken.refetch();
   };
 
-  const onError = (error: unknown) => {
-    const code = error instanceof HttpError ? (error.status === 0 ? "network" : error.code) : "unavailable";
-    toast.error(t.has(`book.errors.${code}` as never) ? t(`book.errors.${code}` as never) : t("book.errors.unavailable"));
-  };
+  const onError = (error: unknown) => toast.error(errorMessage(error));
 
   if (done) {
     return (

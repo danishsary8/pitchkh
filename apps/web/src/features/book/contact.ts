@@ -12,21 +12,23 @@ export type ContactErrors = Partial<Record<"name" | "phone" | "players", true>>;
 
 type Slot = Pick<BookingRequest, "branch" | "fieldId" | "date" | "startMin" | "duration">;
 
+/** Only the fields the customer types, taken from the server's own schema. */
+const ContactSchema = BookingRequest.pick({ name: true, phone: true, players: true, note: true });
+
 /**
- * Turns the form into the exact body POST /api/bookings expects, validated by
- * the same zod schema the server uses. Returns which fields need fixing.
+ * Turns the form into the exact body POST /api/bookings expects. The contact
+ * fields are checked with the server's own rules (same zod schema), so what
+ * passes here passes there; the slot itself is the server's to judge.
  */
 export function toBookingRequest(slot: Slot, input: ContactInput): { ok: true; request: BookingRequest } | { ok: false; errors: ContactErrors } {
   const players = input.players.trim() === "" ? Number.NaN : Number(input.players);
-  const parsed = BookingRequest.safeParse({ ...slot, name: input.name, phone: input.phone, players, note: input.note });
-  if (parsed.success) return { ok: true, request: parsed.data };
+  const parsed = ContactSchema.safeParse({ name: input.name, phone: input.phone, players, note: input.note });
+  if (parsed.success) return { ok: true, request: { ...slot, ...parsed.data } };
   const errors: ContactErrors = {};
   for (const issue of parsed.error.issues) {
     const key = issue.path[0];
     if (key === "name" || key === "phone" || key === "players") errors[key] = true;
   }
-  // A problem outside the contact fields (the slot itself) is the server's to explain.
-  if (Object.keys(errors).length === 0) return { ok: true, request: { ...slot, name: input.name.trim(), phone: input.phone, players, note: input.note.trim() } };
   return { ok: false, errors };
 }
 

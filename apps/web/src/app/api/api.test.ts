@@ -112,3 +112,10 @@ describe("health", () => {
     expect(await (await health()).json()).toEqual({ ok: true, database: "memory", bot: true, admins: 1 });
   });
 });
+
+describe("request size", () => {
+  it("refuses an oversized body without reading it", async () => {
+    const res = await book(new Request("http://test/api/bookings", { method: "POST", headers: { "content-type": "application/json", "content-length": "999999", "x-forwarded-for": "10.7.7.7" }, body: JSON.stringify(order) }));
+    expect(res.status).toBe(400);
+  });
+});

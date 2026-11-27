@@ -9,7 +9,7 @@ import { Sheet } from "@/components/ui/dialog";
 import { type Booking, type BookingStatus, hhmm } from "@/lib/booking-rules";
 import { branchName, findBranch } from "@/lib/branches";
 import { useDates } from "@/lib/format";
-import { ContactButtons, STATUS_VARIANT } from "./admin-page";
+import { ContactButtons, STATUS_VARIANT } from "./contact-buttons";
 
 /** Everything about one booking, with the actions that fit its status. */
 export function BookingSheet({ booking, onClose, onStatus, busy }: { booking: Booking | null; onClose: () => void; onStatus: (id: string, s: BookingStatus) => void; busy: boolean }) {

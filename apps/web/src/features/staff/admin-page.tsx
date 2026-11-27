@@ -2,7 +2,7 @@
 
 import { addDays, dateInPP } from "@pitchkh/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Lock, Phone, Plus, Send, X } from "lucide-react";
+import { Check, Lock, Plus, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -15,16 +15,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { type Booking, type BookingStatus, hhmm } from "@/lib/booking-rules";
 import { BRANCHES, branchName, findBranch } from "@/lib/branches";
 import { client, HttpError } from "@/lib/client";
-import { callLink, chatLinks } from "@/lib/customer-contact";
 import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
 import { getMiniApp } from "@/lib/telegram-webapp";
 import { cn } from "@/lib/utils";
 import { AddBookingSheet } from "./add-booking";
+import { ContactButtons } from "./contact-buttons";
 import { BookingSheet } from "./booking-sheet";
 import { DayGrid } from "./day-grid";
-
-export const STATUS_VARIANT = { pending: "warning", confirmed: "success", cancelled: "muted" } as const;
 
 /** Staff screen. Only opens for the Telegram accounts listed in ADMIN_TELEGRAM_IDS. */
 export function AdminPage() {
@@ -179,51 +177,3 @@ function PendingList({ bookings, loading, onOpen, onStatus, busy }: { bookings: 
     </section>
   );
 }
-
-/**
- * Call and chat with the customer. Chat uses the best Telegram link we have
- * (@username, their Telegram account, or their phone number); when that is not
- * the phone number, a second "by phone" button covers privacy-blocked accounts.
- */
-export function ContactButtons({ booking }: { booking: Booking }) {
-  const t = useTranslations("staff");
-  const call = callLink(booking.phone);
-  const [best, ...rest] = chatLinks(booking);
-  const byPhone = best && best.via !== "phone" ? rest.find((l) => l.via === "phone") : undefined;
-  return (
-    <>
-      {call ? (
-        <Button asChild size="sm" variant="ghost">
-          <a href={call}><Phone />{t("call")}</a>
-        </Button>
-      ) : null}
-      {best ? <ChatButton url={best.url} label={best.via === "phone" ? t("chatByPhone") : t("message")} /> : null}
-      {byPhone ? <ChatButton url={byPhone.url} label={t("chatByPhone")} /> : null}
-    </>
-  );
-}
-
-/** Opens a Telegram chat; inside the Mini App t.me links stay in Telegram instead of leaving for a browser. */
-function ChatButton({ url, label }: { url: string; label: string }) {
-  const web = url.startsWith("https://");
-  return (
-    <Button asChild size="sm" variant="ghost">
-      <a
-        href={url}
-        target={web ? "_blank" : undefined}
-        rel={web ? "noopener noreferrer" : undefined}
-        onClick={(e) => {
-          const app = getMiniApp();
-          if (app && web) {
-            e.preventDefault();
-            app.openTelegramLink(url);
-          }
-        }}
-      >
-        <Send />
-        {label}
-      </a>
-    </Button>
-  );
-}
-

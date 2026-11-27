@@ -26,11 +26,13 @@ export async function HomePage() {
             {t("book.home.title")}
           </h1>
           <p className="max-w-xl text-base text-pretty text-white/85 sm:text-xl">{t("book.home.subtitle")}</p>
-          <ol className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 text-sm sm:mx-0 sm:px-0 sm:text-[0.95rem]">
+          {/* Phones: three equal columns, so every step is fully visible with no sideways scrolling.
+              Wider screens: one row of pills. */}
+          <ol className="grid grid-cols-3 gap-2 text-[0.8rem] leading-snug sm:flex sm:flex-wrap sm:text-[0.95rem]">
             {(["one", "two", "three"] as const).map((step, i) => (
-              <li key={step} className="flex shrink-0 items-center gap-2 rounded-full bg-white/12 py-1.5 pr-3.5 pl-1.5 backdrop-blur-md">
+              <li key={step} className="flex flex-col items-start gap-1.5 rounded-2xl bg-white/12 p-2.5 backdrop-blur-md sm:flex-row sm:items-center sm:gap-2 sm:rounded-full sm:py-1.5 sm:pr-4 sm:pl-1.5">
                 <span className="font-num grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-bold text-accent-foreground sm:size-7 sm:text-sm">{i + 1}</span>
-                {t(`book.home.step.${step}`)}
+                <span className="text-pretty">{t(`book.home.step.${step}`)}</span>
               </li>
             ))}
           </ol>

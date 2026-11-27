@@ -96,52 +96,51 @@
     "description": "Pick a branch, a pitch and a time, and send your booking. We confirm on Telegram. No account needed."
   },
   "legal": {
-    "updated": "Last updated 1 November 2026",
-    "demoNotice": "PitchKH is running in demo mode. Payments are simulated and no real booking is made with any venue.",
+    "updated": "Last updated 27 November 2026",
     "terms": {
       "title": "Terms of use",
       "s1": {
-        "title": "Using PitchKH",
-        "body": "PitchKH lets players book sports pitches listed by independent venue owners and arrange matches with other teams. You need an account to book, and you are responsible for activity on it."
+        "title": "About PitchKH",
+        "body": "PitchKH is the booking service for our football, volleyball and tennis pitches in Phnom Penh. You can book on this website or in our Telegram bot. No account is needed."
       },
       "s2": {
-        "title": "Bookings and payment",
-        "body": "A booking is an agreement between you and the venue. The price shown at checkout is final and includes the platform service fee. Cash bookings are confirmed only after the venue accepts them."
+        "title": "Booking requests",
+        "body": "When you send a booking, we hold that pitch and time for you and your request waits for our confirmation. It becomes a confirmed booking once we confirm it on Telegram or by phone. We may decline a request, for example if the details are incomplete or the pitch is closed."
       },
       "s3": {
-        "title": "Cancellations",
-        "body": "You may cancel or reschedule free of charge up to 2 hours before the start time. After that the venue may keep the full amount."
+        "title": "Prices and payment",
+        "body": "The price shown when you book is the price for the pitch and time you chose, in US dollars, with the riel amount for guidance. Evening hours from 17:00 cost more. You pay at the venue; nothing is charged online."
       },
       "s4": {
-        "title": "Fair play",
-        "body": "Arrive on time, respect the venue's rules and your opponents. Accounts that repeatedly fail to show up or behave abusively may be suspended."
+        "title": "Changes and cancellations",
+        "body": "To change or cancel, message us on Telegram with your booking code as early as you can, so the pitch can go to another team. If you do not arrive, we may give the pitch to other players after 15 minutes, and repeated no-shows may be refused future bookings."
       },
       "s5": {
-        "title": "Venue listings",
-        "body": "Owners must describe their pitches accurately and honour confirmed bookings. PitchKH may remove listings that mislead players or are unsafe."
+        "title": "At the venue",
+        "body": "Please arrive on time, follow the staff's instructions and treat the pitch, other players and our staff with respect. Sport has risks; you play at your own responsibility and should look after your own belongings."
       }
     },
     "privacy": {
       "title": "Privacy",
       "s1": {
         "title": "What we collect",
-        "body": "Your name, phone number, email and language, plus the bookings, matches, messages and reviews you create."
+        "body": "When you book: your name, phone number, the number of players and any note you add. If you book in our Telegram bot, we also receive your Telegram name, username and account number from Telegram. We do not collect payment details."
       },
       "s2": {
         "title": "How we use it",
-        "body": "To make and manage your bookings, show your team to possible opponents, send notifications about your games, and keep the platform safe."
+        "body": "Only to manage your booking: to hold your pitch, confirm or change the booking, and contact you about it by phone or Telegram. We do not send advertising and we do not sell your information."
       },
       "s3": {
         "title": "Who can see it",
-        "body": "A venue sees your name and phone number for bookings you make there. Other teams see your team profile, not your contact details."
+        "body": "Only PitchKH staff who handle bookings. Other customers see that a pitch is taken, never who booked it."
       },
       "s4": {
-        "title": "Storage in this demo",
-        "body": "In demo mode all data stays in your own browser and is never sent to a server. Clearing your browser data removes it."
+        "title": "Where it is kept",
+        "body": "Bookings are stored in a secure database (Neon, in Singapore) and the site runs on Vercel. Both protect data in transit with encryption. We keep booking records for up to 12 months, then delete them."
       },
       "s5": {
         "title": "Your choices",
-        "body": "You can edit your profile at any time and ask support to delete your account and its data."
+        "body": "You can ask us to show, correct or delete your booking details at any time. Message us on Telegram and include your booking code if you have one."
       }
     }
   },

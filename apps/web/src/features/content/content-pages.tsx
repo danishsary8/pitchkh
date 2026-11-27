@@ -11,7 +11,6 @@ export function LegalPage({ kind }: { kind: "terms" | "privacy" }) {
       <Container size="md">
         <PageHeader title={t("title")} subtitle={tl("updated")} />
         <div className="flex flex-col gap-7 text-[1.05rem]">
-          <p className="rounded-2xl bg-warning-surface p-4 text-[0.95rem] text-pretty">{tl("demoNotice")}</p>
           {sections.map((s) => (
             <section key={s} className="flex flex-col gap-2">
               <h2 className="text-xl font-bold">{t(`${s}.title`)}</h2>

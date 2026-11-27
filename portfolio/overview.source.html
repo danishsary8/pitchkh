@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- Source of overview.jpg: open at 2400px wide and screenshot the page at 1x. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Noto+Sans+Khmer:wght@500&display=swap" />
+<style>
+  :root { --pitch: #0a7446; --stripe: #09693f; --night: #0c1f1a; --chalk: #f2f5ef; --flood: #ffc629; --krama: #c2242b; }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 2400px; background: var(--chalk); font-family: 'Geist', system-ui, sans-serif; color: var(--night); -webkit-font-smoothing: antialiased; }
+  header { padding: 64px 80px 44px; color: #fff;
+    background: repeating-linear-gradient(90deg, var(--pitch) 0 120px, var(--stripe) 120px 240px); }
+  header h1 { font-size: 64px; font-weight: 700; letter-spacing: -0.04em; }
+  header p { margin-top: 10px; font-size: 26px; color: rgba(255,255,255,.85); max-width: 1500px; }
+  .krama { height: 16px; background-color: #fff;
+    background-image: repeating-linear-gradient(0deg, color-mix(in srgb, var(--krama) 62%, transparent) 0 8px, transparent 8px 16px),
+                      repeating-linear-gradient(90deg, color-mix(in srgb, var(--krama) 62%, transparent) 0 8px, transparent 8px 16px); }
+  section { padding: 48px 80px 8px; }
+  h2 { display: flex; align-items: baseline; gap: 16px; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+  h2 small { font-size: 21px; font-weight: 400; color: #46584f; }
+  .flow { display: flex; align-items: flex-start; gap: 0; margin-top: 26px; }
+  .step { width: 300px; flex: none; }
+  .step img { display: block; width: 300px; border-radius: 26px; border: 6px solid var(--night); box-shadow: 0 18px 30px -18px rgba(0,0,0,.45); }
+  .step b { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: 21px; }
+  .step b i { font-style: normal; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--flood); font-size: 16px; }
+  .step p { margin-top: 6px; font-size: 17px; line-height: 1.4; color: #46584f; }
+  .arrow { flex: none; width: 70px; align-self: center; margin-top: -120px; text-align: center; font-size: 40px; color: var(--pitch); }
+  .bridge { margin: 34px 80px 0; padding: 22px 28px; border-radius: 22px; background: #fff; border: 2px dashed #b9c7b8; font-size: 22px; line-height: 1.45; }
+  .bridge b { color: var(--pitch); }
+  footer { margin-top: 48px; padding: 26px 80px 40px; font-size: 18px; color: #46584f; }
+  .km { font-family: 'Noto Sans Khmer', sans-serif; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>PitchKH · how it works</h1>
+    <p>A customer books a pitch in a minute, with no sign-up. The owner hears about it on Telegram and confirms it in one tap.</p>
+  </header>
+  <div class="krama"></div>
+
+  <section>
+    <h2>Customer <small>on the website or inside the Telegram bot</small></h2>
+    <div class="flow">
+      <div class="step"><img src="screens/m-home.webp"><b><i>1</i>Open PitchKH</b><p>Three branches, each showing if it's open now and the lowest price.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-time.webp"><b><i>2</i>Pick day and time</b><p>Choose a length, then a time block. Each block shows how many pitches are free.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-pitch.webp"><b><i>3</i>Pick a pitch</b><p>Tap it on the site map or in the list. Taken pitches are dark; the price updates.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-form.webp"><b><i>4</i>Name and phone</b><p>No account. In Telegram the name fills itself in.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-ticket.webp"><b><i>5</i>Request sent</b><p>The pitch is held. A ticket with a code, and one tap to chat with the owner.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-home-km.webp"><b><i>+</i><span>Also in <span class="km">ខ្មែរ</span></span></b><p>Every screen switches to Khmer with one tap.</p></div>
+    </div>
+  </section>
+
+  <div class="bridge"><b>The same second:</b> the booking is saved, the slot is blocked for everyone else (the database refuses any overlap), and the owner's Telegram bot posts the request.</div>
+
+  <section>
+    <h2>Owner and staff <small>inside Telegram, no password</small></h2>
+    <div class="flow">
+      <div class="step"><img src="screens/m-telegram-alert.webp"><b><i>6</i>Alert on Telegram</b><p>Every request arrives with Chat with customer and Open bookings buttons.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-staff-requests.webp"><b><i>7</i>Waiting for you</b><p>All requests in one list: Confirm, Decline, Call or Chat.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-staff-booking.webp"><b><i>8</i>Check the details</b><p>Players, price, note. If they booked in the bot, confirming messages them on Telegram.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-staff-schedule.webp"><b><i>9</i>The day at a glance</b><p>Every pitch on a timeline: waiting in brown, confirmed in green.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><img src="screens/m-staff-walkin.webp"><b><i>+</i>Walk-ins</b><p>Tap a free slot to add a phone or walk-in booking. It blocks the slot at once.</p></div>
+    </div>
+  </section>
+
+  <footer>Screens captured from the real app with demo bookings (made-up names and numbers). The Telegram alert is a real screenshot from the owner's phone, with the phone number blurred.</footer>
+</body>
+</html>

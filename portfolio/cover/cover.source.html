@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!--
+  Source of cover/card.webp and cover/banner.webp.
+  Open with ?mode=card (1600x1000) or ?mode=banner (1920x800) and screenshot at 2x.
+  Screens come from ../screens (real captures of the app with demo data).
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@500&family=Noto+Sans+Khmer:wght@500&display=swap" />
+<style>
+  :root {
+    /* PitchKH's own colours (apps/web/src/app/globals.css). */
+    --pitch: #0a7446; --stripe: #09693f; --deep: #06301e; --night: #0c1f1a;
+    --chalk: #f2f5ef; --flood: #ffc629; --krama: #c2242b;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: var(--w); height: var(--h); background: var(--night); }
+  body { font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+  /* The ground: mown grass in two greens, lit from the top-left floodlight, darker at the far end. */
+  .stage { position: relative; width: var(--w); height: var(--h); overflow: hidden; background: var(--pitch); }
+  .grass { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--pitch) 0 120px, var(--stripe) 120px 240px); }
+  .shade { position: absolute; inset: 0;
+    background:
+      radial-gradient(70% 80% at 12% 0%, rgba(255,240,190,.22) 0%, rgba(255,240,190,0) 60%),
+      linear-gradient(180deg, rgba(6,48,30,0) 30%, rgba(6,48,30,.55) 100%),
+      linear-gradient(90deg, rgba(6,48,30,.55) 0%, rgba(6,48,30,0) 45%); }
+
+  /* Chalk markings: halfway line and centre circle, drawn at full pitch scale. */
+  .lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .lines * { fill: none; stroke: rgba(242,245,239,.34); stroke-width: 4; }
+
+  /* Krama check along the bottom, as in the app's footer and banners. */
+  .krama { position: absolute; left: 0; right: 0; bottom: 0; height: 22px;
+    --k: color-mix(in srgb, var(--krama) 62%, transparent);
+    background-color: #fff;
+    background-image:
+      repeating-linear-gradient(0deg, var(--k) 0 11px, transparent 11px 22px),
+      repeating-linear-gradient(90deg, var(--k) 0 11px, transparent 11px 22px); }
+
+  /* Title block. */
+  .label { position: absolute; left: 6%; top: 10%; width: 44%; color: #fff; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px 9px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.12); backdrop-filter: blur(6px); font: 500 17px/1 'Geist', sans-serif; color: rgba(255,255,255,.9); }
+  .pill svg { width: 20px; height: 20px; }
+  h1 { margin-top: 26px; font-weight: 700; font-size: 112px; line-height: .9; letter-spacing: -0.055em; }
+  h1 span { color: var(--flood); }
+  .line { margin-top: 22px; max-width: 560px; font-size: 26px; line-height: 1.32; color: rgba(255,255,255,.8); text-wrap: balance; }
+  .facts { position: absolute; left: 6%; bottom: 9%; display: flex; gap: 10px; }
+  .facts > span { padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.28); color: rgba(255,255,255,.88); font-size: 17px; }
+  .facts .km { padding: 0; border: 0; font-family: 'Noto Sans Khmer', sans-serif; }
+  .facts > span:first-child { border-color: rgba(255,198,41,.55); background: rgba(255,198,41,.14); color: var(--flood); }
+
+  /* Phones standing on the pitch. */
+  .phone { position: absolute; border-radius: 46px; padding: 11px; background: #0b1510;
+    box-shadow: 0 50px 80px -30px rgba(0,0,0,.75), 0 0 0 1.5px rgba(255,255,255,.14) inset; }
+  .phone img { display: block; width: 100%; border-radius: 36px; }
+  .phone::after { content: ""; position: absolute; left: 50%; bottom: -34px; width: 80%; height: 40px; margin-left: -40%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(18px); z-index: -1; }
+
+  /* The detail taken from the app: the booking ticket stub with its tear line and notches. */
+  .stub { position: absolute; width: 360px; border-radius: 22px; overflow: hidden; background: #fff;
+    box-shadow: 0 30px 50px -20px rgba(0,0,0,.6); transform: rotate(-4deg); }
+  .stub .top { padding: 18px 22px 20px; color: #fff;
+    background: repeating-linear-gradient(90deg, var(--pitch) 0 28px, var(--stripe) 28px 56px); }
+  .stub .row { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: rgba(255,255,255,.85); }
+  .stub .badge { padding: 4px 10px; border-radius: 99px; background: var(--flood); color: #221a00; font-size: 12.5px; font-weight: 700; }
+  .stub .pitchname { margin-top: 6px; font-weight: 700; font-size: 34px; letter-spacing: -0.02em; }
+  .stub .when { margin-top: 10px; font-size: 18px; font-weight: 600; }
+  .stub .tear { position: relative; height: 0; }
+  .stub .tear i { position: absolute; top: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--stripe); }
+  .stub .tear i:first-child { left: -12px; } .stub .tear i:last-child { right: -12px; }
+  .stub .tear b { position: absolute; left: 20px; right: 20px; top: 0; border-top: 2px dashed #d2dbcf; }
+  .stub .bottom { display: flex; justify-content: space-between; align-items: flex-end; padding: 18px 22px; color: #0c1f1a; }
+  .stub small { display: block; font-size: 12.5px; color: #46584f; }
+  .stub .code { font: 600 28px/1.1 'Geist Mono', monospace; letter-spacing: .04em; }
+  .stub .price { text-align: right; font-weight: 700; font-size: 24px; }
+
+  /* Card layout (1600 x 1000). */
+  .card .p1 { width: 340px; right: 23%; top: 15%; transform: rotate(-3deg); z-index: 3; }
+  .card .p2 { width: 300px; right: 5%; top: 24%; transform: rotate(5deg); z-index: 2; }
+  .card .stub { left: 33%; bottom: 11%; z-index: 4; }
+
+  /* Banner layout (1920 x 800): no title, three phones across the halfway line. */
+  .banner .label, .banner .facts { display: none; }
+  .banner .p0 { width: 300px; left: 17%; top: 14%; transform: rotate(-5deg); z-index: 2; }
+  .banner .p1 { width: 330px; left: 41%; top: 8%; z-index: 3; }
+  .banner .p2 { width: 300px; right: 17%; top: 14%; transform: rotate(5deg); z-index: 2; }
+  .banner .stub { left: 3%; bottom: 13%; transform: rotate(-4deg) scale(.92); z-index: 4; }
+  .card .p0 { display: none; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="grass"></div>
+  <svg class="lines" id="lines" preserveAspectRatio="none"></svg>
+  <div class="shade"></div>
+
+  <div class="label">
+    <span class="pill">
+      <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M21.9 4.3 18.7 19.6c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.2 13.3l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 3c.9-.3 1.6.2 1.4 1.3Z"/></svg>
+      Telegram Mini App
+    </span>
+    <h1>Pitch<span>KH</span></h1>
+    <p class="line">Book a football, volleyball or tennis pitch in Phnom Penh. The owner confirms on Telegram.</p>
+  </div>
+  <div class="facts"><span>Live on Telegram</span><span>English · <span lang="km" class="km">ខ្មែរ</span></span><span>No sign-up</span></div>
+
+  <div class="phone p0"><img src="../screens/m-time.webp" alt="" /></div>
+  <div class="phone p1"><img src="../screens/m-pitch.webp" alt="" /></div>
+  <div class="phone p2"><img src="../screens/m-telegram-alert.webp" alt="" /></div>
+
+  <div class="stub">
+    <div class="top">
+      <div class="row"><span>PitchKH Sen Sok</span><span class="badge">Waiting for confirmation</span></div>
+      <div class="pitchname">FIELD C</div>
+      <div class="when">Sat, Nov 28, 18:00–20:00</div>
+    </div>
+    <div class="tear"><i></i><b></b><i></i></div>
+    <div class="bottom">
+      <div><small>Booking code</small><span class="code">PK-KNMTC</span></div>
+      <div class="price"><small>pay at the venue</small>$52</div>
+    </div>
+  </div>
+  <div class="krama"></div>
+</div>
+<script>
+  const mode = new URLSearchParams(location.search).get("mode") === "banner" ? "banner" : "card";
+  const [w, h] = mode === "banner" ? [1920, 800] : [1600, 1000];
+  document.documentElement.style.setProperty("--w", w + "px");
+  document.documentElement.style.setProperty("--h", h + "px");
+  document.getElementById("stage").classList.add(mode);
+  // Halfway line and centre circle, placed under the phones like a real pitch.
+  const cx = mode === "banner" ? w * 0.5 : w * 0.66, cy = h * 0.55, r = h * 0.36;
+  document.getElementById("lines").setAttribute("viewBox", `0 0 ${w} ${h}`);
+  document.getElementById("lines").innerHTML =
+    `<line x1="${cx}" y1="0" x2="${cx}" y2="${h}"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r}"/>` +
+    `<rect x="${mode === "banner" ? -60 : w * 0.02}" y="${h * 0.22}" width="${w * 0.12}" height="${h * 0.56}" opacity="${mode === "banner" ? 1 : 0}"/>` +
+    `<rect x="${w - w * 0.1}" y="${h * 0.22}" width="${w * 0.14}" height="${h * 0.56}"/>`;
+</script>
+</body>
+</html>

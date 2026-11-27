@@ -209,6 +209,9 @@
     line-height: 0.98;
     text-transform: uppercase;
   }
+  /* Khmer display headings: the base-layer Khmer rule loses to .font-display above, so restate it
+     here. Stacked Khmer marks below the line need the room, or they touch the next line. */
+  html[lang="km"] .font-display { line-height: 1.35; }
   /* Numbers (prices, times, scores): condensed width + tabular figures. */
   .font-num {
     font-stretch: 82%;

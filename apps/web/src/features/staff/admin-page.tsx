@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { type Booking, type BookingStatus, hhmm } from "@/lib/booking-rules";
 import { BRANCHES, branchName, findBranch } from "@/lib/branches";
 import { client, HttpError } from "@/lib/client";
+import { callLink, chatLinks } from "@/lib/customer-contact";
 import { useDates } from "@/lib/format";
 import { qk } from "@/lib/query";
 import { getMiniApp } from "@/lib/telegram-webapp";
@@ -179,23 +180,50 @@ function PendingList({ bookings, loading, onOpen, onStatus, busy }: { bookings: 
   );
 }
 
+/**
+ * Call and chat with the customer. Chat uses the best Telegram link we have
+ * (@username, their Telegram account, or their phone number); when that is not
+ * the phone number, a second "by phone" button covers privacy-blocked accounts.
+ */
 export function ContactButtons({ booking }: { booking: Booking }) {
   const t = useTranslations("staff");
+  const call = callLink(booking.phone);
+  const [best, ...rest] = chatLinks(booking);
+  const byPhone = best && best.via !== "phone" ? rest.find((l) => l.via === "phone") : undefined;
   return (
     <>
-      {booking.phone ? (
+      {call ? (
         <Button asChild size="sm" variant="ghost">
-          <a href={`tel:${booking.phone}`}><Phone />{t("call")}</a>
+          <a href={call}><Phone />{t("call")}</a>
         </Button>
       ) : null}
-      {booking.telegramUsername ? (
-        <Button asChild size="sm" variant="ghost">
-          <a href={`https://t.me/${booking.telegramUsername}`} target="_blank" rel="noopener noreferrer" onClick={(e) => { const app = getMiniApp(); if (app) { e.preventDefault(); app.openTelegramLink(`https://t.me/${booking.telegramUsername}`); } }}>
-            <Send />{t("message")}
-          </a>
-        </Button>
-      ) : null}
+      {best ? <ChatButton url={best.url} label={best.via === "phone" ? t("chatByPhone") : t("message")} /> : null}
+      {byPhone ? <ChatButton url={byPhone.url} label={t("chatByPhone")} /> : null}
     </>
+  );
+}
+
+/** Opens a Telegram chat; inside the Mini App t.me links stay in Telegram instead of leaving for a browser. */
+function ChatButton({ url, label }: { url: string; label: string }) {
+  const web = url.startsWith("https://");
+  return (
+    <Button asChild size="sm" variant="ghost">
+      <a
+        href={url}
+        target={web ? "_blank" : undefined}
+        rel={web ? "noopener noreferrer" : undefined}
+        onClick={(e) => {
+          const app = getMiniApp();
+          if (app && web) {
+            e.preventDefault();
+            app.openTelegramLink(url);
+          }
+        }}
+      >
+        <Send />
+        {label}
+      </a>
+    </Button>
   );
 }
 

@@ -1218,7 +1218,7 @@
     "cancel": "លុបការកក់",
     "restore": "ស្តារវិញ",
     "call": "ហៅ",
-    "message": "ផ្ញើសារ",
+    "message": "ឆាត",
     "cancelledCount": "ការកក់បានលុប {count}",
     "detail": {
       "status": "ស្ថានភាព",
@@ -1248,6 +1248,7 @@
       "notAdmin": "គណនី Telegram របស់អ្នកមិនទាន់នៅក្នុងបញ្ជីបុគ្គលិក។ សូមផ្ញើលេខខាងក្រោមទៅម្ចាស់ដើម្បីបន្ថែម។",
       "notConfigured": "ម៉ាស៊ីនមេមិនទាន់រៀបចំ៖ ខ្វះ TELEGRAM_BOT_TOKEN។",
       "yourId": "លេខ Telegram ID របស់អ្នក៖"
-    }
+    },
+    "chatByPhone": "ឆាតតាមលេខទូរស័ព្ទ"
   }
 }

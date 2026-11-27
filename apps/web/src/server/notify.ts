@@ -2,8 +2,9 @@ import "server-only";
 import { formatUsd } from "@pitchkh/shared";
 import { findBranch } from "@/lib/branches";
 import { hhmm, type Booking } from "@/lib/booking-rules";
+import { chatLinks } from "@/lib/customer-contact";
 import { siteUrl } from "@/lib/site";
-import { adminIds, escapeHtml, sendMessage } from "./telegram";
+import { adminIds, escapeHtml, type InlineButton, sendMessage } from "./telegram";
 
 const describe = (b: Booking): { branch: string; field: string; when: string } => {
   const branch = findBranch(b.branch);
@@ -11,10 +12,21 @@ const describe = (b: Booking): { branch: string; field: string; when: string } =
   return { branch: branch?.name ?? b.branch, field: field ? `${field.name} (${field.format})` : b.fieldId, when: `${b.date} · ${hhmm(b.startMin)}–${hhmm(b.endMin)}` };
 };
 
-/** Tells every staff member about a new request, with a button that opens the admin screen. */
+/**
+ * Buttons under a new-request message: chat with the customer, then open the
+ * admin screen. One message per chat option, best first, so a customer whose
+ * privacy settings block one link still leaves a working message.
+ */
+export function newBookingKeyboards(b: Booking): InlineButton[][][] {
+  const open: InlineButton[] = [{ text: "📋 Open bookings", web_app: { url: `${siteUrl}/en/admin?date=${b.date}&branch=${b.branch}` } }];
+  const chats = chatLinks(b).map((link) => [[{ text: link.via === "phone" ? "💬 Chat (by phone number)" : "💬 Chat with customer", url: link.url }], open]);
+  return [...chats, [open]];
+}
+
+/** Tells every staff member about a new request, with buttons to chat and to open the admin screen. */
 export async function notifyNewBooking(b: Booking): Promise<void> {
   const d = describe(b);
-  const contact = b.telegramUsername ? `@${escapeHtml(b.telegramUsername)}` : "no Telegram";
+  const contact = b.telegramUsername ? `@${escapeHtml(b.telegramUsername)}` : b.telegramUserId ? "Telegram, no username" : "no Telegram";
   const text = [
     `🆕 <b>New booking request</b> ${b.code}`,
     `${escapeHtml(d.branch)} · ${escapeHtml(d.field)}`,
@@ -25,8 +37,12 @@ export async function notifyNewBooking(b: Booking): Promise<void> {
   ]
     .filter(Boolean)
     .join("\n");
-  const buttons = [[{ text: "Open bookings", web_app: { url: `${siteUrl}/en/admin?date=${b.date}&branch=${b.branch}` } }]];
-  await Promise.all([...adminIds()].map((id) => sendMessage(id, text, buttons)));
+  const keyboards = newBookingKeyboards(b);
+  await Promise.all(
+    [...adminIds()].map(async (id) => {
+      for (const keyboard of keyboards) if (await sendMessage(id, text, keyboard)) return;
+    }),
+  );
 }
 
 /** Tells the customer (if they booked from Telegram) that staff confirmed or declined. */

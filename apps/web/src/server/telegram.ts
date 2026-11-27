@@ -91,16 +91,16 @@ export function checkAdmin(request: Request): AdminCheck {
   return { ok: true, user };
 }
 
-interface InlineButton {
+export interface InlineButton {
   text: string;
   url?: string;
   web_app?: { url: string };
 }
 
-/** Sends a bot message. Best effort: failures are logged, never thrown. */
-export async function sendMessage(chatId: string, text: string, buttons?: InlineButton[][]): Promise<void> {
+/** Sends a bot message. Best effort: failures are logged, never thrown. Resolves true when Telegram accepted it. */
+export async function sendMessage(chatId: string, text: string, buttons?: InlineButton[][]): Promise<boolean> {
   const token = botToken();
-  if (!token) return;
+  if (!token) return false;
   try {
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
@@ -108,9 +108,12 @@ export async function sendMessage(chatId: string, text: string, buttons?: Inline
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: true, ...(buttons ? { reply_markup: { inline_keyboard: buttons } } : {}) }),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) console.error(JSON.stringify({ level: "warn", msg: "telegram_send_failed", status: response.status, body: (await response.text()).slice(0, 200) }));
+    if (response.ok) return true;
+    console.error(JSON.stringify({ level: "warn", msg: "telegram_send_failed", status: response.status, body: (await response.text()).slice(0, 200) }));
+    return false;
   } catch (error) {
     console.error(JSON.stringify({ level: "warn", msg: "telegram_send_error", error: String(error) }));
+    return false;
   }
 }
 

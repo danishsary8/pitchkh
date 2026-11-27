@@ -1218,7 +1218,7 @@
     "cancel": "Cancel booking",
     "restore": "Restore",
     "call": "Call",
-    "message": "Message",
+    "message": "Chat",
     "cancelledCount": "{count, plural, one {# cancelled booking} other {# cancelled bookings}}",
     "detail": {
       "status": "Status",
@@ -1248,6 +1248,7 @@
       "notAdmin": "Your Telegram account isn't on the staff list. Send the number below to the owner to be added.",
       "notConfigured": "The server isn't set up yet: TELEGRAM_BOT_TOKEN is missing.",
       "yourId": "Your Telegram ID:"
-    }
+    },
+    "chatByPhone": "Chat by phone"
   }
 }

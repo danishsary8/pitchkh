@@ -1,0 +1,150 @@
+<!doctype html>
+<!--
+  PitchKH portfolio cover. Open with ?mode=card (16:10, with title) or ?mode=banner (2.4:1, no title).
+  Rendered at 2x by portfolio/cover/render.cjs. Screens come from ../screens/.
+  Style: "match day". Mowed grass and white pitch lines, the app's red/white krama band,
+  three phones fanned out, and the real Telegram alert staff get for a new booking.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PitchKH cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500&family=Noto+Sans+Khmer:wght@500;700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --green: #0a7446;      /* app --primary / --pitch */
+    --green-deep: #06331f;
+    --night: #041a10;
+    --yellow: #ffc629;     /* app --accent */
+    --krama: #c2242b;      /* app --krama */
+    --ink: #f3f8f2;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--night); }
+  body { font-family: "Geist", "Noto Sans Khmer", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  .stage { position: relative; overflow: hidden; width: 1600px; height: 1000px; isolation: isolate;
+    background: radial-gradient(90% 80% at 72% 40%, #0d8a53 0%, #0a6a40 38%, #064a2c 70%, #04301c 100%); }
+  body.banner .stage { width: 1920px; height: 800px; }
+
+  /* mowing stripes */
+  .stage::before { content: ""; position: absolute; inset: -20%; z-index: -2; transform: rotate(-14deg);
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 110px, rgba(0,0,0,.05) 110px 220px); }
+  /* evening light: dark left side so the title reads, floodlight glow top right */
+  .stage::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(40% 50% at 92% -5%, rgba(255,246,214,.28), transparent 70%),
+      linear-gradient(90deg, rgba(3,22,13,.92) 0%, rgba(3,22,13,.72) 30%, rgba(3,22,13,.0) 58%),
+      linear-gradient(0deg, rgba(3,22,13,.55), transparent 30%); }
+  body.banner .stage::after { background:
+      radial-gradient(35% 60% at 50% -10%, rgba(255,246,214,.25), transparent 70%),
+      linear-gradient(0deg, rgba(3,22,13,.6), transparent 40%),
+      radial-gradient(70% 100% at 50% 50%, transparent 40%, rgba(3,22,13,.55) 100%); }
+
+  /* pitch lines */
+  .lines { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; opacity: .34; }
+
+  /* krama band (the app's red/white checker divider) */
+  .krama { position: absolute; left: 0; right: 0; bottom: 0; height: 22px;
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, var(--krama) 25%, transparent 25%, transparent 75%, var(--krama) 75%),
+      linear-gradient(45deg, var(--krama) 25%, transparent 25%, transparent 75%, var(--krama) 75%);
+    background-size: 11px 11px; background-position: 0 0, 5.5px 5.5px; }
+  .krama::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(194,36,43,.55) 22px 33px); mix-blend-mode: multiply; }
+
+  /* ---------- text (card only) ---------- */
+  .copy { position: absolute; left: 96px; top: 118px; width: 640px; }
+  body.banner .copy, body.banner .facts { display: none; }
+  .tag { display: inline-flex; gap: 10px; align-items: center; padding: 9px 16px 9px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); font-size: 19px; font-weight: 500; color: rgba(243,248,242,.86); }
+  .tag i { width: 10px; height: 10px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 5px rgba(61,220,132,.18); }
+  h1 { margin-top: 34px; font-size: 168px; line-height: .88; font-weight: 900; letter-spacing: -0.055em; }
+  h1 span { color: var(--yellow); }
+  .km { margin-top: 26px; font-family: "Noto Sans Khmer", sans-serif; font-weight: 700; font-size: 38px; color: rgba(243,248,242,.9); }
+  .line { margin-top: 18px; font-size: 31px; line-height: 1.32; font-weight: 400; color: rgba(243,248,242,.74); max-width: 560px; text-wrap: balance; }
+  .facts { position: absolute; left: 96px; bottom: 82px; display: flex; gap: 12px; }
+  .fact { padding: 12px 18px; border-radius: 14px; background: rgba(4,26,16,.55); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); backdrop-filter: blur(6px); }
+  .fact b { display: block; font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+  .fact small { font-size: 15px; color: rgba(243,248,242,.6); font-weight: 500; }
+
+  /* ---------- phones ---------- */
+  .phones { position: absolute; left: 820px; top: 70px; width: 720px; height: 900px; }
+  body.banner .phones { left: 50%; top: 66px; transform: translateX(-50%) scale(.84); transform-origin: top center; width: 1500px; }
+  .phone { position: absolute; width: 330px; aspect-ratio: 516 / 1118; padding: 11px; border-radius: 54px;
+    background: linear-gradient(145deg, #2c3a33, #0b130f 45%, #1d2823);
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.14) inset, 0 60px 90px -30px rgba(0,0,0,.75), 0 24px 40px -18px rgba(0,0,0,.6); }
+  .phone img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 44px; }
+  .phone::after { content: ""; position: absolute; top: 22px; left: 50%; width: 92px; height: 26px; margin-left: -46px; border-radius: 20px; background: #050806; }
+  .p-left  { left: 0;     top: 120px; transform: rotate(-7deg); filter: brightness(.86); }
+  .p-mid   { left: 196px; top: 30px;  z-index: 2; width: 350px; }
+  .p-right { left: 400px; top: 150px; transform: rotate(7deg); z-index: 1; filter: brightness(.92); }
+  body.banner .p-left  { left: 230px; top: 90px; }
+  body.banner .p-mid   { left: 575px; top: 10px; }
+  body.banner .p-right { left: 920px; top: 90px; }
+
+  /* Telegram alert: the message staff really get for a new request (server/notify.ts) */
+  .tg { position: absolute; z-index: 5; left: -96px; top: 560px; width: 380px; padding: 16px 18px 14px; border-radius: 22px 22px 22px 6px;
+    background: #fff; color: #10201a; font-size: 16.5px; line-height: 1.42;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.04); }
+  body.banner .tg { left: 1150px; top: 380px; }
+  .tg header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .tg header .av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; font-weight: 800; font-size: 15px; }
+  .tg header b { font-size: 15px; } .tg header small { display: block; font-size: 12.5px; color: #6b7c74; font-weight: 500; }
+  .tg header time { margin-left: auto; font-size: 12.5px; color: #8a9a92; }
+  .tg p b { font-weight: 700; } .tg .code { font-family: "Geist Mono", monospace; font-size: 15px; }
+  .tg .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+  .tg .btns span { padding: 8px; border-radius: 10px; background: #e7f2ec; color: var(--green); text-align: center; font-weight: 600; font-size: 14px; }
+
+  /* "your pick" chip, the yellow check the map puts on a chosen pitch */
+  .pick { position: absolute; z-index: 6; left: 470px; top: 236px; display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 10px; border-radius: 999px;
+    background: var(--yellow); color: #221a00; font-weight: 700; font-size: 18px; box-shadow: 0 18px 30px -12px rgba(0,0,0,.55); transform: rotate(3deg); }
+  .pick i { width: 28px; height: 28px; border-radius: 50%; background: #221a00; color: var(--yellow); display: grid; place-items: center; font-style: normal; font-size: 16px; }
+  body.banner .pick { left: 860px; top: 200px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg class="lines" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#fff" stroke-width="3">
+    <rect x="60" y="60" width="1480" height="880" rx="4"/>
+    <line x1="800" y1="60" x2="800" y2="940"/>
+    <circle cx="800" cy="500" r="150"/><circle cx="800" cy="500" r="6" fill="#fff"/>
+    <rect x="60" y="250" width="230" height="500"/><rect x="60" y="380" width="80" height="240"/>
+    <rect x="1310" y="250" width="230" height="500"/><rect x="1460" y="380" width="80" height="240"/>
+    <path d="M290 410 A 110 110 0 0 1 290 590"/><path d="M1310 410 A 110 110 0 0 0 1310 590"/>
+  </svg>
+
+  <div class="copy">
+    <span class="tag"><i></i>Football · Volleyball · Tennis</span>
+    <h1>Pitch<span>KH</span></h1>
+    <p class="km">កក់ទីលានក្នុងមួយនាទី</p>
+    <p class="line">Book a pitch in Phnom Penh in a minute. No account, confirmed on Telegram.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><b>3 branches</b><small>24 pitches</small></div>
+    <div class="fact"><b>English · ខ្មែរ</b><small>light &amp; dark</small></div>
+    <div class="fact"><b>Telegram</b><small>Mini App + bot</small></div>
+  </div>
+
+  <div class="phones">
+    <div class="phone p-left"><img src="../screens/schedule.webp" alt=""></div>
+    <div class="phone p-mid"><img src="../screens/map.webp" alt=""></div>
+    <div class="phone p-right"><img src="../screens/sent.webp" alt=""></div>
+    <div class="tg">
+      <header><span class="av">P</span><div><b>PitchKH Bot</b><small>to branch staff</small></div><time>17:44</time></header>
+      <p>🆕 <b>New booking request</b> <span class="code">PK-JASPY</span><br>
+      PitchKH Sen Sok · Field B<br>
+      🗓 Sat, Nov 28 · 19:00–20:00<br>
+      👥 12 players · $26</p>
+      <div class="btns"><span>💬 Chat</span><span>📋 Open bookings</span></div>
+    </div>
+  </div>
+  <div class="krama"></div>
+</div>
+<script>
+  const mode = new URLSearchParams(location.search).get("mode") || "card";
+  document.body.classList.add(mode);
+</script>
+</body>
+</html>
